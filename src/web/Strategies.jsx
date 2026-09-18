@@ -5,7 +5,7 @@ import { canonicalJson } from '../shared/protocol.js';
 const value=v=>Number(v||0)/1e6;
 const cash=v=>v==null?'—':value(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const short=x=>x?x.slice(0,8)+'…'+x.slice(-6):'—';
-export default function Strategies({path,navigate}){
+export function useExecutionSession(){
   const [investor,setInvestor]=useState('a'),[state,setState]=useState(null),[selected,setSelected]=useState('btc-trend'),[amount,setAmount]=useState('10000'),[orderAmount,setOrderAmount]=useState('2500'),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[evidence,setEvidence]=useState(null),[walletSigner,setWalletSigner]=useState(null),[newName,setNewName]=useState(''),[newDescription,setNewDescription]=useState('');
   async function request(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const j=await r.json();if(!r.ok)throw new Error(j.error);return j;}
   async function signed(signer,type,strategyId,data={}){const network=await signer.provider.getNetwork();if(Number(network.chainId)!==10143)throw new Error('지갑을 Monad 테스트넷(10143)으로 연결하세요.');const bytes=crypto.getRandomValues(new Uint8Array(32));const nonce='0x'+Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');const payload={domain:'CONFIDENTIAL_ALPHA_V02',chainId:10143,vault:state.vault.address,signer:await signer.getAddress(),type,strategyId,data,nonce,expiresAt:Math.floor(Date.now()/1000)+300};return {payload,signature:await signer.signMessage(canonicalJson(payload))};}
@@ -31,6 +31,10 @@ export default function Strategies({path,navigate}){
       if(action==='ALLOCATE'){const prepared=await request('/api/sleeves/execution/prepare',envelope),pending={envelope,prepared};localStorage.setItem('omnibus-pending-'+state.vault.address,JSON.stringify(pending));setState(previous=>({...previous,pending:true}));result=await finishDeposit(pending);}
       else result=await request('/api/sleeves/execution/submit',envelope);
     }await load();setNotice(result.registered?'제공자 서명을 확인하고 독립 전략을 등록했습니다.':'EVM 거래 확인 · '+result.transactionHash+' · 실제 토큰 잔액과 장부 일치');}catch(e){setError(e.message);}finally{setBusy(false);}}
+  return {investor,setInvestor,state,selected,setSelected,amount,setAmount,orderAmount,setOrderAmount,busy,error,setError,notice,setNotice,evidence,walletSigner,newName,setNewName,newDescription,setNewDescription,load,connect,resumeDeposit,act};
+}
+export default function Strategies({path,navigate}){
+  const {investor,setInvestor,state,selected,setSelected,amount,setAmount,orderAmount,setOrderAmount,busy,error,setError,notice,setNotice,evidence,walletSigner,newName,setNewName,newDescription,setNewDescription,load,connect,resumeDeposit,act}=useExecutionSession();
   const section=path.startsWith('/strategies/')?'detail':({'/strategies':'catalog','/portfolio':'portfolio','/activity':'activity','/provider':'provider','/verification':'verification'}[path]||'catalog');
   let strategyId;try{strategyId=decodeURIComponent(path.split('/')[2]||'');}catch{strategyId='';}
   const strategy=state?.catalog.find(s=>s.id===strategyId);

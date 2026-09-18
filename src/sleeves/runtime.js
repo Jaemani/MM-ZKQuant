@@ -179,6 +179,20 @@ export class OmnibusRuntime {
     if(plan.kind==='ORDER'&&(plan.side==='SELL'||plan.side==='SHORT_CLOSE')&&flat(s))this.state.track.push({strategyId:s.id,unitPrice:s.history.at(-1).unitPrice,transactionHash:receipt.transactionHash,blockNumber:receipt.blockNumber,source:this.chain.environment});
     this.state.pending=null;this.save();return {id,transactionHash:receipt.transactionHash,reconciled:true};
   }
+  inspectLocalDomains(){
+    const work=this.queue.then(async()=>{
+      must(this.chain.environment==='LOCAL_EVM','Domain inspection is restricted to local test fixtures');
+      return json({mode:this.chain.environment,fixtureOnly:true,vault:this.vault.address,venue:this.venue.address,cashToken:this.cash.address,
+        ledger:this.state.ledger,custody:await this.custody(),marks:await this.marks(),reconciliation:await this.reconcile(),completedRequests:this.state.used.length,
+        registrations:(this.state.registrations||[]).map(e=>({strategyId:e.payload.strategyId,signer:e.payload.signer,signatureHash:digest(e)})),
+        pending:this.state.pending?{id:this.state.pending.id,kind:this.state.pending.kind,strategyId:this.state.pending.p.strategyId,externalAwait:Boolean(this.state.pending.externalAwait)}:null,
+        trace:this.state.receipts.map(x=>({id:x.id,type:x.type,strategyId:x.strategyId,signer:x.investor,signatureHash:x.signatureHash,
+          transactionHash:x.receipt.transactionHash,blockNumber:x.receipt.blockNumber,commitmentHash:x.anchor?.transactionHash||null,
+          events:x.receipt.logs.filter(log=>log.address.toLowerCase()===this.vault.address.toLowerCase()).map(log=>{
+            const event=new Interface(this.vault.abi).parseLog(log);return {name:event.name,values:Object.fromEntries(event.fragment.inputs.map((input,i)=>[input.name,String(event.args[i])]))};
+          }),reconciliation:x.reconciliation})),track:this.state.track});
+    });this.queue=work.catch(()=>{});return work;
+  }
   view(envelope){const work=this.queue.then(()=>this.viewLocked(envelope));this.queue=work.catch(()=>{});return work;}
   async viewLocked(envelope){
     // Portfolio is only returned to the signer, never by a query-string role.

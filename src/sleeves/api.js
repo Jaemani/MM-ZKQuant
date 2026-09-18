@@ -15,6 +15,7 @@ export class SleeveExecutionApi {
   async get(){return (await this.runtime()).view();}
   async post(action,body){
     const r=await this.runtime();
+    if(action==='inspect-local-domains')return r.inspectLocalDomains();
     if(action==='prepare')return r.prepare(body);
     if(action==='complete')return r.complete(body.envelope,body.transactionHash);
     if(action==='submit')return r.submit(body);
@@ -27,6 +28,7 @@ export class SleeveExecutionApi {
       if(body.action==='view')return {...await r.view(await signCommand(r,investor,'VIEW','')),fixtureWallet:true};
       if(['ALLOCATE','REDEEM'].includes(body.action))return r.submit(await signCommand(r,investor,body.action,body.strategyId,body.action==='ALLOCATE'?{amount:body.amount}:{}));
       const provider=localWallet(body.strategyId==='btc-hedge'?4:3);
+      if(body.action==='REGISTER')return r.submit(await signCommand(r,localWallet(3),'REGISTER',body.strategyId,{name:body.name,description:body.description}));
       if(body.action==='ORDER')return r.submit(await signCommand(r,provider,'ORDER',body.strategyId,{side:body.side,asset:'BTC',...(body.amount!==undefined?{amount:body.amount}:{})}));
       if(body.action==='PAY_PROVIDER')return r.submit(await signCommand(r,provider,'PAY_PROVIDER',body.strategyId,{}));
       throw new Error('Unknown fixture action');

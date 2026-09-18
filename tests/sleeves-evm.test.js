@@ -99,4 +99,18 @@ test('screen adapter signs allocation, close and redemption without undefined fi
   const post=(action,extra={})=>api.post('local-fixture',{investor:'a',strategyId:'btc-trend',action,...extra});
   await post('ALLOCATE',{amount:'10000'});await post('ORDER',{side:'BUY',amount:'2500'});await post('ORDER',{side:'SELL'});await post('REDEEM');
   assert.equal((await post('view')).portfolio.length,0);
+  const inspected=await api.post('inspect-local-domains',{});
+  assert.equal(inspected.trace.length,4);assert.equal(inspected.reconciliation.balanced,true);
+  assert.ok(inspected.trace.some(row=>row.events.some(event=>event.name==='Fill')));
+  assert.equal(JSON.stringify(inspected).includes('privateKey'),false);
+  await post('REGISTER',{strategyId:'review-strategy',name:'Review strategy',description:'Independent account'});
+  const registered=await api.post('inspect-local-domains',{});
+  assert.equal(registered.completedRequests,5);
+  assert.equal(registered.registrations[0].strategyId,'review-strategy');
+  assert.equal(registered.registrations[0].signer,localWallet(3).address);
+  assert.equal(registered.trace.length,4); // Registration has no fabricated chain receipt.
+  assert.equal(registered.ledger.strategies.find(s=>s.id==='review-strategy').cash,'0');
+  const runtime=await api.runtime();runtime.chain.environment='MONAD_TESTNET';
+  await assert.rejects(()=>api.post('inspect-local-domains',{}),/restricted to local/);
+  runtime.chain.environment='LOCAL_EVM';
 });
