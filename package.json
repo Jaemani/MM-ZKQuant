@@ -12,7 +12,7 @@
     "build": "vite build",
     "start": "node src/server/http.js",
     "test": "node --test tests/*.test.js",
-    "prove:mvp": "node scripts/prove-pilot.mjs",
+    "prove:mvp": "node scripts/prove-sleeves.mjs",
     "test:core": "node --test tests/engine.test.js tests/service.test.js tests/protocol.test.js",
     "chain:demo": "node scripts/chain-demo.mjs",
     "verify:receipt": "node scripts/verify-receipt.mjs",
@@ -21,7 +21,9 @@
     "pilot:market": "node scripts/pilot.mjs market",
     "pilot:provider": "node scripts/pilot-provider.mjs",
     "prove:legacy": "node scripts/prove-mvp.mjs",
-    "test:pilot": "node --test tests/pilot-*.test.js"
+    "test:pilot": "node --test tests/pilot-*.test.js",
+    "prove:pilot": "node scripts/prove-pilot.mjs",
+    "prove:sleeves": "node scripts/prove-sleeves.mjs"
   },
   "dependencies": {
     "ethers": "^6.15.0",

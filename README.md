@@ -1,3 +1,20 @@
+# Confidential Alpha Protocol · Concept v0.2
+
+**Many private strategies. One shared vault.** 투자자가 고른 전략마다 자본·지분·주문·체결·비용·손익을 따로 귀속하고, 실제 보관과 실행만 하나의 Omnibus Vault에서 공유합니다. Provider alpha를 하나의 공통 전략으로 합치지 않습니다.
+
+현재 기본 화면은 **Strategies**입니다. 독립 전략 장부, 투자자의 전략별 배정·환매, 롱/숏 비용 귀속과 공동 장부 대사를 격리된 로컬 회계 환경에서 검토할 수 있습니다. 표시된 전략과 체결은 명시적인 검토 예제이며 실제 제공자의 forward 성과나 새 Omnibus 체인 운용이 아닙니다. 기존 테스트넷 자금은 변경하지 않았습니다.
+
+- [승인된 Concept Specification v0.2](docs/confidential-alpha-v0.2.md)
+- [새 회계·화면·API와 아직 필요한 연결](docs/sleeves-v0.2.md)
+- [구조 변경 결정](docs/adr/0002-independent-sleeves-shared-custody.md)
+- [독립 전략 회계 검토 결과](docs/evidence/sleeves-review.json)
+
+`rtk npm run build` 후 `rtk npm start`로 localhost:8790에서 검토합니다. `rtk npm run prove:mvp -- --strict`는 새 구조의 회계를 검사하고, 외부 연결이 미완료이므로 종료 2를 반환합니다. 이전 공동 합성 펀드 검증은 `rtk npm run prove:pilot -- --strict`로 보존합니다. 이전 판정을 새 제품의 완료 판정으로 사용하지 않습니다.
+
+---
+
+아래는 이전 공동 합성 펀드 Pilot의 기록입니다. 현재 제품 범위는 위 v0.2 명세가 우선합니다.
+
 # MM-ZKQuant · Alpha Fund Pilot
 
 TEE를 제외한 제품 흐름을 구현 중입니다. 새 **Pilot evidence** 경로는 서명 제출 → 사전 commitment → 공개 가격 관측 → 테스트 자산의 예치·지분 → 롱/숏 실제 EVM 체결 → 상환·평가 → 이익 한도 보상 → 환매를 연결합니다.

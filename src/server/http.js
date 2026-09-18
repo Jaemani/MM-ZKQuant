@@ -5,9 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { Store } from './store.js';
 import { AlphaService, AppError } from './service.js';
 import { PilotApi } from '../pilot/api.js';
+import { SleeveReview } from '../sleeves/review.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const publicDocuments = new Set(['requirements.md', 'development-spec.md', 'acceptance-tests.md', 'three-week-execution-plan.md', 'mvp-readiness.md', 'pilot/runbook.md', 'pilot/development-spec.md']);
+const publicDocuments = new Set(['requirements.md', 'development-spec.md', 'acceptance-tests.md', 'three-week-execution-plan.md', 'mvp-readiness.md', 'pilot/runbook.md', 'pilot/development-spec.md', 'confidential-alpha-v0.2.md', 'sleeves-v0.2.md']);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.md': 'text/plain; charset=utf-8' };
 function reply(response, status, value) { response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); response.end(JSON.stringify(value)); }
 async function readBody(request) {
@@ -24,6 +25,8 @@ async function readBody(request) {
 export function makeHttpServer(service, { port = 8790, pilotDirectory = resolve(process.env.ALPHA_DATA_DIR || resolve(ROOT,'.data'),'testnet-pilot') } = {}) {
   let pilot;
   const pilotApi=()=>pilot||(pilot=new PilotApi(pilotDirectory,ROOT));
+  let sleeves;
+  const sleeveReview=()=>sleeves||(sleeves=new SleeveReview(resolve(pilotDirectory,'../sleeve-review/state.json')));
   return createServer(async (request, response) => {
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('X-Content-Type-Options', 'nosniff');
@@ -37,6 +40,7 @@ export function makeHttpServer(service, { port = 8790, pilotDirectory = resolve(
       const path = url.pathname;
       workspace = service.workspace(url.searchParams.get('workspace') ?? 'demo');
       if (request.method === 'GET') {
+        if(path==='/api/sleeves/review'){try{return reply(response,200,sleeveReview().view(url.searchParams.get('investor')||'review-a'));}catch(error){throw new AppError(error.message,400);}}
         if(path.startsWith('/api/pilot/')) {try{return reply(response,200,pilotApi().get(path,url));}catch(error){throw new AppError(error.message,400);}}
         if (path === '/api/health') return reply(response, 200, { ok: true, mode: 'LOCAL_REVIEW_ONLY' });
         if (path === '/api/state') return reply(response, 200, service.state(workspace));
@@ -60,6 +64,9 @@ export function makeHttpServer(service, { port = 8790, pilotDirectory = resolve(
       const allowedOrigins = new Set([...allowedHosts].map(host => 'http://' + host));
       if (request.headers.origin ? !allowedOrigins.has(request.headers.origin) : request.headers['x-local-client'] !== 'mm-alpha-sdk') throw new AppError('Same-origin browser or explicit local SDK request required', 403);
       const body = await readBody(request);
+      if(path.startsWith('/api/sleeves/review/')){
+        try {const review=sleeveReview(),action=path.slice('/api/sleeves/review/'.length);if(!['allocate','redeem','cycle'].includes(action))throw new Error('Unknown review operation');return reply(response,200,review[action](body));}catch(error){throw new AppError(error.message,400);}
+      }
       if(path.startsWith('/api/pilot/')) {try{return reply(response,200,await pilotApi().post(path,body));}catch(error){throw new AppError(error.message,400);}}
       workspace = service.workspace(body.workspace ?? workspace);
       if (path === '/api/providers') return reply(response, 201, service.register(workspace, body));

@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-09-18T12:59:27.771Z",
+  "concept": "CONFIDENTIAL_ALPHA_V0.2",
+  "accountingReview": "PASS",
+  "productVerdict": "NOT_READY_OMNIBUS_INTEGRATION",
+  "teeExcluded": true,
+  "chainConnected": false,
+  "controlledPrices": true,
+  "realParticipants": false,
+  "beforeRedemption": {
+    "investorA": [
+      {
+        "strategyId": "btc-trend",
+        "name": "BTC 상승 전략",
+        "units": "100000000000",
+        "claim": "102245275000"
+      },
+      {
+        "strategyId": "cash-reserve",
+        "name": "현금 유지 전략",
+        "units": "30000000000",
+        "claim": "30000000000"
+      }
+    ],
+    "investorB": [
+      {
+        "strategyId": "btc-hedge",
+        "name": "BTC 하락 전략",
+        "units": "100000000000",
+        "claim": "97494750000"
+      }
+    ],
+    "reconciliation": {
+      "identity": "ONE_REVIEW_OMNIBUS_VAULT",
+      "balanced": true,
+      "vaultEquity": "229989500000",
+      "strategyEquity": "229989500000",
+      "protocolAccrual": "0",
+      "valuationRounding": "0"
+    }
+  },
+  "afterRedemption": {
+    "investorA": [
+      {
+        "strategyId": "cash-reserve",
+        "name": "현금 유지 전략",
+        "units": "30000000000",
+        "claim": "30000000000"
+      }
+    ],
+    "investorB": [
+      {
+        "strategyId": "btc-hedge",
+        "name": "BTC 하락 전략",
+        "units": "100000000000",
+        "claim": "97494750000"
+      }
+    ],
+    "reconciliation": {
+      "identity": "ONE_REVIEW_OMNIBUS_VAULT",
+      "balanced": true,
+      "vaultEquity": "127744225000",
+      "strategyEquity": "127744225000",
+      "protocolAccrual": "0",
+      "valuationRounding": "0"
+    }
+  },
+  "checks": [
+    "strategy-specific investor claims",
+    "independent long/short outcomes",
+    "same provider independent sleeves",
+    "attributed fees",
+    "one-sleeve redemption preserves other claims",
+    "shared custody reconciles with strategy equity"
+  ],
+  "remaining": "Signed strategy submissions, investor authorization, new Omnibus/DEX adapter and actual receipt reconciliation, crash recovery, insolvency handling, external end-to-end execution; see docs/sleeves-v0.2.md."
+}
