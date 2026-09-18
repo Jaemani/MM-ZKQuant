@@ -1,0 +1,147 @@
+{
+  "schema": "MM_PILOT_READINESS_V2",
+  "startedAt": "2026-09-17T20:34:50.469Z",
+  "finishedAt": "2026-09-17T20:35:09.160Z",
+  "productVerdict": "NOT_READY_EXTERNAL_EVIDENCE",
+  "localImplementationVerified": true,
+  "marketSourceVerified": true,
+  "gates": [
+    {
+      "id": "G1",
+      "name": "실제 독립 운영자 승인·서명 제출",
+      "pass": false,
+      "implementation": "승인·키 연결·서명 SDK·마감 구현",
+      "remaining": "인간이 검토한 독립 운영자 최소 3명의 외부 실행 기록"
+    },
+    {
+      "id": "G2",
+      "name": "평가 전 외부 확정 커밋",
+      "pass": false,
+      "implementation": "계약의 마감/시작 제한·finalized 확인·재개 journal 구현",
+      "remaining": "Monad testnet에서 실제 사전 확정한 연속 2 epoch"
+    },
+    {
+      "id": "G3",
+      "name": "독립 가격 원자료와 평가 연결",
+      "pass": false,
+      "implementation": "Kraken 네 자산 동일 시각 closed 1m 원자료 수집·재계산 통과",
+      "remaining": "외부 epoch의 begin/end marketHash 연결"
+    },
+    {
+      "id": "G4",
+      "name": "자본·지분·롱/숏 체결·환매",
+      "pass": false,
+      "implementation": "로컬 EVM 예치·AMM 매수/매도·담보부 차입/상환·환매·자산 보존 통과",
+      "remaining": "동일 경로의 공개 테스트넷 거래 receipt"
+    },
+    {
+      "id": "G5",
+      "name": "연속 weight 갱신·실제 지급",
+      "pass": false,
+      "implementation": "로컬 2 epoch·실현 이익 한도 지급·손실기 무지급·중복 지급 거부 통과",
+      "remaining": "외부 2 epoch 및 실제 양수 보상 지급"
+    },
+    {
+      "id": "G6",
+      "name": "승인 운영자 단위 보상 악용 통제",
+      "pass": true,
+      "implementation": "계정 복제 불변·상쇄 신호 기여 0·cap 포화 Shapley 검증",
+      "remaining": "숨겨진 공통 소유자는 기술만으로 식별할 수 없어 등록 심사가 필요"
+    },
+    {
+      "id": "TEE",
+      "name": "TEE 격리·attestation",
+      "pass": null,
+      "implementation": "사용자 요청으로 제외",
+      "remaining": null
+    }
+  ],
+  "network": {
+    "chainId": 10143,
+    "address": "0xA761529aE65a0966125C47911DEDCC7F23951D57",
+    "balanceWei": "4128720386000000000",
+    "checkedAt": "2026-09-17T20:35:04.821Z"
+  },
+  "external": {
+    "valid": true,
+    "environment": "MONAD_TESTNET",
+    "epochs": [],
+    "depositObserved": true,
+    "redemptionObserved": false,
+    "reconstructedShareSupply": "100000000000000000000000",
+    "reconstructedNav": "100000000000000000000000",
+    "ledger": {
+      "0xf68a57c44e566a78bdeb1531532a142185b1285d:0xa761529ae65a0966125c47911dedcc7f23951d57": "4000000000000000000000000",
+      "0x9aaa786996772f8dfc7baf994df77298973b71fa:0xa761529ae65a0966125c47911dedcc7f23951d57": "6524093477211341484",
+      "0xf68a57c44e566a78bdeb1531532a142185b1285d:0xc8bb05e63f5ef984bee10fa2c4a1d6f8b5dbfe7d": "4000000000000000000000000",
+      "0x9aaa786996772f8dfc7baf994df77298973b71fa:0xc8bb05e63f5ef984bee10fa2c4a1d6f8b5dbfe7d": "19572280431634024452",
+      "0xf341ea2b2f6ad8a4c3ffd27abec9641c43368949:0xa761529ae65a0966125c47911dedcc7f23951d57": "203555711162588088734",
+      "0xf341ea2b2f6ad8a4c3ffd27abec9641c43368949:0xc8bb05e63f5ef984bee10fa2c4a1d6f8b5dbfe7d": "610667133487764266202",
+      "0x3ad44d290f927cb12eec473e02661dcc1bd38ca5:0xa761529ae65a0966125c47911dedcc7f23951d57": "21635655560363479013414107",
+      "0x3ad44d290f927cb12eec473e02661dcc1bd38ca5:0xc8bb05e63f5ef984bee10fa2c4a1d6f8b5dbfe7d": "64906966681090437040242318",
+      "0xc33bf771cff789e68bbeef544cc963e7d060d396:0xa761529ae65a0966125c47911dedcc7f23951d57": "4938271604938271604939",
+      "0xc33bf771cff789e68bbeef544cc963e7d060d396:0xc8bb05e63f5ef984bee10fa2c4a1d6f8b5dbfe7d": "14814814814814814814814",
+      "0xf68a57c44e566a78bdeb1531532a142185b1285d:0x912ed1ef5581e48f6daa0fe02eb357706e821cc7": "100000000000000000000000"
+    },
+    "referenceAttributionNotRecomputed": true,
+    "independentChainVerification": true,
+    "finalizedHead": 63409278,
+    "independenceMeaning": "Fresh public RPC receipt/readback independent of saved application JSON; not an independent auditor or consensus light client."
+  },
+  "externalError": null,
+  "sourceCheckpoint": {
+    "contracts/EpochCommitmentRegistry.sol": "4e3617c099f87762acf4a9225e5d4155564ee0d01e343aea3404262e3a1a7402",
+    "contracts/deploy-testnet.mjs": "614e5d60e1831d27e96416239279720f993d572e371d50a4a5c5b61a8af4e355",
+    "contracts/local-evm.mjs": "1d63d80721cba5204c4dcfd6e299586887ec7c6b29403fb87485b86ff613c5c6",
+    "contracts/pilot/PilotFund.sol": "103b4a7db60caa41a5dce9071cb18d93a473514b4efadfcbbb4b560978ea6efa",
+    "scripts/chain-demo.mjs": "43973237a296f24d62ed1e086179bbad3f07f2b4f41f486cf5bffe83d48b80ae",
+    "scripts/dev.mjs": "a97e30e7148ce23e631e57ac22907fbed1010b0ebb2bfe4e3fb767f6be8a22ef",
+    "scripts/evidence/http-challenge.mjs": "c3cbe704060b4a5d15f1961e6ef487de7ef102ff7891c2a386d8f7c9f6380517",
+    "scripts/evidence/quant-challenges.mjs": "7a6876264d27feef72e7ffa5071abf28af60def17de1db70fb942dbab558d37a",
+    "scripts/evidence/security-challenges.mjs": "d59025337f0dafc8efb7f35d4d0c7ced27fc0bb4660b7b76701e0acf01d441a3",
+    "scripts/pilot-provider.mjs": "34de687483417391d43d257b25bfff5f916b5ff75a9c3b0c2946593bdc4714d1",
+    "scripts/pilot.mjs": "2ebd92072a8f561e64f8dfe65ef8c4bf311237d174219e66282bbbf9cb3caedf",
+    "scripts/prove-mvp.mjs": "4039e4aad12edf69ecbcfc43cacb686442e9c22f37ad121b24513adcc4ec5c0d",
+    "scripts/prove-pilot.mjs": "9d597d2b757403e97fa7e4de955c26ce98dd213dd5f8f201ec59197622d739de",
+    "scripts/provider-demo.mjs": "8069c68fde9fc9fa46aa5809d6f78fd763e5f54dd973119f6b5f84e5b57434ff",
+    "scripts/verify-receipt.mjs": "d45854f52230469acd16e1865476442776e1855a8de0072ff0d5053fe7bdefdc",
+    "src/core/engine.js": "196eb852556720e43d8c6e5c63e3ff8035b64d562044113e8120e9f554148d35",
+    "src/pilot/api.js": "dd87e32c6e7c272560f0cbf2aa416532cba8648ce5d2ed8afa868ae6a70a6322",
+    "src/pilot/chain.js": "d97d7bfe388fdee0e64de1df4fb32804658443c72b03249eeee6d5986a616741",
+    "src/pilot/challenges.js": "a4e722eddef74c5de12f564a2c3480be3f2900aa7dbb48f5dc152653fc6db5e2",
+    "src/pilot/coordinator.js": "66b5e7f69886ff7699e30e0bff48aa394ba65e6ae682aeff6c82ce78c9d5b22d",
+    "src/pilot/market.js": "6ca276c9d6cd9de25b0ef55eb72d62163fb573a4d7ac45a2310f22d3c89feca9",
+    "src/pilot/policy.js": "709f3b2ea8d92b63b99b603c0ebe828a9748bcaa5638da3377a0f48a61209a49",
+    "src/pilot/runner.js": "9acef75e4b973ad326cafc310dfc966272c5973289f727b8c199afd433581ac3",
+    "src/pilot/verify.js": "5606026671b67b3adad46052f63e67ff1be8e2a4f7baf56d04b2fee320443b13",
+    "src/server/crypto.js": "5d14e4973012242a519d336abfab01c676f97e5fdbf998cd16c4111eb0f795a7",
+    "src/server/http.js": "a1bb5e9ad0ebea7a873fa25cac01cfa0f6e0886ae2e7c1e573ee65687b42cc85",
+    "src/server/service.js": "fdfc91891c80e588038c849d71b105f05e7f30da4c44ba8eb0c5d61d110776ea",
+    "src/server/store.js": "59a82375820bd1e9b95e99c5b9d9b22c6e07004a7a6e13e20f72542cdd9334af",
+    "src/shared/protocol.js": "f039724c09e0aa19b3384b9e187f338436c7cd8ac48cf20195783e7e7ef1e033",
+    "src/web/App.jsx": "2ceffee867bacbee984247a604a94c728668dd35ae10fc4658c233f52111713f",
+    "src/web/Pilot.jsx": "12d22cfb872601a68c0ef29648eb40d7e1446d2e01987389d080dd34f0e81a14",
+    "src/web/main.jsx": "345dfacf7ef0befe1f8a2598213ce48d7d28c7c18d9bec93418c74d0f41c2ae5",
+    "src/web/styles.css": "cc5899bacabf430b650ff044ada3623fb5674d9879582b49617f7bb98e61b187",
+    "tests/commitment-binding.test.js": "9c8656d929db724b3a42d1c019881ad6fc8a55fc3a646e5faee02cf16b531121",
+    "tests/contracts.test.js": "b01d062e0ea9d7faac5eb910feb14474aeea31a9ab03c56acf5d466f1659a239",
+    "tests/engine.test.js": "96dc585fe2e7efbaa0b9c1b1a6a89b1e18e4ed0be31c265f6b6ae4fd26e00c41",
+    "tests/http.test.js": "2274c18b1926286d624b40d2de2fb678d53bc0d3bd85e971d5037a76e10e955d",
+    "tests/pilot-http.test.js": "8363c84b1f91973741a1f822e10b16d1196df38c253418bfef065df407b9ca61",
+    "tests/pilot-integration.test.js": "7be8d56876ca3d76fb4e727b810cf1fbcca33d69744e95df5a32a6b9f89e8d49",
+    "tests/pilot-journal.test.js": "a98d603160bb7f04abc8c5a21a2fd2c290350429469a4c138ce29d67000b46e1",
+    "tests/pilot-market.test.js": "0ed9deb8963d461ecdbb92026dac1db64935987e5f2d010d58dc8ea68e64b5af",
+    "tests/pilot-policy.test.js": "401f7145c26765ab2f52d7a83c6c4bca294cb1d1c55181b2551c5dd3ac75bccb",
+    "tests/pilot-provider.test.js": "3b1e4dd3b70ad9a6cca51eb94d091f30db27fab46047fc40d23a52ba3acfad83",
+    "tests/protocol.test.js": "b3c7d0b306509c311623a3ab1bd889b07fcccae863aa8450a030b7578d00ef96",
+    "tests/service.test.js": "7f1f1428941b024687e84e898c82145ebde5f86fb5c42b2adc4cf8d0165aaee1"
+  },
+  "artifacts": {
+    "pilot-local.json": "12008cfe259db10ba0845fbcc4195bd6eaece371fa29ccd2b1b3e86880f9497d",
+    "pilot-local-verification.json": "feb282fce4361eec0c3305b0ceb6fca4784b30a64a3c08d987ddb31ebe1e49f3",
+    "pilot-reward-challenges.json": "6cff7e249a8330816d295b41052e2e23b661736bc4143bc16865c7f11fc2be26",
+    "market-live.json": "7ed10674e4c3e5f08b132a8c34bf8b8efd2147be83b81dec3227bf0b20e9e823"
+  },
+  "noProductionMoneyUsed": true,
+  "teeExcluded": true
+}

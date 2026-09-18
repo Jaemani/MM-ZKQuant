@@ -1,0 +1,41 @@
+{
+  "strategy": "exchange_outflow",
+  "cutoff": 1800000000,
+  "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+  "inputs": [
+    {
+      "name": "exchange_netflow_z_milli",
+      "value": -2000,
+      "event_at": 1799999940,
+      "available_at": 1799999970,
+      "source": "custom-flow-v1",
+      "revision": 0,
+      "asset": "BTC"
+    },
+    {
+      "name": "flow_coverage_bps",
+      "value": 9500,
+      "event_at": 1799999940,
+      "available_at": 1799999970,
+      "source": "custom-flow-v1",
+      "revision": 0,
+      "asset": "BTC"
+    },
+    {
+      "name": "trend_30d_bps",
+      "value": 1200,
+      "event_at": 1799999940,
+      "available_at": 1799999970,
+      "source": "canonical-price-v1",
+      "revision": 0,
+      "asset": "BTC"
+    }
+  ],
+  "decision": {
+    "status": "TARGET",
+    "targets_bps": {
+      "BTC_SPOT": 3500
+    },
+    "reason": "entry gate"
+  }
+}

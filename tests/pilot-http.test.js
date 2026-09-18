@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { once } from 'node:events';
+import {request as httpRequest} from 'node:http';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { generateKeyPairSync, randomBytes } from 'node:crypto';
+import { Store } from '../src/server/store.js';
+import { AlphaService } from '../src/server/service.js';
+import { makeHttpServer } from '../src/server/http.js';
+import { signObject, signingPublicKey } from '../src/server/crypto.js';
+test('pilot HTTP exposes source evidence and signed pending enrollment without granting actor approval',async t=>{
+  const directory=mkdtempSync(join(tmpdir(),'pilot-http-')),store=new Store(join(directory,'paper'));
+  const server=makeHttpServer(new AlphaService(store),{pilotDirectory:join(directory,'pilot'),port:8790});
+  server.listen(0,'127.0.0.1');await once(server,'listening');
+  t.after(async()=>{await new Promise(r=>server.close(r));store.close();rmSync(directory,{recursive:true,force:true});});
+  const base=`http://127.0.0.1:${server.address().port}`;
+  const send=(path,body,headers={})=>new Promise((resolve,reject)=>{const request=httpRequest(base+path,{method:body?'POST':'GET',headers:{Host:'127.0.0.1:8790','Content-Type':'application/json','X-Local-Client':'mm-alpha-sdk',...headers}},response=>{const chunks=[];response.on('data',c=>chunks.push(c));response.on('end',()=>resolve({status:response.statusCode,json:async()=>JSON.parse(Buffer.concat(chunks).toString())}));});request.on('error',reject);request.end(body?JSON.stringify(body):undefined);});
+  let r=await send('/api/pilot/status');assert.equal(r.status,200);const state=await r.json();assert.equal(state.actors.length,0);assert.equal(state.serverPublicKey.kty,'RSA');
+  const privateKey=generateKeyPairSync('ed25519').privateKey.export({type:'pkcs8',format:'pem'});
+  const payload={domain:'MM_PILOT_ENROLL_V1',name:'External provider',publicKey:signingPublicKey(privateKey),payoutAddress:'0x'+'12'.repeat(20),nonce:randomBytes(32).toString('hex')};
+  r=await send('/api/pilot/enroll',{payload,signature:signObject(payload,privateKey)});assert.equal(r.status,200);assert.equal((await r.json()).status,'PENDING');
+  r=await send('/api/pilot/status');const after=await r.json();assert.equal(after.actors.length,0);assert.equal(after.pendingRequests.length,1);assert.ok(!JSON.stringify(after).includes('PRIVATE KEY'));
+  r=await send('/api/pilot/enroll',{payload,signature:'invalid'});assert.equal(r.status,400);
+  r=await send('/api/pilot/enroll',{payload,signature:signObject(payload,privateKey)},{Origin:'https://unrelated.example'});assert.equal(r.status,403);
+  r=await send('/api/pilot/approve',{request:'arbitrary'});assert.equal(r.status,400);
+});

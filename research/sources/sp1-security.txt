@@ -1,0 +1,268 @@
+Security Model | Succinct Docs
+Skip to main content
+Succinct Docs
+SP1
+Prover Network
+Overview
+Provers
+Solutions
+OP Succinct
+SP1 Helios
+GitHub
+Search
+Overview
+Introduction
+What is a zkVM?
+Usecases
+Getting Started
+Installation
+Quickstart
+Hardware Requirements
+Recommended Workflow
+Migrating from V5 to V6
+Writing Programs
+Basics
+Setup
+Compiling Programs
+Proof Aggregation
+Proving
+Basics
+Proof Types
+Hardware Acceleration
+Advanced
+Offchain Verification
+Optimization & Profiling
+Basics
+Precompiles
+Precompile Specification
+Prover Gas
+Cycle Tracking
+Profiling
+Prover Network
+Quickstart
+Advanced Usage
+Reserved Capacity
+Migrate to Mainnet
+Troubleshooting
+FAQ
+TEE 2FA
+TEE Private Proving
+On-Chain Verification
+Setup
+Contract Addresses
+Solidity Verifier
+Troubleshooting & CI
+Common Issues
+Usage in CI
+Upgrade Guides
+SP1 Proof System
+Introduction
+Shard Proofs
+Main Trace Commitment
+LogUp GKR
+Zerocheck
+Jagged PCS
+Dense PCS
+Global Memory Argument
+Recursion
+Security
+Security Model
+Safe Usage of SP1 Precompiles
+Security Policy
+Security Advisories
+Audit Reports
+Bug Bounty
+Resources
+Explorer (Mainnet)
+Explorer (Reserved)
+Staking
+Security
+Security Model
+On this page
+Security Model
+SP1 Hypercube Security Model
+​
+The goal of the SP1 zkVM is to transform an arbitrary program written in an LLVM-compiled language into a sound zero-knowledge proof, proving the program's correct execution. SP1's security model outlines the necessary cryptographic assumptions and program safety requirements to ensure secure proof generation and verification. It also addresses our trusted setup process and additional practical measures to enhance the security of using SP1.
+Hash Functions and the Random Oracle Model
+​
+SP1 Hypercube utilizes the Poseidon2 hash function over the Koalabear field
+P
+=
+2
+31
+−
+2
+24
++
+1
+P=2^{31}-2^{24}+1
+P
+=
+2
+31
+−
+2
+24
++
+1
+. The Poseidon2 is parameterized with a width of 16 field elements and SBOX degree of
+3
+3
+3
+. There are 8 external rounds with and 20 internal rounds. These parameters were used in
+Plonky3
+. Readers are referred to the Plonky3 documentation above for more details and theoretical background on the parameter selection for Poseidon2.
+Using the
+Random Oracle Model
+, we assume our system remains as secure as if Poseidon2 was replaced with a random oracle. This assumption establishes the security of the
+Fiat-Shamir transform
+, which converts an interactive protocol into a non-interactive one. This is a common cryptographic assumption used by many teams in the domain; see also the
+Poseidon Initiative
+.
+We also ensure that the depth of the overall circuit being proven is less than that of the Poseidon hash, thereby avoiding the recent
+Fiat-Shamir attack
+.
+Conjectures for FRI's Security
+​
+SP1 Hypercube does not rely on proximity gap conjectures. Rather, it relies on proximity gap theorems established in (
+https://eprint.iacr.org/2020/654.pdf
+), while operating in the unique decoding regime. The FRI parameters are available at
+hypercube-verifier/crates/primitives/src /fri_params.rs
+.
+Recursion's Overhead in Security
+​
+We assume that recursive proofs do not incur a loss in security as the number of recursive steps increases. This assumption is widely accepted for recursion-based approaches.
+Security of Elliptic Curves over Extension Fields
+​
+SP1 assumes that the discrete logarithm problem on the elliptic curve over the degree-7 extension of BabyBear is computationally hard. The selected instantiation of the elliptic curve satisfies the criteria outlined in
+SafeCurves
+, including high embedding degree, prime group order, and a large CM discriminant.
+An analysis based on Thomas Pornin's paper
+"EcGFp5: a Specialized Elliptic Curve"
+, confirmed that the selected elliptic curve provides at least 100 bits of security against known attacks.
+This assumption is used in our new memory argument. For more details, see
+our notes
+explaining how it works.
+Groth16, PLONK, and the Zero-Knowledgeness of SP1
+​
+SP1 utilizes
+Gnark's
+implementation of Groth16 or PLONK over the BN254 curve to compress a STARK proof into a SNARK proof, which is then used for on-chain verification. SP1 assumes all cryptographic assumptions required for the security of Groth16 and PLONK. While our implementations of Groth16 and PLONK are zero-knowledge, individual STARK proofs in SP1 do not currently satisfy the zero-knowledge property.
+Differences in SP1 Turbo Security Model
+​
+SP1 Turbo uses the Babybear field
+P
+=
+15
+⋅
+2
+27
++
+1
+P=15 \cdot 2^{27} + 1
+P
+=
+15
+⋅
+2
+27
++
+1
+and the Poseidon2 parameters are adjusted accordingly. The SBOX degree is 7 and there are 13 internal rounds
+In contrast to Hypercube, SP1
+:Turbo
+relies on conjectures on proximity gaps. Specifically SP1 Turbo's FRI parameters have
+num_queries = 100 / log_blowup
+with
+proof_of_work_bits = 16
+. Despite
+recent
+attacks
+on
+proximity gaps, these parameters still conjecturally provide 100 bits of security.
+Program Safety Requirements
+​
+Since SP1 only aims to provide proof of correct execution for the user-provided program, it is crucial for users to make sure that
+their programs are secure
+.
+SP1 assumes that the program compiled into SP1 is non-malicious. This includes that the program is memory-safe and the compiled ELF binary has not been tampered with. Compiling unsafe programs with undefined behavior into SP1 could result in undefined or even malicious behavior being provable and verifiable within SP1. Therefore, developers must ensure the safety of their code and the correctness of their SP1 usage through the appropriate toolchain. Similarly, users using SP1's patched crates must ensure that their code is secure when compiled with the original crates. SP1 also has
+requirements for safe usage of SP1 Precompiles
+, which must be ensured by the developers.
+Additionally, SP1 assumes that
+0
+is not a valid program counter in the compiled program.
+Trusted Setup
+​
+The Groth16 and PLONK protocols require a trusted setup to securely setup the proof systems. For PLONK, SP1 relies on the trusted setup ceremony conducted by
+Aztec Ignition
+. For Groth16, SP1 conducted a trusted setup among several contributors to enable its use in the zero-knowledge proof generation pipeline.
+Purpose
+​
+A trusted setup ceremony generates cryptographic parameters essential for systems like Groth16 and PLONK. These parameters ensure the validity of proofs and prevent adversaries from creating malicious or invalid proofs. However, the security of the trusted setup process relies on the critical assumption that at least one participant in the ceremony securely discards their intermediary data (commonly referred to as "toxic waste"). If this assumption is violated, the security of the proof system can be compromised.
+Options
+​
+SP1 provides two trusted setup options, depending on user preferences and security requirements:
+PLONK’s Universal Trusted Setup:
+For PLONK, SP1 uses the
+Aztec Ignition
+ceremony, which is a universal trusted setup designed for reuse across multiple circuits. This approach eliminates the need for circuit-specific ceremonies and minimizes trust assumptions, making it a robust and widely trusted solution.
+The details of SP1's usage of this trusted setup can be found in our repository
+here
+using
+Gnark's ignition verifier
+.
+The main downside of using PLONK is that it incurs a higher proving cost than Groth16 by 3-4x. This cost will be negligible for large proofs, whose runtime is dominated by the compress stage.
+Groth16 Circuit-Specific Trusted Setup:
+For Groth16, Succinct conducted a circuit-specific trusted setup ceremony among several contributors to the project. While every effort was made to securely generate and discard intermediary parameters following best practices, circuit-specific ceremonies inherently carry higher trust assumptions. The contributors are the following:
+Todd Norton (Etherealize)
+Taylan Pince (Polygon)
+Mofi Taiwo (OP Labs)
+Aaron Feickert (Alpen Labs)
+Pranay Anchuri (Offchain Labs)
+Eugene Rabinovich (Succinct)
+Roger Bai (Coinbase)
+Taylor Webb (Across Protocol)
+Taehoon Kim (Succinct)
+Leopold Joy (Coinbase)
+Krlos Mata (Polygon)
+Daniel Lumi (Offchain Labs)
+Ihor Farion (Across Protocol)
+Tsahi Zidenberg (Offchain Labs)
+Ron Rothblum (Succinct)
+Ernesto Ramirez (Succinct)
+Tamir Hemo (Succinct)
+Tobias Bergkvist (Succinct)
+The trusted setup artifacts and individual contributions were generated by
+Semaphore
+which was originally developed by
+Worldcoin
+. To verify the contributions, see
+here
+.
+Users uncomfortable with these security assumptions are strongly encouraged to use PLONK instead.
+Approved Prover
+​
+Zero-knowledge proof (ZKP) systems are highly advanced and complex pieces of software that push the boundaries of cryptographic innovation. As with any complex system, the possibility of bugs or vulnerabilities cannot be entirely eliminated. In particular, issues in the prover implementation may lead to incorrect proofs or security vulnerabilities that could compromise the integrity of the entire proof system.
+To mitigate these risks, we officially recommend the use of an approved prover for any application handling critical or sensitive amounts of value. An approved prover refers to an implementation where there is a list of whitelisted provers or oracles who provide an additional sanity check that the proof's claimed outputs are correct.
+Over time, as the ecosystem matures and the understanding of ZKP systems improves, we expect to relax these restrictions. Advances in formal verification, fuzz testing, and cryptographic research may provide new tools and methods to achieve high levels of security and confidence of prover implementations.
+We strongly advise users to:
+Use only Succinct approved versions of the prover software for critical applications.
+Follow updates and recommendations from the SP1 team regarding approved provers.
+Regularly apply security patches and updates to the prover software.
+This careful approach ensures that applications using SP1 maintain the highest possible level of security, while still leaving room for innovation and growth in the ZKP ecosystem.
+Previous
+Recursion
+Next
+Safe Usage of SP1 Precompiles
+SP1 Hypercube Security Model
+Hash Functions and the Random Oracle Model
+Conjectures for FRI's Security
+Recursion's Overhead in Security
+Security of Elliptic Curves over Extension Fields
+Groth16, PLONK, and the Zero-Knowledgeness of SP1
+Differences in SP1 Turbo Security Model
+Program Safety Requirements
+Trusted Setup
+Purpose
+Options
+Approved Prover

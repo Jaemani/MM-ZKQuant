@@ -1,0 +1,63 @@
+Vaults | Hyperliquid Docs
+Hyperliquid Docs
+⌘
+Ctrl
+k
+Hyperliquid Docs
+Builder Tools
+Support
+Hyperliquid Docs
+About Hyperliquid
+Onboarding
+HyperCore
+Overview
+USDC
+API servers
+Clearinghouse
+Oracle
+Order book
+Staking
+Vaults
+Protocol vaults
+HyperCore vaults (legacy)
+For vault leaders (legacy)
+For vault depositors (legacy)
+Multi-sig
+Permissionless spot quote assets
+Aligned quote assets
+HyperEVM
+Hyperliquid Improvement Proposals (HIPs)
+Trading
+Validators
+Referrals
+Points
+Historical data
+Bug bounty program
+Audits
+Brand kit
+For developers
+API
+HyperEVM
+Nodes
+Powered by GitBook
+On this page
+For the complete documentation index, see
+llms.txt
+. This page is also available as
+Markdown
+.
+Copy
+On this page
+Hyperliquid Docs
+HyperCore
+Vaults
+Vaults are a general case of the powerful functionality that HyperEVM enables via CoreWriter and precompiles. Builders can create and tokenize vaults on the HyperEVM with fully customizable accounting. Builders can follow specs such as
+https://eips.ethereum.org/EIPS/eip-4626
+with the added benefit of trustless read and write operations on HyperCore. For example, vaults can trade onchain via CoreWriter, or they can delegate any number of authorized agents using CoreWriter. The net result is fully onchain accounting via precompiles, and full access to Core features including spot and HIP-3 in all quote assets.
+This is a strict improvement over the "legacy" HyperCore vaults, which were introduced in 2023 and do not support HIP-3 or spot trading.
+Previous
+Staking
+Next
+Protocol vaults
+Last updated
+3 months ago

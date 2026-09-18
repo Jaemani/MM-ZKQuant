@@ -1,0 +1,451 @@
+{
+  "schema": "MM_QUANT_CHALLENGES_V1",
+  "runAt": "2026-09-17T18:42:50.434Z",
+  "runtime": "v22.23.0",
+  "scope": {
+    "noTEE": true,
+    "syntheticPrices": true,
+    "approximatePaperLinearModel": true,
+    "actualTrades": false,
+    "actualRewards": false,
+    "chainEvidence": false,
+    "independentOracle": "Explicit hand-calculated constants/dollar formulas; production engine is only the observed implementation.",
+    "serviceCoverage": "flow() with an isolated in-memory store and explicitly seeded settled book; no HTTP, persistence or clock claim."
+  },
+  "arithmeticChecks": "PASS",
+  "productCounterexamplesReproduced": 3,
+  "cases": [
+    {
+      "id": "accounting-separation-missing-and-flows",
+      "classification": "ARITHMETIC_SUPPORT_WITHIN_DECLARED_PAPER_MODEL",
+      "expectedFormula": "Fund: $100000 + $10000 ETH * 10% - $10 fee - $5 slippage = $100985. BTC +$10000 and -$10000 net to zero. Standalone BTC uses $25000 capped exposure, not the provider weight. Missing 10% weight remains unallocated; the three submitted signals are not reweighted.",
+      "expectedProviderResults": {
+        "long-btc": [
+          496.25,
+          201.5,
+          6716
+        ],
+        "short-btc": [
+          -503.75,
+          -198.5,
+          0
+        ],
+        "long-eth": [
+          246.25,
+          98.5,
+          3283
+        ],
+        "missing": [
+          0,
+          0,
+          0
+        ]
+      },
+      "observed": {
+        "targetBps": {
+          "BTC": 0,
+          "ETH": 1000,
+          "MON": 0,
+          "SOL": 0
+        },
+        "nav": 100985,
+        "fundReturnBps": 98.5,
+        "pnl": 985,
+        "turnover": 10000,
+        "fee": 10,
+        "slippage": 5,
+        "providers": [
+          {
+            "id": "long-btc",
+            "standaloneNetReturnBps": 496.25,
+            "contributionBps": 201.5,
+            "credits": 6716
+          },
+          {
+            "id": "short-btc",
+            "standaloneNetReturnBps": -503.75,
+            "contributionBps": -198.5,
+            "credits": 0
+          },
+          {
+            "id": "long-eth",
+            "standaloneNetReturnBps": 246.25,
+            "contributionBps": 98.5,
+            "credits": 3283
+          },
+          {
+            "id": "missing",
+            "standaloneNetReturnBps": 0,
+            "contributionBps": 0,
+            "credits": 0
+          }
+        ],
+        "unallocatedCredits": 1,
+        "unallocatedWeightBps": 7000,
+        "weightsUnchanged": true,
+        "deposit": {
+          "nav": 111083.5,
+          "shares": 110000,
+          "sharePrice": 1.00985
+        },
+        "withdrawal": {
+          "nav": 100985,
+          "shares": 100000,
+          "sharePrice": 1.00985,
+          "netTradingProfitAfterFlows": 985
+        }
+      },
+      "conclusion": "Standalone/LOO separation and cost/flow arithmetic are concretely reviewable. This does not demonstrate real execution, custody, liquidity or self-financing on-chain shares."
+    },
+    {
+      "id": "identical-clones-and-risk-cap",
+      "classification": "PRODUCT_DESIGN_COUNTEREXAMPLE_NOT_FORMULA_BUG",
+      "expectedFormula": "10% exposure * (10% return - 0.15% entry cost) = 98.5 return bps per uncapped signal. At three identical signals, the 25% cap makes each removal worth 5% exposure = 49.25 bps. At four, removing any one still leaves 30% before the same cap, so every LOO contribution is zero.",
+      "observed": [
+        {
+          "actorCopies": 1,
+          "targetBps": {
+            "BTC": 2000,
+            "ETH": 0,
+            "MON": 0,
+            "SOL": 0
+          },
+          "nav": 101970,
+          "fundReturnBps": 197,
+          "pnl": 1970,
+          "turnover": 20000,
+          "fee": 20,
+          "slippage": 10,
+          "providers": [
+            {
+              "id": "honest",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 98.5,
+              "credits": 5000
+            },
+            {
+              "id": "actor-1",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 98.5,
+              "credits": 5000
+            },
+            {
+              "id": "neutral-2",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-3",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-4",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-5",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-6",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-7",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-8",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-9",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            }
+          ],
+          "unallocatedCredits": 0,
+          "actorCredits": 5000
+        },
+        {
+          "actorCopies": 2,
+          "targetBps": {
+            "BTC": 2500,
+            "ETH": 0,
+            "MON": 0,
+            "SOL": 0
+          },
+          "nav": 102462.5,
+          "fundReturnBps": 246.25,
+          "pnl": 2462.5,
+          "turnover": 25000,
+          "fee": 25,
+          "slippage": 12.5,
+          "providers": [
+            {
+              "id": "honest",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 49.25,
+              "credits": 3333
+            },
+            {
+              "id": "actor-1",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 49.25,
+              "credits": 3333
+            },
+            {
+              "id": "actor-2",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 49.25,
+              "credits": 3333
+            },
+            {
+              "id": "neutral-3",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-4",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-5",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-6",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-7",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-8",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-9",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            }
+          ],
+          "unallocatedCredits": 1,
+          "actorCredits": 6666
+        },
+        {
+          "actorCopies": 3,
+          "targetBps": {
+            "BTC": 2500,
+            "ETH": 0,
+            "MON": 0,
+            "SOL": 0
+          },
+          "nav": 102462.5,
+          "fundReturnBps": 246.25,
+          "pnl": 2462.5,
+          "turnover": 25000,
+          "fee": 25,
+          "slippage": 12.5,
+          "providers": [
+            {
+              "id": "honest",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "actor-1",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "actor-2",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "actor-3",
+              "standaloneNetReturnBps": 246.25,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-4",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-5",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-6",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-7",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-8",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            },
+            {
+              "id": "neutral-9",
+              "standaloneNetReturnBps": 0,
+              "contributionBps": 0,
+              "credits": 0
+            }
+          ],
+          "unallocatedCredits": 10000,
+          "actorCredits": 0
+        }
+      ],
+      "conclusion": "One actor increases credits from 5000 to 6666 by adding an exact copy. With one more identical identity the fund still earns $2462.50, yet all 10000 credits stay unallocated. LOO is not a novelty score or additive profit attribution; per-key caps are not per-economic-actor caps."
+    },
+    {
+      "id": "opposite-signal-coalition-positive-only-reward",
+      "classification": "PRODUCT_DESIGN_COUNTEREXAMPLE_NOT_FORMULA_BUG",
+      "expectedFormula": "Fund retains only +$10000 ETH: -$1000 price PnL - $15 costs = -$1015. Removing both actor identities leaves the exact same portfolio and zero joint contribution; honest ETH and two neutral providers still satisfy minProviders=3. Individual LOO = +101.5, -98.5 and -101.5 bps; positive-only normalization pays 10000 credits to actor-long.",
+      "observed": {
+        "targetBps": {
+          "BTC": 0,
+          "ETH": 1000,
+          "MON": 0,
+          "SOL": 0
+        },
+        "nav": 98985,
+        "fundReturnBps": -101.5,
+        "pnl": -1015,
+        "turnover": 10000,
+        "fee": 10,
+        "slippage": 5,
+        "providers": [
+          {
+            "id": "actor-long",
+            "standaloneNetReturnBps": 246.25,
+            "contributionBps": 101.5,
+            "credits": 10000
+          },
+          {
+            "id": "actor-short",
+            "standaloneNetReturnBps": -253.75,
+            "contributionBps": -98.5,
+            "credits": 0
+          },
+          {
+            "id": "honest-eth",
+            "standaloneNetReturnBps": -253.75,
+            "contributionBps": -101.5,
+            "credits": 0
+          },
+          {
+            "id": "neutral-1",
+            "standaloneNetReturnBps": 0,
+            "contributionBps": 0,
+            "credits": 0
+          },
+          {
+            "id": "neutral-2",
+            "standaloneNetReturnBps": 0,
+            "contributionBps": 0,
+            "credits": 0
+          }
+        ],
+        "unallocatedCredits": 0,
+        "coalitionJointContributionDollars": 0,
+        "coalitionCombinedCredits": 10000,
+        "withoutCoalition": {
+          "nav": 98985,
+          "cohortStatus": "READY",
+          "submitted": 3
+        }
+      },
+      "conclusion": "A zero-net-signal coalition receives the whole pool while the fund loses money. With no identity aggregation, stake or downside debit, current credits cannot substantiate Sybil-resistant or economically fair provider payouts."
+    },
+    {
+      "id": "one-bet-perfect-metrics-and-no-maturity-weight",
+      "classification": "STATISTICAL_VALIDATION_GAP_NOT_FORMULA_BUG",
+      "expectedFormula": "Vectors [10000,0,0,0] and returns [10%,0,0,0] are positively collinear: IC=1. Only BTC has a nonzero signal and return: hit rate=1 from one direction pair. Quality=1+246.25/500+98.5/250=1.8865. Each fresh peer gets floor(10000/(9+1.8865))=918; lucky is capped at 1000; 738 bps remain unallocated.",
+      "observed": {
+        "predictionIC": 1,
+        "hitRate": 1,
+        "directionalAssetCount": 1,
+        "oneObservation": {
+          "weightsBps": {
+            "lucky": 1000,
+            "fresh-0": 918,
+            "fresh-1": 918,
+            "fresh-2": 918,
+            "fresh-3": 918,
+            "fresh-4": 918,
+            "fresh-5": 918,
+            "fresh-6": 918,
+            "fresh-7": 918,
+            "fresh-8": 918
+          },
+          "unallocatedBps": 738,
+          "method": "Prior 30 settled epochs: net return, positive LOO contribution, completeness and drawdown; cap overflow remains unallocated."
+        },
+        "thirtyObservations": {
+          "weightsBps": {
+            "lucky": 1000,
+            "fresh-0": 918,
+            "fresh-1": 918,
+            "fresh-2": 918,
+            "fresh-3": 918,
+            "fresh-4": 918,
+            "fresh-5": 918,
+            "fresh-6": 918,
+            "fresh-7": 918,
+            "fresh-8": 918
+          },
+          "unallocatedBps": 738,
+          "method": "Prior 30 settled epochs: net return, positive LOO contribution, completeness and drawdown; cap overflow remains unallocated."
+        },
+        "identicalWeights": true,
+        "oneFairCoinWinningProbability": 0.5
+      },
+      "conclusion": "The current UI exposes sample counts and leaves Sharpe null; it does not falsely claim significance. A one-bet perfect metric and one-epoch weight update nevertheless provide no statistical evidence of durable trading skill or optimal allocation. Thirty repeated rows are a mathematical sensitivity probe, not independent observations."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "epochId": "c001907d-1566-4434-b599-4ddc712444b3",
+  "root": "0xf4f40a006c42bc136ce8c3592be582226bc3473ca35bdb2061f35955fa80a0e6",
+  "manifestHash": "0x34511b8b84b75bb7fca22bb76b343f932cebfc2781facea8ebd4a44a33d19196",
+  "manifest": {
+    "domain": "MM_ALPHA_EPOCH_V1",
+    "epochId": "c001907d-1566-4434-b599-4ddc712444b3",
+    "workspace": "demo",
+    "policyHash": "0xbf53374edaa5d1578a2949adb9e75ef565bf8a77989719272aac7c88f73ad7c4",
+    "rosterHash": "0x37ff012f00e08788222bb822660e34ce8c868697259a3fb744c41fa1f0fd1d94",
+    "weightsHash": "0xc3eed40e26bc7fae15b9e4b4eae2c5dd63bdf913b71321e90bcce0e8277c3503",
+    "submissionRoot": "0xf4f40a006c42bc136ce8c3592be582226bc3473ca35bdb2061f35955fa80a0e6",
+    "cutoffAt": "2026-09-17T20:09:27.794Z",
+    "startAt": "2026-09-17T20:09:27.794Z",
+    "endAt": "2026-09-17T21:09:27.794Z",
+    "sealedAt": "2026-09-17T20:09:27.794Z",
+    "previousManifestHash": "0x6cfde1961224a968e479d8f471c3e66cc004bc7524dd298141b765436db12110",
+    "clock": "SIMULATED"
+  },
+  "anchor": {
+    "status": "LOCAL_ONLY",
+    "chain": null
+  }
+}

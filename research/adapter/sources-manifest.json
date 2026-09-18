@@ -1,0 +1,308 @@
+[
+  {
+    "repo": "freqtrade/freqtrade-strategies",
+    "commit": "f3340ce11f5bdf62f598522e64d1f5638eaa13f5",
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade-strategies/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/LICENSE",
+    "local": "research/adapter/sources/freqtrade/freqtrade-strategies/LICENSE",
+    "bytes": 35147,
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  {
+    "repo": "freqtrade/freqtrade-strategies",
+    "commit": "f3340ce11f5bdf62f598522e64d1f5638eaa13f5",
+    "path": "user_data/strategies/berlinguyinca/AverageStrategy.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade-strategies/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/berlinguyinca/AverageStrategy.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade-strategies/user_data/strategies/berlinguyinca/AverageStrategy.py",
+    "bytes": 2630,
+    "sha256": "63606866fdf1cb3d71dc39a951ed0784a31686690b1c4014c12d2481c8dbf094"
+  },
+  {
+    "repo": "freqtrade/freqtrade-strategies",
+    "commit": "f3340ce11f5bdf62f598522e64d1f5638eaa13f5",
+    "path": "user_data/strategies/berlinguyinca/ADXMomentum.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade-strategies/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/berlinguyinca/ADXMomentum.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade-strategies/user_data/strategies/berlinguyinca/ADXMomentum.py",
+    "bytes": 2137,
+    "sha256": "7ed9c2306f337a1cc49cb2e11ddf6b66397853b9c4155faa13e5cf1ea61a651a"
+  },
+  {
+    "repo": "freqtrade/freqtrade-strategies",
+    "commit": "f3340ce11f5bdf62f598522e64d1f5638eaa13f5",
+    "path": "user_data/strategies/HourBasedStrategy.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade-strategies/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/HourBasedStrategy.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade-strategies/user_data/strategies/HourBasedStrategy.py",
+    "bytes": 4270,
+    "sha256": "61755d49c46b3037c102f60de30841910472b6da06e9b578882b3dfc125b9ccc"
+  },
+  {
+    "repo": "freqtrade/freqtrade-strategies",
+    "commit": "f3340ce11f5bdf62f598522e64d1f5638eaa13f5",
+    "path": "user_data/strategies/TWAPStrategy.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade-strategies/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/TWAPStrategy.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade-strategies/user_data/strategies/TWAPStrategy.py",
+    "bytes": 5513,
+    "sha256": "cb565aef94b39b2a716994868ce069cfa169023122f0f1e9fafdb524beb9365b"
+  },
+  {
+    "repo": "freqtrade/freqtrade-strategies",
+    "commit": "f3340ce11f5bdf62f598522e64d1f5638eaa13f5",
+    "path": "user_data/strategies/futures/TrendFollowingStrategy.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade-strategies/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/futures/TrendFollowingStrategy.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade-strategies/user_data/strategies/futures/TrendFollowingStrategy.py",
+    "bytes": 2441,
+    "sha256": "6b8f3e272acfd4923539120364b9ddceccc17a385117d12a249dc1460ea53c4f"
+  },
+  {
+    "repo": "freqtrade/freqtrade",
+    "commit": "175ed3db469d1451224f0ab7677271bcc332c37e",
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade/175ed3db469d1451224f0ab7677271bcc332c37e/LICENSE",
+    "local": "research/adapter/sources/freqtrade/freqtrade/LICENSE",
+    "bytes": 35141,
+    "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2"
+  },
+  {
+    "repo": "freqtrade/freqtrade",
+    "commit": "175ed3db469d1451224f0ab7677271bcc332c37e",
+    "path": "freqtrade/templates/FreqaiExampleStrategy.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade/175ed3db469d1451224f0ab7677271bcc332c37e/freqtrade/templates/FreqaiExampleStrategy.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade/freqtrade/templates/FreqaiExampleStrategy.py",
+    "bytes": 11534,
+    "sha256": "294f7e1e7fe912a3bf73a2cb4a2ecffe80cae6228a3d28fc5b78d3fb0731f8d5"
+  },
+  {
+    "repo": "freqtrade/freqtrade",
+    "commit": "175ed3db469d1451224f0ab7677271bcc332c37e",
+    "path": "docs/strategy-customization.md",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade/175ed3db469d1451224f0ab7677271bcc332c37e/docs/strategy-customization.md",
+    "local": "research/adapter/sources/freqtrade/freqtrade/docs/strategy-customization.md",
+    "bytes": 65529,
+    "sha256": "37c9edb95ff9c3e23b054c7b628cbe514e19dda5b8b0d24161e3671f0814a59f"
+  },
+  {
+    "repo": "freqtrade/freqtrade",
+    "commit": "175ed3db469d1451224f0ab7677271bcc332c37e",
+    "path": "docs/strategy-callbacks.md",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade/175ed3db469d1451224f0ab7677271bcc332c37e/docs/strategy-callbacks.md",
+    "local": "research/adapter/sources/freqtrade/freqtrade/docs/strategy-callbacks.md",
+    "bytes": 69047,
+    "sha256": "70f9677e647809998c9e80a3a9f441e43f7f4d36662db74027a9d9c9239b9246"
+  },
+  {
+    "repo": "freqtrade/freqtrade",
+    "commit": "175ed3db469d1451224f0ab7677271bcc332c37e",
+    "path": "docs/backtesting.md",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade/175ed3db469d1451224f0ab7677271bcc332c37e/docs/backtesting.md",
+    "local": "research/adapter/sources/freqtrade/freqtrade/docs/backtesting.md",
+    "bytes": 57906,
+    "sha256": "dc74cad035e679e4f361fe4c7cff4c8dd2dd62f534c39f7b5b012d307dee7fd9"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/LICENSE",
+    "local": "research/adapter/sources/hummingbot/hummingbot/LICENSE",
+    "bytes": 11352,
+    "sha256": "f0dd03c14db3dfbce03c166645f88fda96599ad1a5d217fddb49134de8c72a29"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "controllers/directional_trading/bollinger_v1.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/controllers/directional_trading/bollinger_v1.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/controllers/directional_trading/bollinger_v1.py",
+    "bytes": 3674,
+    "sha256": "d828f373513f300e88fd94c73c158d32367b9cc8f2b9c45ef024e85861741283"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "controllers/directional_trading/supertrend_v1.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/controllers/directional_trading/supertrend_v1.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/controllers/directional_trading/supertrend_v1.py",
+    "bytes": 3998,
+    "sha256": "f066780ac6c85b92fa35edd87ab61932c8e5858941b50cda308157d151b3b113"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "controllers/generic/stat_arb.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/controllers/generic/stat_arb.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/controllers/generic/stat_arb.py",
+    "bytes": 28096,
+    "sha256": "8f2d70b2cb39a20a2d4ba6cffff6442adcb3578ef79023ce970eb1da08645aa3"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "controllers/market_making/pmm_simple.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/controllers/market_making/pmm_simple.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/controllers/market_making/pmm_simple.py",
+    "bytes": 1168,
+    "sha256": "1ba6dff75c8b0980caee7d5275bd030d768bdc530f6aa26d914608de1386e85c"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "scripts/v2_funding_rate_arb.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/v2_funding_rate_arb.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/scripts/v2_funding_rate_arb.py",
+    "bytes": 20137,
+    "sha256": "845c125057a1bf66c2a19bf6551477bfc124ee24aef101901601ea165bc83597"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "scripts/simple_pmm.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/simple_pmm.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/scripts/simple_pmm.py",
+    "bytes": 4609,
+    "sha256": "187d4dc10d8ea428608762d6dddfcf04b7a557dba6686557e7e9112df2814a3e"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "scripts/external_events_example.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/external_events_example.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/scripts/external_events_example.py",
+    "bytes": 3649,
+    "sha256": "26380cf2e590e5c52eb4a87063359435f29c3722e3d390f831433c4e218e1319"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "hummingbot/strategy_v2/controllers/directional_trading_controller_base.py",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/hummingbot/strategy_v2/controllers/directional_trading_controller_base.py",
+    "local": "research/adapter/sources/hummingbot/hummingbot/hummingbot/strategy_v2/controllers/directional_trading_controller_base.py",
+    "bytes": 9515,
+    "sha256": "6ad92a3a2948646dcf7ad2063d2639bc4e353c70b797ed58dc8dd40a781d6856"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/LICENSE",
+    "local": "research/adapter/sources/QuantConnect/Lean/LICENSE",
+    "bytes": 10737,
+    "sha256": "522cf0a716ce03f67d46f8fceb5bf78c5b84400ec5cd8d14bf9f02cddc1cb6ba"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Algorithm.Framework/Alphas/EmaCrossAlphaModel.py",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Alphas/EmaCrossAlphaModel.py",
+    "local": "research/adapter/sources/QuantConnect/Lean/Algorithm.Framework/Alphas/EmaCrossAlphaModel.py",
+    "bytes": 5530,
+    "sha256": "9779224202a749e0371049239a9a975390af36a536f3674775f07a630b4f9d08"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Algorithm.Framework/Portfolio/EqualWeightingPortfolioConstructionModel.py",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Portfolio/EqualWeightingPortfolioConstructionModel.py",
+    "local": "research/adapter/sources/QuantConnect/Lean/Algorithm.Framework/Portfolio/EqualWeightingPortfolioConstructionModel.py",
+    "bytes": 3435,
+    "sha256": "24daa59b886a2d74639f9d82646f0b1335acdc2716d879b57ef5882d001f74b0"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Algorithm.Python/CustomDataBitcoinAlgorithm.py",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Python/CustomDataBitcoinAlgorithm.py",
+    "local": "research/adapter/sources/QuantConnect/Lean/Algorithm.Python/CustomDataBitcoinAlgorithm.py",
+    "bytes": 5284,
+    "sha256": "070c565bfe4f3f3f2473d8cd3a19fd5eb9faed02dc820edd6677a6c3c11ac38f"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Algorithm.Python/EmaCrossAlphaModelFrameworkRegressionAlgorithm.py",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Python/EmaCrossAlphaModelFrameworkRegressionAlgorithm.py",
+    "local": "research/adapter/sources/QuantConnect/Lean/Algorithm.Python/EmaCrossAlphaModelFrameworkRegressionAlgorithm.py",
+    "bytes": 1207,
+    "sha256": "0de6d03d0b6cbbabeb4c5d7d2935f3d5f7141867a62702580817211184772590"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Algorithm.Python/PearsonCorrelationPairsTradingAlphaModelFrameworkAlgorithm.py",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Python/PearsonCorrelationPairsTradingAlphaModelFrameworkAlgorithm.py",
+    "local": "research/adapter/sources/QuantConnect/Lean/Algorithm.Python/PearsonCorrelationPairsTradingAlphaModelFrameworkAlgorithm.py",
+    "bytes": 2866,
+    "sha256": "57449e107d71204c245f341dc36ed823785032e8593e3ac1cee2a3ea8b858cd9"
+  },
+  {
+    "repo": "freqtrade/freqtrade",
+    "commit": "175ed3db469d1451224f0ab7677271bcc332c37e",
+    "path": "freqtrade/vendor/qtpylib/indicators.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/freqtrade/175ed3db469d1451224f0ab7677271bcc332c37e/freqtrade/vendor/qtpylib/indicators.py",
+    "local": "research/adapter/sources/freqtrade/freqtrade/freqtrade/vendor/qtpylib/indicators.py",
+    "bytes": 789,
+    "sha256": "c040927436bb510e2091a7bb7f6e51f25135292bf2e0d995fa344871f0d505a9"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Indicators/ExponentialMovingAverage.cs",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Indicators/ExponentialMovingAverage.cs",
+    "local": "research/adapter/sources/QuantConnect/Lean/Indicators/ExponentialMovingAverage.cs",
+    "bytes": 5436,
+    "sha256": "dfc0ce32bf17259a18c2ebe19dcdcd412a1f7cf090b9a6063dbf07cca250575b"
+  },
+  {
+    "repo": "QuantConnect/Lean",
+    "commit": "f9107abdf26121c5ce159f561bd27fead01d30e1",
+    "path": "Algorithm.Framework/Alphas/PearsonCorrelationPairsTradingAlphaModel.py",
+    "url": "https://raw.githubusercontent.com/QuantConnect/Lean/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Alphas/PearsonCorrelationPairsTradingAlphaModel.py",
+    "local": "research/adapter/sources/QuantConnect/Lean/Algorithm.Framework/Alphas/PearsonCorrelationPairsTradingAlphaModel.py",
+    "bytes": 4683,
+    "sha256": "9cb269d82d8cbd7bd44ccc98c7168a17b9bc2603f2fffa1a8814a2916b2b890e"
+  },
+  {
+    "repo": "hummingbot/hummingbot",
+    "commit": "2bfaccc48dd49e71a5b6d9b3011808e127dd00cd",
+    "path": "hummingbot/strategy/pure_market_making/pure_market_making.pyx",
+    "url": "https://raw.githubusercontent.com/hummingbot/hummingbot/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/hummingbot/strategy/pure_market_making/pure_market_making.pyx",
+    "local": "research/adapter/sources/hummingbot/hummingbot/hummingbot/strategy/pure_market_making/pure_market_making.pyx",
+    "bytes": 61171,
+    "sha256": "c647fe11c69c986d353c936e9ee577119635e30dd46ae3ab926bf2eb8068c212"
+  },
+  {
+    "repo": "freqtrade/technical",
+    "commit": "2582314940f1b27a14f7cd12faaf3ec5a9e2ac59",
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/freqtrade/technical/2582314940f1b27a14f7cd12faaf3ec5a9e2ac59/LICENSE",
+    "local": "research/adapter/sources/freqtrade/technical/LICENSE",
+    "bytes": 35147,
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  {
+    "repo": "freqtrade/technical",
+    "commit": "2582314940f1b27a14f7cd12faaf3ec5a9e2ac59",
+    "path": "technical/qtpylib.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/technical/2582314940f1b27a14f7cd12faaf3ec5a9e2ac59/technical/qtpylib.py",
+    "local": "research/adapter/sources/freqtrade/technical/technical/qtpylib.py",
+    "bytes": 140,
+    "sha256": "23dba4be3d0fb8c398b6cd016d3c44a8ae34e1a96e2a7b2185d993225de32c0b"
+  },
+  {
+    "repo": "freqtrade/technical",
+    "commit": "2582314940f1b27a14f7cd12faaf3ec5a9e2ac59",
+    "path": "technical/vendor/qtpylib/__init__.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/technical/2582314940f1b27a14f7cd12faaf3ec5a9e2ac59/technical/vendor/qtpylib/__init__.py",
+    "local": "research/adapter/sources/freqtrade/technical/technical/vendor/qtpylib/__init__.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "repo": "freqtrade/technical",
+    "commit": "2582314940f1b27a14f7cd12faaf3ec5a9e2ac59",
+    "path": "technical/vendor/qtpylib/indicators.py",
+    "url": "https://raw.githubusercontent.com/freqtrade/technical/2582314940f1b27a14f7cd12faaf3ec5a9e2ac59/technical/vendor/qtpylib/indicators.py",
+    "local": "research/adapter/sources/freqtrade/technical/technical/vendor/qtpylib/indicators.py",
+    "bytes": 19724,
+    "sha256": "2129553b17bb6706a404baf9f789e929fa54f05f2ea8888014fda04ac11a7871"
+  }
+]

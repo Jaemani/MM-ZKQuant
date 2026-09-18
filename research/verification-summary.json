@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-16",
+  "ordered_required_sections": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "external_links_access_checked": 59,
+  "broken_local_links": 0,
+  "main_sha256": "1415b4a56154f99713f286cd3a214a9fc8ba6d8910ba80711ce00002a6d2be62",
+  "adapter_replay_verified": "adapter/verification.json",
+  "limits": [
+    "No customer interviews or paid pilot",
+    "No full-framework backtest",
+    "No zkVM guest build/proof/latency benchmark",
+    "No real capital or fills",
+    "Publisher financial claims not independently audited"
+  ]
+}

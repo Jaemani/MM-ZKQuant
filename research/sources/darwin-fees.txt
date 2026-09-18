@@ -1,0 +1,185 @@
+DARWIN Investment Conditions
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+Skip to content
+English
+Čeština
+Español
+Français
+Italiano
+English
+Show submenu for translations
+Official Website
+Log in
+Sign up
+Open main navigation
+Close main navigation
+Official Website
+Log in
+Sign up
+English
+Čeština
+Español
+Français
+Italiano
+English
+Show submenu for translations
+Contact us
+Contact us
+Darwinex Docs
+There are no suggestions because the search field is empty.
+Darwinex Docs
+Managing a DARWIN portfolio
+The DARWIN product class
+DARWIN Investment Conditions
+DARWINs enjoy whole brokerage fees - 60% cheaper than the commission retail traders pay. Here is the full list of conditions of investing in DARWINs.
+Contents
+Quote
+Minimum / Maximum investment & FIFO rule
+Divergence
+Trading hours
+Brokerage fees
+Management fees
+Performance fees
+Leverage
+Conditional orders
+Stop-outs
+Investing in DARWINs is not available for Darwinex Global (FSA regulated) clients.
+Quote
+The DARWIN's quote is determined by the return obtained since the underlying strategy's inception with 100 = 0.00% return.
+If there are open trades on the underlying strategy, the DARWIN's quote updates every 30 seconds.
+The price shows what an investor would have theoretically obtained if they had invested in the same currency as the underlying strategy, with an initial value of 100, and with an identical
+execution
+between the DARWIN and the investor, i.e. 0%
+divergence
+.
+Although brokerage fees are factored into the quote, both management and performance fees are not.
+Read more:
+What does the DARWIN's quote mean?
+Minimum & Maximum investment and FIFO rule
+The minimum amount
+to invest in a DARWIN is 200 units of your Wallet's base currency (EUR, USD, or GBP), and in increments of 25 units for subsequent investments or partial closures.
+The maximum amount
+to invest in a DARWIN is 100,000 units of your Wallet's base currency. Get in touch with us (info@darwinex.com) if you wish to make an investment above this amount so we can review your case.
+If you have made
+various investments in the same DARWIN
+and you wish to make a partial closure of the same DARWIN, Darwinex will apply the FIFO rule (First In, First Out). In other words, the oldest investment will be the first one to be closed, and then the next investments based on the investment date on the DARWIN.
+The profits generated with a DARWIN will be
+automatically reinvested
+while the investment is open.
+Divergence
+The divergence is the difference between the return obtained by the investors in a DARWIN, and the theoretical return of a DARWIN.
+It is shown as a percentage and its value can be either negative or positive.
+Divergence is caused mainly by investor volume with system latency and difference in base currencies being additional minor causes of divergence.
+Providers can control investors' divergence via
+order fractioning
+and
+capacity management
+. With regards to the latter, they can specify the conditions under which to close / reopen investments in their DARWIN.
+When the DARWIN closes to new investor capital, both investors – including those with a conditional order – and DARWIN providers, will receive a notification.
+Read more:
+What is divergence?
+Trading hours
+Monday to Thursday 17:05-16:59 New York Time.
+On Fridays, the market will close at 16:55 New York Time.
+A DARWIN is a liquid product, which can be bought and sold instantly 24/5, except:
+During market rollover
+. As a protecting measure toward our investors, and due to the noticeable decrease in liquidity in the market, between 16:59 and 17:05 New York Time, the DARWINExchange will remain closed. The only exception will be Friday night when the market will close at 16:55 instead of 16:59 New York.
+Market closure
+. If the DARWIN has open trades in assets which market is temporarily closed, be it due to a bank holiday or usual daily market closure, the purchase/sale will not be carried out immediately. The system will buy/sell those assets in which markets are open, waiting for the opening of the other markets to complete the operation. In case of a sell order, only after 100% of the assets open in the DARWIN have been sold will the operation appear in the "History" tab and the capital as "Available".
+Read more:
+What happens if you want to buy/sell a DARWIN which has underlying trades open with different opening/closing times?
+Brokerage fees
+DARWIN orders enjoy wholesale brokerage fees in all our FOREX assets - up to 60% cheaper than the commission retail traders pay in such assets-.
+This ensures that alpha generation remains neutral and efficient — independent of trade volume and frequency.
+In terms of spreads and swaps, DARWINs pay the same fees as retail traders.
+Read more:
+Assets and spreads
+Management fees
+We charge 1.2% annual management fees on invested equity.
+Every business day (M-F) 1.2% / 261 is charged on the equity (invested + PnL without performance fees).
+For each day, the average equity during the day is taken into account.
+To calculate the average equity during the day, the investment is weighted by the time it has been open during the day.
+For example, if an investor would've had an invested equity (invested + PnL) of 4,000 for 12 hours, that'd be 2,000 of average daily equity.
+The management fee is charged daily at closing the investment in a DARWIN or at market closure.
+Inactive periods
+No management fees are charged during inactive DARWIN periods.
+We identify periods of inactivity as those periods longer than 4 weeks without market exposure. If the last open position in a DARWIN was more than 4 weeks ago, the DARWIN will be considered inactive and, therefore, no management fees will be charged on the investment in that DARWIN from this moment until there is a new open position.
+Performance fees
+Darwinex charges a 20% performance fee on any 3rd party profit in DARWINs (15% is for the DARWIN provider and 5% for Darwinex) using the HWM (high-water mark) method.
+Using this method we ensure that you only pay performance fees for new profits earned avoiding overlapping with profits from previous time periods.
+Your quarter starts when you make your firsts investment in a DARWIN in the same portfolio.
+Your successive investments in the same DARWIN in the same portfolio have no effect on the starting date of the quarter.
+Should you invest in the same DARWIN in a different portfolio (you can have up to 5 live portfolios), HWM starting dates across portfolios would be different.
+Each time a new quarter period comes to an end, and in case the previous high-water mark has been surpassed, we'll charge you 20% of the net profit (closed profit + open profit) generated in the quarter.
+Read more:
+What are performance fees?
+Leverage
+For investors who're comfortable with higher risk levels than DARWINs' default 6.5% monthly target VaR(95%), we offer the possibility to
+increase the leverage x3
+.
+This means that with e.g. 5,000 own funds you'll be able to invest up to 15,000.
+Investing 15,000 in 6.5% VaR DARWINs is the same as investing 5,000 in 19.5% VaR DARWINs.
+Portfolio leverage is disabled by default but once enabled it cannot be deactivated.
+Read more:
+What is leverage for a DARWIN portfolio?
+Conditional orders
+Conditional orders are orders which are not immediately executed since the quote price has to reach a certain value before the order is triggered.
+We offer four types of conditional orders for DARWINs.
+Buy Limit
+. A Buy Limit order will buy a DARWIN at a lower quote than its current one. This option is used by investors who want to make the most of a drawdown in a DARWIN in order to buy at a ''cheaper'' quote
+.
+Buy Stop
+. A Buy Stop order will purchase a DARWIN at a higher price than its current one.,  This order is used by investors who want to make the most of the momentum of a specific DARWIN
+.
+Take Profit
+. A Take Profit order will sell a DARWIN at a higher quote than its current one.
+Stop Loss
+. A Stop Loss order will sell a DARWIN at a lower quote than its current one.
+Read more:
+What are conditional orders?
+Stop-outs
+Due to the low leverage at which DARWINs trade, the probability of negative balances is very low.
+Nevertheless, Darwinex needs to have a mechanism to prevent, as far as possible, negative balances altogether.
+The stop-out is applied per DARWIN and not per portfolio.
+The stop-out gets triggered the moment losses of a real investment in a DARWIN reach 90% of the real (not the leveraged) investment.
+For example, if an investor invests €15,000 in a DARWIN in a leveraged portfolio (the real investment is €5,000 since the other 10,000 are borrowed from Darwinex), when losses reach €4,500, Darwinex will immediately close the investment in such DARWIN.
+Your Darwinex Account
+Regulation & Money Safety
+Account Application
+Deposits & Withdrawals
+Partnerships
+Account security
+Trade with us
+First Steps as a Trader
+Trading Conditions
+Trading Basics
+MetaTrader Guide
+Tradingview & Dxtrade
+Providing a DARWIN
+Managing a DARWIN portfolio
+First Steps as an Investor
+The DARWIN product class
+Creating a DARWIN Portfolio
+World of Darwinex
+Darwinex Metrics and Graphs
+Investment Attributes
+DarwinIA Capital Allocation
+Algorithmic Trading
+From Trading as a Hobby, to Trading as a Profession
+DARWIN Data Analytics for Algorithmic Trading
+Algorithmic Trading: Training for and by Traders
+Darwinex & IBKR
+Darwinex Pro
+About Darwinex Pro
+Economics
+Regulation Umbrella
+Raising Capital
+Pro - how do I get started?
+The Pro investor experience
+Copyright © 2025, Darwinex
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+The Darwinex® brand and the Darwinex.com domain are commercial names used by Tradeslide Trading Tech Limited, a company regulated by the Financial Conduct Authority (FCA) in the United Kingdom with FRN 586466 and company registration number 08061368, by Sapiens Markets EU Sociedad de Valores SA, a company regulated by the Comisión Nacional del Mercado de Valores (CNMV) in Spain under the number 311, with CIF A10537348 and by Tradeslide Global Ltd., a company authorised and regulated by the Financial Services Authority (FSA) of Seychelles with number SD171, company registration number 8433817-1.
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.

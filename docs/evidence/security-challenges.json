@@ -1,0 +1,241 @@
+{
+  "evidenceVersion": "security-challenges-v1",
+  "phase": "after",
+  "generatedAt": "2026-09-17T18:42:50.900Z",
+  "runtime": "v22.23.0",
+  "sourceCheckpoint": {
+    "algorithm": "SHA256",
+    "files": {
+      "src/server/crypto.js": "5d14e4973012242a519d336abfab01c676f97e5fdbf998cd16c4111eb0f795a7",
+      "src/server/store.js": "59a82375820bd1e9b95e99c5b9d9b22c6e07004a7a6e13e20f72542cdd9334af",
+      "src/server/service.js": "fdfc91891c80e588038c849d71b105f05e7f30da4c44ba8eb0c5d61d110776ea",
+      "src/server/http.js": "8e98ed463fa27eb8eb680ee60794115e94a18da4f10927448fa4fb1cc0454ffc",
+      "src/core/engine.js": "196eb852556720e43d8c6e5c63e3ff8035b64d562044113e8120e9f554148d35",
+      "src/shared/protocol.js": "f039724c09e0aa19b3384b9e187f338436c7cd8ac48cf20195783e7e7ef1e033",
+      "contracts/EpochCommitmentRegistry.sol": "4e3617c099f87762acf4a9225e5d4155564ee0d01e343aea3404262e3a1a7402",
+      "contracts/local-evm.mjs": "1d63d80721cba5204c4dcfd6e299586887ec7c6b29403fb87485b86ff613c5c6",
+      "scripts/chain-demo.mjs": "43973237a296f24d62ed1e086179bbad3f07f2b4f41f486cf5bffe83d48b80ae",
+      "scripts/evidence/security-challenges.mjs": "d59025337f0dafc8efb7f35d4d0c7ced27fc0bb4660b7b76701e0acf01d441a3"
+    },
+    "vcsCommit": null,
+    "note": "Workspace has no .git metadata; file hashes identify the executed source snapshot."
+  },
+  "isolation": {
+    "temporaryDatabasesOnly": true,
+    "liveDataTouched": false,
+    "externalNetworkUsed": false,
+    "artificialClockExplicit": true
+  },
+  "observedExpectationsSatisfied": true,
+  "verdictScope": "These are separate guarantees and counterexamples, not an MVP sufficiency score or pass percentage.",
+  "cases": [
+    {
+      "id": "receipt-before-seal",
+      "type": "guarantee-boundary",
+      "claim": "봉인 전 receipt는 서버 접수 서명이고 Merkle 포함 증명이 아니다.",
+      "verification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": null,
+        "manifestValid": null,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      },
+      "rootPresent": false
+    },
+    {
+      "id": "receipt-finalized-control",
+      "type": "enforced",
+      "claim": "정상 봉인 receipt의 signature·inclusion·manifest·context가 함께 통과한다.",
+      "verification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "unsigned-leaf-tamper",
+      "type": "enforced",
+      "claim": "서버 서명 없이 receipt의 commitment 내용을 바꾸면 거부한다.",
+      "verification": {
+        "valid": false,
+        "signatureValid": false,
+        "inclusionValid": false,
+        "manifestValid": true,
+        "contextValid": false,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "unsigned-proof-tamper",
+      "type": "enforced",
+      "claim": "서버 서명 없이 receipt의 commitment 내용을 바꾸면 거부한다.",
+      "verification": {
+        "valid": false,
+        "signatureValid": false,
+        "inclusionValid": false,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "unsigned-manifest-tamper",
+      "type": "enforced",
+      "claim": "서버 서명 없이 receipt의 commitment 내용을 바꾸면 거부한다.",
+      "verification": {
+        "valid": false,
+        "signatureValid": false,
+        "inclusionValid": true,
+        "manifestValid": false,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "separately-trusted-key",
+      "type": "enforced",
+      "claim": "receipt 안의 키 대신 별도 신뢰한 서버 키와 비교한다.",
+      "verification": {
+        "valid": false,
+        "signatureValid": false,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": false,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "operator-signed-impossible-timestamps",
+      "type": "trusted-server-boundary",
+      "claim": "유효한 receipt는 acceptedAt < cutoffAt, receipt/manifest cutoff 일치, sealedAt < outcome 시작을 검증하지 않는다.",
+      "acceptedAt": "2099-01-01T00:00:00.000Z",
+      "receiptCutoffAt": "2020-01-01T00:00:00.000Z",
+      "manifestCutoffAt": "2026-09-18T00:00:10.000Z",
+      "sealedAt": "2099-01-01T00:00:00.000Z",
+      "verification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "operator-signed-unpublished-policy-roster-weights",
+      "type": "trusted-server-boundary",
+      "claim": "verifier는 사전에 고정된 정책·roster·weights 원문이나 이전 manifest 이력을 받지 않으므로 그 진실을 검증하지 않는다.",
+      "rootUnchanged": true,
+      "verification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "sealed-envelope-substitution",
+      "type": "enforced-after-fix",
+      "claim": "DB 쓰기 권한으로 unsigned 반대 vector 암호문을 넣어도 이미 봉인한 submission을 대신 평가할 수 없어야 한다.",
+      "attackerCapability": "Temporary SQLite write plus public encryption key; no provider/server signing private key used by the attack.",
+      "honestNav": 102462.5,
+      "substitutedNav": null,
+      "unchangedDeclaredExecutionTarget": {
+        "BTC": 2500,
+        "ETH": 0,
+        "MON": 0,
+        "SOL": 0
+      },
+      "rejected": true,
+      "rejection": {
+        "status": 409,
+        "message": "Stored epoch commitment or submission is invalid; operation rejected"
+      },
+      "stateUnchangedOnRejection": true,
+      "originalReceiptStillValid": true,
+      "originalRootUnchanged": true
+    },
+    {
+      "id": "database-rollback-forks-valid-local-history",
+      "type": "trusted-server-boundary",
+      "claim": "오래된 DB 복원 뒤 다른 local root가 만들어져도 각 receipt는 통과한다. 별도 보관한 과거 root와 비교하면 fork를 검출한다.",
+      "oldRoot": "0x5e00d294c6eea3fef2b5b0efbe7927d59a259cccf031a2d5e6fe5b883dbd1770",
+      "newRoot": "0x6fc48d783111182a840a3a32439c9b86201f0fa2d877dadabd3e9c6c9e477bae",
+      "savedRootComparisonMatches": false,
+      "oldVerification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      },
+      "newVerification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      },
+      "previousStatus": "EVALUATED",
+      "rewrittenStatus": "EXPIRED",
+      "sealedAt": "2026-09-18T00:00:20.000Z",
+      "outcomeEndAt": "2026-09-18T00:00:20.000Z"
+    },
+    {
+      "id": "http-phase-and-outcome-boundaries",
+      "type": "enforced-and-trusted-boundary",
+      "claim": "실제 HTTP route는 조기 실행·평가와 비양수 가격을 거부하지만 양수인 허위 가격을 판별하지 못한다.",
+      "clock": "Injected deterministic server clock; HTTP is real, this is not elapsed wall-clock evidence.",
+      "earlySeal": 409,
+      "evaluateBeforeSeal": 409,
+      "statusAtCutoffBeforeSeal": "OPEN",
+      "invalidBegin": 400,
+      "sealedStatus": "AWAITING_OUTCOME",
+      "evaluateBeforeEnd": 409,
+      "invalidEnd": 400,
+      "invalidEndLeavesWorkspaceUnchanged": true,
+      "arbitraryPositiveEndPriceAccepted": 200,
+      "priceSource": "USER_ASSERTED",
+      "sameEpochDifferentOutcomeRetry": 409,
+      "sealAfterEvaluation": {
+        "status": 200,
+        "duplicate": true
+      },
+      "verification": {
+        "valid": true,
+        "signatureValid": true,
+        "inclusionValid": true,
+        "manifestValid": true,
+        "contextValid": true,
+        "independentlyTimestamped": false
+      }
+    },
+    {
+      "id": "contract-immutable-bytes-not-fact-check",
+      "type": "enforced-and-trusted-boundary",
+      "claim": "실제 로컬 EVM은 publisher 권한·동일 epoch 불변성을 강제한다. nonzero digest만으로 제출·정책·가격의 진실은 증명하지 않는다.",
+      "environment": "LOCAL_EVM",
+      "remoteChainUsed": false,
+      "publisherArbitraryNonzeroDigestsAccepted": true,
+      "unauthorizedPublisherRejected": true,
+      "overwriteRejected": true,
+      "blockTimestampIsSynthetic": true,
+      "compilerVersion": "0.8.37+commit.f401782d.Emscripten.clang",
+      "sourceSha256": "4e3617c099f87762acf4a9225e5d4155564ee0d01e343aea3404262e3a1a7402"
+    }
+  ],
+  "remainingBoundaries": [
+    "Server signing identity, clock, user-asserted prices, roster completeness and calculation still rely on the local operator.",
+    "Receipt verification does not accept an independent prior root/policy/roster/weights or verify outcome calculations.",
+    "Saved old receipts/roots allow comparison that detects changed commitments; a standalone new receipt cannot prove absence of rollback.",
+    "No TEE, independent timestamp, authenticated market feed, external chain finality, investor custody or real execution is established here."
+  ]
+}

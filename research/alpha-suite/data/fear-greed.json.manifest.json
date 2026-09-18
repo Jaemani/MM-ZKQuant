@@ -1,0 +1,8 @@
+{
+  "url": "https://api.alternative.me/fng/?limit=0&format=json",
+  "retrieved_at": "2026-09-17T11:43:26.441401+00:00",
+  "sha256": "480fa5907359ed1e712390c84b084ab16e06b0c326dc4256e1ce4b4501f02201",
+  "bytes": 296913,
+  "authentication": "HTTPS retrieval only; no provider signature",
+  "historical_available_at": "unknown"
+}

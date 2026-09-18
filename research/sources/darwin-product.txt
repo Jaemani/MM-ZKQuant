@@ -1,0 +1,111 @@
+What is a DARWIN?
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+Skip to content
+English
+Čeština
+Español
+Français
+Italiano
+English
+Show submenu for translations
+Official Website
+Log in
+Sign up
+Open main navigation
+Close main navigation
+Official Website
+Log in
+Sign up
+English
+Čeština
+Español
+Français
+Italiano
+English
+Show submenu for translations
+Contact us
+Contact us
+Darwinex Docs
+There are no suggestions because the search field is empty.
+Darwinex Docs
+Managing a DARWIN portfolio
+What is a DARWIN?
+A DARWIN is an investment product uncorrelated to other financial assets since traders trade both long and short interchangeably. What is more, it combines a trading strategy managed by a trader with Darwinex’s independent Risk Management Engine.
+Investing in DARWINs is not available for Darwinex Global (FSA regulated) clients.
+Darwinex transforms traders' trading strategies into a new product, a "DARWIN".
+The DARWIN replicates the trader's strategy, entering the markets when the trader places an order but with the risk managed by Darwinex's
+Risk Engine
+.
+Every DARWIN asset trades within the same range of target risk: 3.25-6.5% monthly VaR.
+Replication
+The DARWIN automatically replicates trades opened/closed by the trader.
+However, this process takes place without revealing the trade details so as to protect the
+intellectual property of our traders
+.
+DARWIN vs. strategy
+Our own Risk Engine is the tool used at Darwinex to ensure that all the DARWINs are listed with the same level of risk.
+The Risk Engine determines the size of the trades the DARWIN will open for its investors in the assets traded by the trader.
+By these means, the DARWIN replicates the trader's strategy and Darwinex establishes the target risk level which oscillates in between 6.5% and 3.25%
+monthly VaR
+.
+DARWIN quote
+The
+DARWIN quote
+is based on the DARWIN's return since its inception.
+All DARWINs start at 100 and this quote rises or falls according to the return obtained since their "birth".
+A quote of 378.57 means that the DARWIN has obtained a return of 278.57% since inception (378.57 - 100 = 278.57%).
+Thus the DARWIN quote shows the return an investor would have obtained in theory if they had invested in the DARWIN from the very beginning.
+The quote is calculated by taking into account both open and closed trades, as well as the
+execution costs
+.
+The quote updates every 30 seconds.
+We recommend that you also read:
+What is Value at Risk (VaR)
+DARWIN vs. underlying strategy
+Darwinex Risk Engine
+Why Darwinex is an exchange (and not a hedge fund)
+Related podcasts
+On how traders at Darwinex can have their own hedge fund without the legal burden of creating one.
+“This strategy / hedge fund is low risk because it has a low drawdown”. Do you agree with that statement? If you do, watch
+The Deer Hunter
+and listen to this podcast episode.
+Your Darwinex Account
+Regulation & Money Safety
+Account Application
+Deposits & Withdrawals
+Partnerships
+Account security
+Trade with us
+First Steps as a Trader
+Trading Conditions
+Trading Basics
+MetaTrader Guide
+Tradingview & Dxtrade
+Providing a DARWIN
+Managing a DARWIN portfolio
+First Steps as an Investor
+The DARWIN product class
+Creating a DARWIN Portfolio
+World of Darwinex
+Darwinex Metrics and Graphs
+Investment Attributes
+DarwinIA Capital Allocation
+Algorithmic Trading
+From Trading as a Hobby, to Trading as a Profession
+DARWIN Data Analytics for Algorithmic Trading
+Algorithmic Trading: Training for and by Traders
+Darwinex & IBKR
+Darwinex Pro
+About Darwinex Pro
+Economics
+Regulation Umbrella
+Raising Capital
+Pro - how do I get started?
+The Pro investor experience
+Copyright © 2025, Darwinex
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+The Darwinex® brand and the Darwinex.com domain are commercial names used by Tradeslide Trading Tech Limited, a company regulated by the Financial Conduct Authority (FCA) in the United Kingdom with FRN 586466 and company registration number 08061368, by Sapiens Markets EU Sociedad de Valores SA, a company regulated by the Comisión Nacional del Mercado de Valores (CNMV) in Spain under the number 311, with CIF A10537348 and by Tradeslide Global Ltd., a company authorised and regulated by the Financial Services Authority (FSA) of Seychelles with number SD171, company registration number 8433817-1.
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.

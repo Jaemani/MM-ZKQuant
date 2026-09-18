@@ -1,0 +1,419 @@
+{
+  "retrieved_date": "2026-09-16",
+  "scope": "Access/title check only; not independent verification of full content",
+  "results": [
+    {
+      "url": "https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html",
+      "status": 200,
+      "final_url": "https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html",
+      "title": "What is Nitro Enclaves? - AWS Nitro Enclaves",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.aws.amazon.com/enclaves/latest/user/verify-root.html",
+      "status": 200,
+      "final_url": "https://docs.aws.amazon.com/enclaves/latest/user/verify-root.html",
+      "title": "Verifying the root of trust - AWS Nitro Enclaves",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.chamberfi.com/concepts/leaderboard-ranking",
+      "status": 200,
+      "final_url": "https://docs.chamberfi.com/concepts/leaderboard-ranking",
+      "title": "Leaderboard &amp; ranking | Chamber Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.chamberfi.com/introduction/dhedge-to-chamber",
+      "status": 200,
+      "final_url": "https://docs.chamberfi.com/introduction/dhedge-to-chamber",
+      "title": "dHEDGE → Chamber | Chamber Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.chamberfi.com/manage/fees-performance",
+      "status": 200,
+      "final_url": "https://docs.chamberfi.com/manage/fees-performance",
+      "title": "Fees &amp; performance | Chamber Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.enzyme.finance/user-documentation/blue-enzyme-vaults/editor/fee",
+      "status": 200,
+      "final_url": "https://docs.enzyme.finance/user-documentation/blue-enzyme-vaults/editor/fee",
+      "title": "Fee | User Documentation | Enzyme Documentation",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.enzyme.finance/user-documentation/blue-enzyme-vaults/editor/ownership",
+      "status": 200,
+      "final_url": "https://docs.enzyme.finance/user-documentation/blue-enzyme-vaults/editor/ownership",
+      "title": "Ownership | User Documentation | Enzyme Documentation",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.numer.ai/numerai-signals/scoring",
+      "status": 200,
+      "final_url": "https://docs.numer.ai/numerai-signals/scoring",
+      "title": "Scoring | Numerai Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.numer.ai/numerai-signals/signals-overview",
+      "status": 200,
+      "final_url": "https://docs.numer.ai/numerai-signals/signals-overview",
+      "title": "Overview | Numerai Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.succinct.xyz/docs/sp1/introduction",
+      "status": 200,
+      "final_url": "https://docs.succinct.xyz/docs/sp1/introduction",
+      "title": "Introduction | Succinct Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.succinct.xyz/docs/sp1/prover-network/faq",
+      "status": 200,
+      "final_url": "https://docs.succinct.xyz/docs/sp1/prover-network/faq",
+      "title": "FAQ | Succinct Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.succinct.xyz/docs/sp1/prover-network/private-proving",
+      "status": 200,
+      "final_url": "https://docs.succinct.xyz/docs/sp1/prover-network/private-proving",
+      "title": "TEE Private Proving | Succinct Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://docs.succinct.xyz/docs/sp1/security/security-model",
+      "status": 200,
+      "final_url": "https://docs.succinct.xyz/docs/sp1/security/security-model",
+      "title": "Security Model | Succinct Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/QuantConnect/Documentation/blob/master/Resources/landing-page-introductions/alpha-streams-market.html",
+      "status": 200,
+      "final_url": "https://github.com/QuantConnect/Documentation/blob/master/Resources/landing-page-introductions/alpha-streams-market.html",
+      "title": "Documentation/Resources/landing-page-introductions/alpha-streams-market.html at master · QuantConnect/Documentation · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/QuantConnect/Lean/pull/6638",
+      "status": 200,
+      "final_url": "https://github.com/QuantConnect/Lean/pull/6638",
+      "title": "Remove alpha stream from docker image by LouisSzeto · Pull Request #6638 · QuantConnect/Lean · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/Uniswap/v3-core/blob/d0831dc6b8a318df3872b6d68f6de135c9f3ec29/contracts/interfaces/pool/IUniswapV3PoolEvents.sol",
+      "status": 200,
+      "final_url": "https://github.com/Uniswap/v3-core/blob/d0831dc6b8a318df3872b6d68f6de135c9f3ec29/contracts/interfaces/pool/IUniswapV3PoolEvents.sol",
+      "title": "v3-core/contracts/interfaces/pool/IUniswapV3PoolEvents.sol at d0831dc6b8a318df3872b6d68f6de135c9f3ec29 · Uniswap/v3-core · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/binance/binance-spot-api-docs/blob/b8a0f61e088c65d18a157f2e11a8e273826b6c08/rest-api.md#request-security",
+      "status": 200,
+      "final_url": "https://github.com/binance/binance-spot-api-docs/blob/b8a0f61e088c65d18a157f2e11a8e273826b6c08/rest-api.md#request-security",
+      "title": "binance-spot-api-docs/rest-api.md at b8a0f61e088c65d18a157f2e11a8e273826b6c08 · binance/binance-spot-api-docs · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/binance/binance-spot-api-docs/blob/b8a0f61e088c65d18a157f2e11a8e273826b6c08/user-data-stream.md",
+      "status": 200,
+      "final_url": "https://github.com/binance/binance-spot-api-docs/blob/b8a0f61e088c65d18a157f2e11a8e273826b6c08/user-data-stream.md",
+      "title": "binance-spot-api-docs/user-data-stream.md at b8a0f61e088c65d18a157f2e11a8e273826b6c08 · binance/binance-spot-api-docs · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/docs/backtesting.md#assumptions-made-by-backtesting",
+      "status": 200,
+      "final_url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/docs/backtesting.md#assumptions-made-by-backtesting",
+      "title": "freqtrade/docs/backtesting.md at 175ed3db469d1451224f0ab7677271bcc332c37e · freqtrade/freqtrade · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/docs/strategy-callbacks.md",
+      "status": 200,
+      "final_url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/docs/strategy-callbacks.md",
+      "title": "freqtrade/docs/strategy-callbacks.md at 175ed3db469d1451224f0ab7677271bcc332c37e · freqtrade/freqtrade · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/docs/strategy-customization.md",
+      "status": 200,
+      "final_url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/docs/strategy-customization.md",
+      "title": "freqtrade/docs/strategy-customization.md at 175ed3db469d1451224f0ab7677271bcc332c37e · freqtrade/freqtrade · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/hummingbot/hummingbot-site/blob/f1108de3d352733936fc400e177021f81939eecc/docs/strategies/v2-strategies/controllers/index.md",
+      "status": 200,
+      "final_url": "https://github.com/hummingbot/hummingbot-site/blob/f1108de3d352733936fc400e177021f81939eecc/docs/strategies/v2-strategies/controllers/index.md",
+      "title": "hummingbot-site/docs/strategies/v2-strategies/controllers/index.md at f1108de3d352733936fc400e177021f81939eecc · hummingbot/hummingbot-site · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/nkaz001/hftbacktest/blob/master/docs/latency_models.rst",
+      "status": 200,
+      "final_url": "https://github.com/nkaz001/hftbacktest/blob/master/docs/latency_models.rst",
+      "title": "hftbacktest/docs/latency_models.rst at master · nkaz001/hftbacktest · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/nkaz001/hftbacktest/blob/master/docs/order_fill.rst",
+      "status": 200,
+      "final_url": "https://github.com/nkaz001/hftbacktest/blob/master/docs/order_fill.rst",
+      "title": "hftbacktest/docs/order_fill.rst at master · nkaz001/hftbacktest · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/security-model.md",
+      "status": 200,
+      "final_url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/security-model.md",
+      "title": "risc0/website/api/security-model.md at 3bbcd44d6459b9ef6ac0df3846dc9215514934e8 · risc0/risc0 · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/zkvm/host-code-101.md",
+      "status": 200,
+      "final_url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/zkvm/host-code-101.md",
+      "title": "risc0/website/api/zkvm/host-code-101.md at 3bbcd44d6459b9ef6ac0df3846dc9215514934e8 · risc0/risc0 · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/zkvm/receipts.md",
+      "status": 200,
+      "final_url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/zkvm/receipts.md",
+      "title": "risc0/website/api/zkvm/receipts.md at 3bbcd44d6459b9ef6ac0df3846dc9215514934e8 · risc0/risc0 · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/zkvm/zkvm-specification.md",
+      "status": 200,
+      "final_url": "https://github.com/risc0/risc0/blob/3bbcd44d6459b9ef6ac0df3846dc9215514934e8/website/api/zkvm/zkvm-specification.md",
+      "title": "risc0/website/api/zkvm/zkvm-specification.md at 3bbcd44d6459b9ef6ac0df3846dc9215514934e8 · risc0/risc0 · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/3-levels-protect-intellectual-property",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/3-levels-protect-intellectual-property",
+      "title": "3 levels to protect your intellectual property",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/correlation-between-darwins",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/correlation-between-darwins",
+      "title": "Correlation between DARWINs",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/divergence",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/divergence",
+      "title": "What is divergence?",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/investments-costs",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/investments-costs",
+      "title": "DARWIN Investment Conditions",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/performance-fees-darwin-provider",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/performance-fees-darwin-provider",
+      "title": "Performance Fees for DARWIN providers",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/risk-manager",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/risk-manager",
+      "title": "How the Risk Engine works",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/select-darwins-for-investing",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/select-darwins-for-investing",
+      "title": "How to select DARWINs for investing",
+      "soft_404": false
+    },
+    {
+      "url": "https://help.darwinex.com/what-is-a-darwin",
+      "status": 200,
+      "final_url": "https://help.darwinex.com/what-is-a-darwin",
+      "title": "What is a DARWIN?",
+      "soft_404": false
+    },
+    {
+      "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults",
+      "status": 200,
+      "final_url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults",
+      "title": "Vaults | Hyperliquid Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults/for-vault-depositors-legacy",
+      "status": 200,
+      "final_url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults/for-vault-depositors-legacy",
+      "title": "For vault depositors (legacy) | Hyperliquid Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults/for-vault-leaders-legacy",
+      "status": 200,
+      "final_url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults/for-vault-leaders-legacy",
+      "title": "For vault leaders (legacy) | Hyperliquid Docs",
+      "soft_404": false
+    },
+    {
+      "url": "https://www.aima.org/sound-practices/due-diligence-questionnaires.html",
+      "status": 200,
+      "final_url": "https://www.aima.org/sound-practices/due-diligence-questionnaires.html",
+      "title": "Due Diligence Questionnaires",
+      "soft_404": false
+    },
+    {
+      "url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+      "status": 200,
+      "final_url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+      "title": null,
+      "soft_404": false
+    },
+    {
+      "url": "https://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf",
+      "status": 200,
+      "final_url": "https://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf",
+      "title": null,
+      "soft_404": false
+    },
+    {
+      "url": "https://www.etoro.com/copytrader/",
+      "status": 200,
+      "final_url": "https://www.etoro.com/copytrader/",
+      "title": null,
+      "soft_404": false
+    },
+    {
+      "url": "https://www.gipsstandards.org/wp-content/uploads/2021/03/2020_gips_standards_firms.pdf",
+      "status": 200,
+      "final_url": "https://www.gipsstandards.org/wp-content/uploads/2021/03/2020_gips_standards_firms.pdf",
+      "title": null,
+      "soft_404": false
+    },
+    {
+      "url": "https://www.quantconnect.com/docs/v2/writing-algorithms/algorithm-framework/overview",
+      "status": 200,
+      "final_url": "https://www.quantconnect.com/docs/v2/writing-algorithms/algorithm-framework/overview",
+      "title": "Overview - QuantConnect.com",
+      "soft_404": false
+    },
+    {
+      "url": "https://www.quantconnect.com/docs/v2/writing-algorithms/live-trading/signal-exports/collective2",
+      "status": 200,
+      "final_url": "https://www.quantconnect.com/docs/v2/writing-algorithms/live-trading/signal-exports/collective2",
+      "title": "Collective2 - QuantConnect.com",
+      "soft_404": false
+    },
+    {
+      "url": "https://www.quantconnect.com/docs/v2/writing-algorithms/reality-modeling/key-concepts",
+      "status": 200,
+      "final_url": "https://www.quantconnect.com/docs/v2/writing-algorithms/reality-modeling/key-concepts",
+      "title": "Key Concepts - QuantConnect.com",
+      "soft_404": false
+    },
+    {
+      "url": "https://www.quantconnect.com/docs/v2/writing-algorithms/reality-modeling/slippage/supported-models",
+      "status": 200,
+      "final_url": "https://www.quantconnect.com/docs/v2/writing-algorithms/reality-modeling/slippage/supported-models",
+      "title": "Supported Models - QuantConnect.com",
+      "soft_404": false
+    },
+    {
+      "url": "https://www.tradingview.com/pine-script-docs/concepts/other-timeframes-and-data/",
+      "status": 200,
+      "final_url": "https://www.tradingview.com/pine-script-docs/concepts/other-timeframes-and-data/",
+      "title": null,
+      "soft_404": false
+    },
+    {
+      "url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
+      "status": 200,
+      "final_url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
+      "title": null,
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/QuantConnect/Lean/blob/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Alphas/EmaCrossAlphaModel.py#L36",
+      "status": 200,
+      "final_url": "https://github.com/QuantConnect/Lean/blob/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Alphas/EmaCrossAlphaModel.py#L36",
+      "title": "Lean/Algorithm.Framework/Alphas/EmaCrossAlphaModel.py at f9107abdf26121c5ce159f561bd27fead01d30e1 · QuantConnect/Lean · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/QuantConnect/Lean/blob/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Portfolio/EqualWeightingPortfolioConstructionModel.py#L44",
+      "status": 200,
+      "final_url": "https://github.com/QuantConnect/Lean/blob/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Framework/Portfolio/EqualWeightingPortfolioConstructionModel.py#L44",
+      "title": "Lean/Algorithm.Framework/Portfolio/EqualWeightingPortfolioConstructionModel.py at f9107abdf26121c5ce159f561bd27fead01d30e1 · QuantConnect/Lean · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/QuantConnect/Lean/blob/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Python/CustomDataBitcoinAlgorithm.py#L54",
+      "status": 200,
+      "final_url": "https://github.com/QuantConnect/Lean/blob/f9107abdf26121c5ce159f561bd27fead01d30e1/Algorithm.Python/CustomDataBitcoinAlgorithm.py#L54",
+      "title": "Lean/Algorithm.Python/CustomDataBitcoinAlgorithm.py at f9107abdf26121c5ce159f561bd27fead01d30e1 · QuantConnect/Lean · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/freqtrade/freqtrade-strategies/blob/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/berlinguyinca/AverageStrategy.py#L38",
+      "status": 200,
+      "final_url": "https://github.com/freqtrade/freqtrade-strategies/blob/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/berlinguyinca/AverageStrategy.py#L38",
+      "title": "freqtrade-strategies/user_data/strategies/berlinguyinca/AverageStrategy.py at f3340ce11f5bdf62f598522e64d1f5638eaa13f5 · freqtrade/freqtrade-strategies · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/freqtrade/freqtrade-strategies/blob/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/futures/TrendFollowingStrategy.py#L27",
+      "status": 200,
+      "final_url": "https://github.com/freqtrade/freqtrade-strategies/blob/f3340ce11f5bdf62f598522e64d1f5638eaa13f5/user_data/strategies/futures/TrendFollowingStrategy.py#L27",
+      "title": "freqtrade-strategies/user_data/strategies/futures/TrendFollowingStrategy.py at f3340ce11f5bdf62f598522e64d1f5638eaa13f5 · freqtrade/freqtrade-strategies · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/freqtrade/templates/FreqaiExampleStrategy.py#L225",
+      "status": 200,
+      "final_url": "https://github.com/freqtrade/freqtrade/blob/175ed3db469d1451224f0ab7677271bcc332c37e/freqtrade/templates/FreqaiExampleStrategy.py#L225",
+      "title": "freqtrade/freqtrade/templates/FreqaiExampleStrategy.py at 175ed3db469d1451224f0ab7677271bcc332c37e · freqtrade/freqtrade · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/hummingbot/hummingbot/blob/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/controllers/generic/stat_arb.py#L241",
+      "status": 200,
+      "final_url": "https://github.com/hummingbot/hummingbot/blob/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/controllers/generic/stat_arb.py#L241",
+      "title": "hummingbot/controllers/generic/stat_arb.py at 2bfaccc48dd49e71a5b6d9b3011808e127dd00cd · hummingbot/hummingbot · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/hummingbot/hummingbot/blob/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/simple_pmm.py#L50",
+      "status": 200,
+      "final_url": "https://github.com/hummingbot/hummingbot/blob/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/simple_pmm.py#L50",
+      "title": "hummingbot/scripts/simple_pmm.py at 2bfaccc48dd49e71a5b6d9b3011808e127dd00cd · hummingbot/hummingbot · GitHub",
+      "soft_404": false
+    },
+    {
+      "url": "https://github.com/hummingbot/hummingbot/blob/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/v2_funding_rate_arb.py#L175",
+      "status": 200,
+      "final_url": "https://github.com/hummingbot/hummingbot/blob/2bfaccc48dd49e71a5b6d9b3011808e127dd00cd/scripts/v2_funding_rate_arb.py#L175",
+      "title": "hummingbot/scripts/v2_funding_rate_arb.py at 2bfaccc48dd49e71a5b6d9b3011808e127dd00cd · hummingbot/hummingbot · GitHub",
+      "soft_404": false
+    }
+  ]
+}

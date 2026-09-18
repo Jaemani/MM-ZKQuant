@@ -1,0 +1,310 @@
+{
+  "scope": "HOST SIGNAL KERNEL ONLY; NO PNL, FILLS, PROOF OR UPLOAD",
+  "historical_timing": "EX-POST archive: assumed price lag 60s, funding lag 300s, fear lag 24h. Not verified historical availability.",
+  "strategy_sha256": "6c75db307bcda4572f42b8f71429ac773e95d0ca0cc44506b71f044351bd1b3a",
+  "price_inputs": [
+    {
+      "path": "adapter/data/BTCUSDT-4h-2024-11.csv",
+      "sha256": "f494d441e657f467a5e5a907ea727c7d4bcf0ccc5c0d3bd6cb31c544689b4153"
+    },
+    {
+      "path": "adapter/data/BTCUSDT-4h-2024-12.csv",
+      "sha256": "1e6ec88ac8911e58733af53cee41f261d1f5ae2c6662d37cb31ed31ffb9eced0"
+    }
+  ],
+  "archival_replay": {
+    "funding_trend": {
+      "decisions": 186,
+      "positive_target_epochs": 83,
+      "flat_target_epochs": 100,
+      "data_blocked_epochs": 3
+    },
+    "fear_rebound": {
+      "decisions": 186,
+      "positive_target_epochs": 0,
+      "flat_target_epochs": 93,
+      "data_blocked_epochs": 93
+    }
+  },
+  "synthetic_examples": [
+    {
+      "strategy": "funding_trend",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "trend_30d_bps",
+          "value": 1200,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "funding_24h_ppm",
+          "value": 200,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "binance-funding-v1",
+          "revision": 0,
+          "asset": "BTC"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "BTC_SPOT": 5000
+        },
+        "reason": "entry gate"
+      }
+    },
+    {
+      "strategy": "fear_rebound",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "fear_greed",
+          "value": 20,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "alternative-me-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "return_1d_bps",
+          "value": 150,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "trend_30d_bps",
+          "value": 1200,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "BTC_SPOT": 2500
+        },
+        "reason": "entry gate"
+      }
+    },
+    {
+      "strategy": "stable_liquidity",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "stable_supply_7d_bps",
+          "value": 70,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "stable-supply-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "stable_depeg_bps",
+          "value": 10,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "trend_30d_bps",
+          "value": 1200,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "BTC_SPOT": 5000
+        },
+        "reason": "entry gate"
+      }
+    },
+    {
+      "strategy": "exchange_outflow",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "exchange_netflow_z_milli",
+          "value": -2000,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-flow-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "flow_coverage_bps",
+          "value": 9500,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-flow-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "trend_30d_bps",
+          "value": 1200,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "BTC_SPOT": 3500
+        },
+        "reason": "entry gate"
+      }
+    },
+    {
+      "strategy": "unlock_guard",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "unlock_7d_float_bps",
+          "value": 30,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-unlock-v1",
+          "revision": 0,
+          "asset": "SOL"
+        },
+        {
+          "name": "trend_30d_bps",
+          "value": 1200,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "SOL"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "SOL_SPOT": 2500
+        },
+        "reason": "entry gate"
+      }
+    },
+    {
+      "strategy": "frozen_news",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "news_score_milli",
+          "value": 500,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-news-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "news_count",
+          "value": 8,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-news-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "return_1d_bps",
+          "value": 150,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "BTC_SPOT": 2000
+        },
+        "reason": "entry gate"
+      }
+    },
+    {
+      "strategy": "funding_carry",
+      "cutoff": 1800000000,
+      "evidence": "SYNTHETIC CONTRACT FIXTURE, NOT REAL CUSTOM DATA",
+      "inputs": [
+        {
+          "name": "carry_forecast_72h_bps",
+          "value": 60,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-carry-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "carry_allin_cost_72h_bps",
+          "value": 20,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "custom-carry-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "basis_abs_bps",
+          "value": 20,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-price-v1",
+          "revision": 0,
+          "asset": "BTC"
+        },
+        {
+          "name": "margin_buffer_bps",
+          "value": 4000,
+          "event_at": 1799999940,
+          "available_at": 1799999970,
+          "source": "canonical-account-v1",
+          "revision": 0,
+          "asset": "BTC"
+        }
+      ],
+      "decision": {
+        "status": "TARGET",
+        "targets_bps": {
+          "BTC_SPOT": 2500,
+          "BTC_PERP": -2500
+        },
+        "reason": "carry margin and cost gate"
+      }
+    }
+  ]
+}

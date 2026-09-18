@@ -1,0 +1,229 @@
+Due Diligence Questionnaires
+Members
+Log ins to
+www.aima.org
+are provided to AIMA member contacts registered with us.
+If you work for an AIMA member firm and are not registered with us for a personal login, or if you are otherwise in need of assistance, please
+contact us
+.
+Forgotten password?
+Remember me
+Member log in
+ALTERNATIVE
+CREDIT COUNCIL
+LENDING FOR GROWTH
+AIMA Regulatory Horizon Scan
+Press Office
+Network
+Contact
+Home
+About AIMA
+AIMA in numbers
+Objectives and principles
+Corporate Social Responsibility
+Annual Reports and Reviews
+History
+Structure
+AIMA Council
+AIMA Global Investor Board
+Meet the team
+Vacancies
+Featured publication
+AIMA's Global Review of the Year 2025
+Membership
+Becoming a member
+Why Join?
+Membership benefits
+Member discounts
+Application forms
+Member Area
+AIMA Newsletters
+AIMA NewsWire
+Member Directory
+AIMA Committees & Working Groups
+Use of AIMA name & logo by members
+Call for Volunteers
+Regulation
+Key Topics in Regulation
+Distribution 360 Programme
+Irish Managers Group
+UAE Managers Group
+AIMA's Policy Principles
+AIMA regulatory responses / comment letters
+Government and Regulatory Affairs Newsletters
+AIMA Regulatory Horizon Scan
+Spotlight on Compliance
+Back to Basics Series
+Compass
+Practical Guides
+Due Diligence Questionnaires
+Insights
+Featured publication
+AIMA Tech Vendor Directory
+Education
+Third-party research
+AIMA Surveys
+AIMA Journal
+Holding Strong: Alternative Investments in a Volatile Market
+Our educational partners
+Events
+Forthcoming AIMA events
+AIMA Conferences
+Sponsorship opportunities
+Past event playbacks
+AIMA virtual events
+AIMA Fund manager briefings
+ACC events
+Third-party events
+View AIMA's annual conferences here
+AIMA Conferences
+AIMA Regulatory Horizon Scan
+Press Office
+Network
+Contact
+Menu
+Region
+Preferences:
+Customise the site content to be more relevant to you.
+Apply
+Region
+Global
+EMEA
+Americas
+Asia Pacific
+Country
+Australia
+Bermuda
+Canada
+Cayman Islands
+China
+France
+Hong Kong
+Ireland
+Japan
+Jersey, Channel Is.
+Luxembourg
+Singapore
+Switzerland
+UK
+USA
+Advanced search
+Homepage
+Sound Practices
+Due Diligence Questionnaires
+Due Diligence Questionnaires
+For more than 20 years, AIMA has been providing guidance and standardisation for its members around the world in the form of Due Diligence Questionnaires (DDQs).
+AIMA's DDQs assist a) investors in assessing the fund investments they might make and b) fund managers in their choice of service providers, directors and boards of those funds.   The first AIMA DDQ - for investors conducting due diligence on hedge fund managers - was published in 1997.   It was a response to requests from investors for a standardised set of questions.   Since then, the DDQs have gone on to become the industry-standard template. The AIMA DDQs can be downloaded by AIMA members below.
+OTHER DDQ FAQs
+Will blacklines showing the differences between the 2017 and 2019 versions of the modules in the Investment Manager DDQ be available?
+Yes, a blackline of the changes made to each of the individual modules and some of the Basic Setup versions will be made available in the DDQ Archive from 7 February 2019.
+Why is it useful for there to be a standardised set of questions?
+Standardised questions help investors compare like-for-like when they receive responses from multiple managers. Managers like standardised questions because it reduces the amount of work they have to do and helps them reassure investors that they are all receiving the same information.  Even in the absence of an investor request for information, a standard set of questions can be helpful for new managers who are seeking to assess their own practices against industry standards.
+Who uses the DDQ and how does it fit into the overall DD process?
+DDQs are used by investors from all around the world and by many of our asset manager members. For investors, the DDQ is an early step in the due diligence process but by no means is it the last step. Investors use the information they get from the responses to these questions to develop areas of focus for further questions and discussion with managers and to cross check information from other sources.
+The DDQ for investment managers has multiple modules.  What is the easiest way for me to get started?
+In situations where the investment manager is managing open-end funds, the easiest place to start is the Basic Open-End Setup and then add or replace modules as needed. Similarly, if the investment manager is managing closed-end funds, the easiest place to start is the Basic Closed-End Setup. Platform providers should start with the Basic Platform Provider Setup. Third party sub-advisory relationships should start with the Basic Sub-Adviser Setup. If the sub-advisory relationship is with an affiliate, however, consideration might be given as to whether it makes sense to discuss the sub-adviser as part of the “investment manager” for purposes of the modules regarding the investment manager. These DDQs are available
+here
+.
+For Canadian Alternative Mutual Funds, UCITS and U.S. mutual funds, the
+Liquid Alternatives Fund DDQ
+may be the easiest place to start.
+When should investors anticipate being able to get information from most managers on this new form?
+The new form is in a substantially different format from the prior versions and contains lots of questions. We anticipate it will take most managers time to work through the new form and fill it in. It is reasonable to expect that investment managers will begin using the new form in 2018 or 2019.
+How do the Short Form Manager Module and Short Form Fund Module relate to the other modules in the Illustrative Questionnaire for the Due Diligence of Investment Managers?
+The Short Form Manager Module represents a condensed version of the following three modules from the Illustrative Questionnaire for the Due Diligence of Investment Managers:
+Overview;
+Governance of the Investment Manager; and
+Operations and Risk Management,
+and can be used in lieu of those modules.
+The Short Form Fund Module represents a condensed version of the Open-End Private Fund Module and
+can
+be used in lieu of that module for open-end private funds and
+should
+be used in lieu of that module for any liquid alternatives funds.
+Investors receiving information on one of these short forms should consider whether and to what extent they need or want more information than has been provided.
+How will DDQ platforms verify whether my firm is a member and what happens to DDQs completed on the platform if my firm is no longer a member?
+Our DDQs are licenced for use on a variety of third party platforms.  These platforms are required to verify that any use through the platforms is in line with the applicable Terms of Use.  This means that platform providers will be seeking validation from AIMA that either the platform user (the investor in the case of investor push systems or the manager in manager push systems).  The platform provider will send us the relevant firm name by email and we will respond with whether the firm is a member or not.  If not a member, the platform provider will be required to deny access to the our DDQ templates through the platform.
+We will also notify the applicable platform providers when a previously verified user subsequently chooses not to renew.  This will mean that the platform provider will be required to discontinue future access to the template documents, although previously distributed forms of the DDQ completed during the period of membership are permitted to be maintained.
+AIMA DDQ
+Licensed AIMA DDQ platforms
+More
+AIMA DDQ
+Topic
+Business operations
+Corporate Governance
+COVID-19
+Cyber Security
+Digital assets
+Diversity
+Due diligence
+Education & qualifications
+ERAs
+ESG
+Fund administration
+Fund directors
+Funds
+Liquid alternatives
+Managed accounts
+Market Data
+MiFID
+Open-ended funds
+Operational Resilience
+Outsourcing
+Paying for research
+Prime brokerage
+Private credit
+Private Funds
+Responsible Investment
+RIAs
+Risk management
+Strategies
+Technology
+Trading
+Apply filter
+Clear filter
+Filter
+ACC DDQ for Private Credit Managers - WPCRI7 - ACC Managed Account Short Form + PCRI + PM (2025)
+ACC DDQ for Private Credit Managers - WPCRI6 - ACC Managed Account Short Form + PCRI + CL (2025)
+ACC DDQ for Private Credit Managers - W7 - ACC Managed Account Short Form + PM (2025)
+ACC DDQ for Private Credit Managers - W6 - ACC Managed Account Short Form + CL (2025)
+AIMA DDQ for Investment Managers - H5 - Short Form Manager Modules + TS (2025)
+AIMA DDQ for Investment Managers - H9 - Short Form Manager Modules + MOD (2025)
+AIMA DDQ for Investment Managers - K9 - Managed Accounts Short Form + MOD (2025)
+ACC DDQ for Private Credit Managers - UPCRI6 - ACC Short Form Manager Modules + PCRI + CL (2025)
+Load more
+Licensed AIMA DDQ platforms
+Topic
+Licensed DDQ platforms
+Apply filter
+Clear filter
+Filter
+Dasseti - DDQ Platform | 20% off first year pricing whether sending or receiving DDQs.
+Orbit Diligence – 20% off for AIMA members in Year 1
+CENTRL - 20% discount off first contract year for AIMA members
+Diligence Vault - DDQ Platform: 20% discount for 1st contract year for AIMA members
+AlphaPipe - DDQ Platform
+Load more
+Sponsoring Partners of AIMA
+Sponsoring Partners
+About AIMA
+Our Objectives
+Benefits of membership
+How to apply
+Corporate and Social Responsibility
+Selected content
+Regulatory search
+AIMA Research
+Press Office
+Site Information
+Privacy Policy
+Cookies Policy
+Disclaimer
+Contact
+Social Connections
+AIMA Blog
+AIMA SmartBrief
+© 2026
+The Alternative Investment Management Association Limited
+Registered in England as a Company Limited by Guarantee, No. 4437037
+167 Fleet Street, London, EC4A 2EA, United Kingdom.

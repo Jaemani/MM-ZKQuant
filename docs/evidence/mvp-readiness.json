@@ -1,0 +1,155 @@
+{
+  "schema": "MM_MVP_READINESS_EVIDENCE_V1",
+  "startedAt": "2026-09-17T18:42:29.839Z",
+  "finishedAt": "2026-09-17T18:42:50.902Z",
+  "runtime": "v22.23.0",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "experimentsReproduced": true,
+  "productVerdict": "NOT_READY",
+  "originalScope": "원본 25절 confidential multi-alpha fund. 사용자 유예: TEE.",
+  "readinessAssessment": {
+    "method": "MANUAL_ORIGINAL_SPEC_AUDIT_SUPPORTED_BY_REPRODUCED_COUNTEREXAMPLES",
+    "gates": [
+      {
+        "id": "G1",
+        "claim": "서로 독립된 실제 provider 3명 이상이 동일 규칙으로 제출",
+        "status": "NOT_DEMONSTRATED",
+        "evidence": "독립 client 구현이 만든 4개 fixture key; 실제 독립 참여자 운영 증거 없음"
+      },
+      {
+        "id": "G2",
+        "claim": "정책·roster·weights·root가 결과 구간 시작 전에 외부에서 확정",
+        "status": "NOT_MET",
+        "evidence": "LOCAL_ONLY receipt와 로컬 EVM. 외부 확정 시각 없음"
+      },
+      {
+        "id": "G3",
+        "claim": "독립된 가격 출처·상품·관측시각·원자료로 결과 재계산",
+        "status": "NOT_MET",
+        "evidence": "통제한 USER_ASSERTED 가격; 잘못된 양수 가격도 접수됨"
+      },
+      {
+        "id": "G4",
+        "claim": "테스트 자산 예치→shares→venue 체결→잔고/NAV→환매",
+        "status": "NOT_IMPLEMENTED",
+        "evidence": "PAPER 선형 노출, 로컬 shares. 자금 계약/venue fill 없음"
+      },
+      {
+        "id": "G5",
+        "claim": "평가→다음 weight→테스트 자산 보상→반복 2회 증거",
+        "status": "NOT_MET",
+        "evidence": "weight와 미지급 credit만 구현; 실제 지급 없음"
+      },
+      {
+        "id": "G6",
+        "claim": "보상에서 동일 운영자의 복제·상반 신호 악용을 통제",
+        "status": "COUNTEREXAMPLE",
+        "evidence": "공동 기여 $0인 두 identity에 전체 10,000 credits 배정 재현"
+      },
+      {
+        "id": "TEE",
+        "claim": "운영자로부터 vector 기밀성",
+        "status": "USER_DEFERRED",
+        "evidence": "사용자가 유예한 항목. 위 G1–G6 미충족 판정의 이유가 아님"
+      }
+    ]
+  },
+  "sourceCheckpoint": {
+    "algorithm": "SHA256",
+    "vcsCommit": null,
+    "files": {
+      "contracts/EpochCommitmentRegistry.sol": "4e3617c099f87762acf4a9225e5d4155564ee0d01e343aea3404262e3a1a7402",
+      "contracts/deploy-testnet.mjs": "614e5d60e1831d27e96416239279720f993d572e371d50a4a5c5b61a8af4e355",
+      "contracts/local-evm.mjs": "1d63d80721cba5204c4dcfd6e299586887ec7c6b29403fb87485b86ff613c5c6",
+      "package-lock.json": "69f5fcf585ab237004415fad01175ab1dcd486a62100e3a6ff5de1d6b58ead4c",
+      "package.json": "7c18565e771c12f264c2452514bcace6b74e042440b164fb365cbc86c412e1d0",
+      "scripts/chain-demo.mjs": "43973237a296f24d62ed1e086179bbad3f07f2b4f41f486cf5bffe83d48b80ae",
+      "scripts/dev.mjs": "a97e30e7148ce23e631e57ac22907fbed1010b0ebb2bfe4e3fb767f6be8a22ef",
+      "scripts/evidence/http-challenge.mjs": "c3cbe704060b4a5d15f1961e6ef487de7ef102ff7891c2a386d8f7c9f6380517",
+      "scripts/evidence/quant-challenges.mjs": "7a6876264d27feef72e7ffa5071abf28af60def17de1db70fb942dbab558d37a",
+      "scripts/evidence/security-challenges.mjs": "d59025337f0dafc8efb7f35d4d0c7ced27fc0bb4660b7b76701e0acf01d441a3",
+      "scripts/prove-mvp.mjs": "4039e4aad12edf69ecbcfc43cacb686442e9c22f37ad121b24513adcc4ec5c0d",
+      "scripts/provider-demo.mjs": "8069c68fde9fc9fa46aa5809d6f78fd763e5f54dd973119f6b5f84e5b57434ff",
+      "scripts/verify-receipt.mjs": "d45854f52230469acd16e1865476442776e1855a8de0072ff0d5053fe7bdefdc",
+      "src/core/engine.js": "196eb852556720e43d8c6e5c63e3ff8035b64d562044113e8120e9f554148d35",
+      "src/server/crypto.js": "5d14e4973012242a519d336abfab01c676f97e5fdbf998cd16c4111eb0f795a7",
+      "src/server/http.js": "8e98ed463fa27eb8eb680ee60794115e94a18da4f10927448fa4fb1cc0454ffc",
+      "src/server/service.js": "fdfc91891c80e588038c849d71b105f05e7f30da4c44ba8eb0c5d61d110776ea",
+      "src/server/store.js": "59a82375820bd1e9b95e99c5b9d9b22c6e07004a7a6e13e20f72542cdd9334af",
+      "src/shared/protocol.js": "f039724c09e0aa19b3384b9e187f338436c7cd8ac48cf20195783e7e7ef1e033",
+      "src/web/App.jsx": "01220c3673f0ff5e1dad643a2deac1ed3e1ed4160261f661118037bf6d2cf48d",
+      "src/web/main.jsx": "345dfacf7ef0befe1f8a2598213ce48d7d28c7c18d9bec93418c74d0f41c2ae5",
+      "src/web/styles.css": "2802215eddb5d0aad494fbffb465d1e0e17dccd567fe5dd448feb88225c02b8e",
+      "tests/commitment-binding.test.js": "9c8656d929db724b3a42d1c019881ad6fc8a55fc3a646e5faee02cf16b531121",
+      "tests/contracts.test.js": "b01d062e0ea9d7faac5eb910feb14474aeea31a9ab03c56acf5d466f1659a239",
+      "tests/engine.test.js": "96dc585fe2e7efbaa0b9c1b1a6a89b1e18e4ed0be31c265f6b6ae4fd26e00c41",
+      "tests/http.test.js": "2274c18b1926286d624b40d2de2fb678d53bc0d3bd85e971d5037a76e10e955d",
+      "tests/protocol.test.js": "b3c7d0b306509c311623a3ab1bd889b07fcccae863aa8450a030b7578d00ef96",
+      "tests/service.test.js": "7f1f1428941b024687e84e898c82145ebde5f86fb5c42b2adc4cf8d0165aaee1",
+      "vite.config.js": "bae390db5683a56ead03a99f2de09d728ee6f150b040275b8f71d7b21f687cd6"
+    },
+    "note": "Git 이력이 없는 workspace의 파일 지문. 제3자 attestation이나 과거 시각 증명은 아님."
+  },
+  "evidenceFiles": {
+    "http-challenge.json": "47c9914d87c1181c64e5af0b7c05af3ba7e739f752a99571d089862505d3f01c",
+    "quant-challenges.json": "42606d1cd43909d81deecd0ff442c3fef02db7690dd24d55dd8f1da84abc06f9",
+    "security-challenges.json": "543d90f49849a731a2b7c33848b30a041170220568356550912bf1fe3f2c95c7",
+    "security-challenges-before.json": "eac1bd448927c558f09f5efbe8610dc66b41c950661b5a72ec3bf109bf331298",
+    "commit-binding-fix.patch": "22e0377479dc9def139a196d103b2ddbcff859e5c0e6f00abaebd659cbbdd1f6"
+  },
+  "summary": {
+    "httpChecks": 23,
+    "expectedNav": 100098.5,
+    "observedNav": 100098.5,
+    "bindingBefore": {
+      "id": "sealed-envelope-substitution",
+      "type": "confirmed-defect-before-fix",
+      "claim": "DB 쓰기 권한으로 unsigned 반대 vector 암호문을 넣어도 이미 봉인한 submission을 대신 평가할 수 없어야 한다.",
+      "attackerCapability": "Temporary SQLite write plus public encryption key; no provider/server signing private key used by the attack.",
+      "honestNav": 102462.5,
+      "substitutedNav": 97462.5,
+      "unchangedDeclaredExecutionTarget": {
+        "BTC": 2500,
+        "ETH": 0,
+        "MON": 0,
+        "SOL": 0
+      },
+      "rejected": false,
+      "rejection": null,
+      "stateUnchangedOnRejection": false,
+      "originalReceiptStillValid": true,
+      "originalRootUnchanged": true
+    },
+    "bindingAfter": {
+      "id": "sealed-envelope-substitution",
+      "type": "enforced-after-fix",
+      "claim": "DB 쓰기 권한으로 unsigned 반대 vector 암호문을 넣어도 이미 봉인한 submission을 대신 평가할 수 없어야 한다.",
+      "attackerCapability": "Temporary SQLite write plus public encryption key; no provider/server signing private key used by the attack.",
+      "honestNav": 102462.5,
+      "substitutedNav": null,
+      "unchangedDeclaredExecutionTarget": {
+        "BTC": 2500,
+        "ETH": 0,
+        "MON": 0,
+        "SOL": 0
+      },
+      "rejected": true,
+      "rejection": {
+        "status": 409,
+        "message": "Stored epoch commitment or submission is invalid; operation rejected"
+      },
+      "stateUnchangedOnRejection": true,
+      "originalReceiptStillValid": true,
+      "originalRootUnchanged": true
+    },
+    "productCounterexamples": 3
+  },
+  "boundaries": {
+    "existingUserDataTouched": false,
+    "externalTransactions": false,
+    "actualMarkets": false,
+    "independentAuditor": false,
+    "note": "별도 구현·적대적 fixture를 사용한 저장소 내부 검증. 독립 기관 감사나 실운용 실적이 아님."
+  }
+}

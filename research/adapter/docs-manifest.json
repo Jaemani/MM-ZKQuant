@@ -1,0 +1,60 @@
+[
+  {
+    "name": "pine-strategies",
+    "url": "https://www.tradingview.com/pine-script-docs/concepts/strategies/",
+    "sha256_html": "2b75155db62d82b1105a398c1fb6cb9d54a8d011eeedf7ba5890d44a0f67cbf4",
+    "inspection_file": "/tmp/zk-adapter-pine-strategies.txt",
+    "chars": 191900
+  },
+  {
+    "name": "pine-execution",
+    "url": "https://www.tradingview.com/pine-script-docs/language/execution-model/",
+    "sha256_html": "b95648a8e8fd10eced9df01f5ae93b1d3a203bbe3eb49c3d8ea8edc6b115d752",
+    "inspection_file": "/tmp/zk-adapter-pine-execution.txt",
+    "chars": 88386
+  },
+  {
+    "name": "pine-request",
+    "url": "https://www.tradingview.com/pine-script-docs/concepts/other-timeframes-and-data/",
+    "sha256_html": "64e41e6e718ee45dba95c11a4bcf8b7ca5625504b9c79b6d26e83b6f2a2c4a6f",
+    "inspection_file": "/tmp/zk-adapter-pine-request.txt",
+    "chars": 184446
+  },
+  {
+    "name": "hummingbot-controllers",
+    "url": "https://hummingbot.org/strategies/v2-strategies/controllers/",
+    "error": "HTTP Error 403: Forbidden",
+    "resolved_official_source_url": "https://raw.githubusercontent.com/hummingbot/hummingbot-site/f1108de3d352733936fc400e177021f81939eecc/docs/strategies/v2-strategies/controllers/index.md",
+    "resolved_source_sha256": "1b83734aa764ce7170290ea96ffc08bdb0c137bc2202e510b3b201f2096265d2",
+    "resolved_source_bytes": 4817
+  },
+  {
+    "name": "hummingbot-executors",
+    "url": "https://hummingbot.org/strategies/v2-strategies/executors/",
+    "error": "HTTP Error 403: Forbidden",
+    "resolved_official_source_url": "https://raw.githubusercontent.com/hummingbot/hummingbot-site/f1108de3d352733936fc400e177021f81939eecc/docs/strategies/v2-strategies/executors/index.md",
+    "resolved_source_sha256": "f5ed61638eaf085584e1b064edfe280b69758f7eb96b96c616f04056b535876e",
+    "resolved_source_bytes": 5207
+  },
+  {
+    "name": "lean-framework",
+    "url": "https://www.quantconnect.com/docs/v2/writing-algorithms/algorithm-framework/overview",
+    "sha256_html": "0fd74574c538f62a7a543b662420d343c67afdd85bc166dde27b3b671c544a75",
+    "inspection_file": "/tmp/zk-adapter-lean-framework.txt",
+    "chars": 20805
+  },
+  {
+    "name": "lean-models",
+    "url": "https://www.quantconnect.com/docs/v2/writing-algorithms/reality-modeling/key-concepts",
+    "sha256_html": "8bafa3e9093d947405f4fada049ebd06b6555a3dcd106d3f53ed9011627cc9ae",
+    "inspection_file": "/tmp/zk-adapter-lean-models.txt",
+    "chars": 16128
+  },
+  {
+    "name": "binance-data",
+    "url": "https://github.com/binance/binance-public-data",
+    "sha256_html": "b8519aa512eea9e6ba05d28de397268d711b09d2f99bb95e659ab4dced23bb29",
+    "inspection_file": "/tmp/zk-adapter-binance-data.txt",
+    "chars": 5507
+  }
+]

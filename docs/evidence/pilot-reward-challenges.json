@@ -1,0 +1,50 @@
+{
+  "scope": "APPROVED_ECONOMIC_ACTOR_MODEL; hidden common ownership requires human admission review",
+  "passed": true,
+  "clone": {
+    "before": {
+      "actor-0": "5000",
+      "actor-1": "5000",
+      "actor-2": "0",
+      "actor-3": "0"
+    },
+    "after": {
+      "actor-0": "5000",
+      "actor-1": "5000",
+      "actor-2": "0",
+      "actor-3": "0"
+    },
+    "unchanged": true
+  },
+  "opposite": {
+    "contributionBps": 0,
+    "reward": "0"
+  },
+  "cap": {
+    "contributions": [
+      {
+        "actorId": "actor-0",
+        "submitted": true,
+        "contributionBps": 62.374999999999986
+      },
+      {
+        "actorId": "actor-1",
+        "submitted": true,
+        "contributionBps": 62.374999999999986
+      },
+      {
+        "actorId": "actor-2",
+        "submitted": true,
+        "contributionBps": 62.374999999999986
+      },
+      {
+        "actorId": "actor-3",
+        "submitted": true,
+        "contributionBps": 62.374999999999986
+      }
+    ],
+    "sumBps": 249.49999999999994
+  },
+  "duplicateSubjectRejected": true,
+  "hiddenSybilDetectionProven": false
+}

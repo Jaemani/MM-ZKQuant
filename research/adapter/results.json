@@ -1,0 +1,487 @@
+{
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "ta_lib_python": "0.6.8",
+    "ta_lib_core": "0.6.4 (Oct 20 2025 20:23:07)"
+  },
+  "scope": {
+    "complete_strategy_replays": 0,
+    "public_strategy_signal_kernels": 2,
+    "unmodified_strategy_method_bodies": 6,
+    "unmodified_helper_function_bodies": 2,
+    "zk_proofs": 0,
+    "actual_fills": 0
+  },
+  "spec": {
+    "artifact_kind": "reference integer transition specification, not compiled zk guest",
+    "scale": 100000000,
+    "rounding": "floor after each integer division",
+    "inputs": "closed UTC candles, strictly contiguous fixed interval; close > 0, volume >= 0",
+    "bounds": "close and volume <= 10^12; state arithmetic checked against signed 128-bit",
+    "average": {
+      "ema_periods": [
+        8,
+        21
+      ],
+      "seed": "SMA of first period observations",
+      "zero_volume": "update indicators but suppress entry/exit"
+    },
+    "trend": {
+      "ema_period": 20,
+      "seed": "first close (pandas adjust=False semantics)",
+      "obv_seed": "first volume"
+    },
+    "excluded": [
+      "orders",
+      "fills",
+      "ROI",
+      "stoploss",
+      "trailing stop",
+      "position sizing",
+      "leverage",
+      "exchange",
+      "fees",
+      "framework lifecycle"
+    ]
+  },
+  "spec_sha256": "e96ff8394310f2d7cb2ad594681a2780fe7f5e4af8c50e7c292fcd884eea3cf6",
+  "replays": [
+    {
+      "label": "BTCUSDT 2024 4h",
+      "kernel": "average",
+      "bars": 2196,
+      "signal_columns": [
+        "enter_long",
+        "exit_long"
+      ],
+      "reference_signal_counts": [
+        41,
+        41
+      ],
+      "port_signal_counts": [
+        41,
+        41
+      ],
+      "mismatch_bars": 0,
+      "mismatch_flags": 0,
+      "maximum_indicator_absolute_error": [
+        3.291643224656582e-08,
+        7.030030246824026e-08
+      ],
+      "first_mismatches": []
+    },
+    {
+      "label": "BTCUSDT 2024-01 5m",
+      "kernel": "trend",
+      "bars": 8928,
+      "signal_columns": [
+        "enter_long",
+        "enter_short",
+        "exit_long",
+        "exit_short"
+      ],
+      "reference_signal_counts": [
+        682,
+        682,
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        682,
+        682,
+        0,
+        0
+      ],
+      "mismatch_bars": 0,
+      "mismatch_flags": 0,
+      "maximum_indicator_absolute_error": [
+        7.22138793207705e-08,
+        2.546585164964199e-11
+      ],
+      "first_mismatches": []
+    },
+    {
+      "label": "constant_then_one_tick",
+      "kernel": "average",
+      "bars": 40,
+      "signal_columns": [
+        "enter_long",
+        "exit_long"
+      ],
+      "reference_signal_counts": [
+        1,
+        1
+      ],
+      "port_signal_counts": [
+        0,
+        0
+      ],
+      "mismatch_bars": 2,
+      "mismatch_flags": 2,
+      "maximum_indicator_absolute_error": [
+        7.153715841923258e-09,
+        3.79078812784428e-09
+      ],
+      "first_mismatches": [
+        {
+          "index": 30,
+          "open_time": "1704499200000",
+          "close": "100.00000001",
+          "reference": [
+            1,
+            0
+          ],
+          "port": [
+            0,
+            0
+          ],
+          "reference_indicators": [
+            100.00000000222222,
+            100.0000000009091
+          ],
+          "port_indicators": [
+            100.0,
+            100.0
+          ]
+        },
+        {
+          "index": 39,
+          "open_time": "1704628800000",
+          "close": "100.00000000",
+          "reference": [
+            0,
+            1
+          ],
+          "port": [
+            0,
+            0
+          ],
+          "reference_indicators": [
+            100.00000000203615,
+            100.00000000235377
+          ],
+          "port_indicators": [
+            100.0,
+            100.0
+          ]
+        }
+      ]
+    },
+    {
+      "label": "constant_then_one_tick",
+      "kernel": "trend",
+      "bars": 40,
+      "signal_columns": [
+        "enter_long",
+        "enter_short",
+        "exit_long",
+        "exit_short"
+      ],
+      "reference_signal_counts": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "mismatch_bars": 1,
+      "mismatch_flags": 1,
+      "maximum_indicator_absolute_error": [
+        3.9372167748297215e-09,
+        0.0
+      ],
+      "first_mismatches": [
+        {
+          "index": 35,
+          "open_time": "1704571200000",
+          "close": "100.00000000",
+          "reference": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "port": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference_indicators": [
+            100.00000000356225,
+            1.0
+          ],
+          "port_indicators": [
+            100.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "label": "monotonic_up",
+      "kernel": "average",
+      "bars": 80,
+      "signal_columns": [
+        "enter_long",
+        "exit_long"
+      ],
+      "reference_signal_counts": [
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        0,
+        0
+      ],
+      "mismatch_bars": 0,
+      "mismatch_flags": 0,
+      "maximum_indicator_absolute_error": [
+        0.0,
+        0.0
+      ],
+      "first_mismatches": []
+    },
+    {
+      "label": "monotonic_up",
+      "kernel": "trend",
+      "bars": 80,
+      "signal_columns": [
+        "enter_long",
+        "enter_short",
+        "exit_long",
+        "exit_short"
+      ],
+      "reference_signal_counts": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "mismatch_bars": 0,
+      "mismatch_flags": 0,
+      "maximum_indicator_absolute_error": [
+        6.825801790455444e-08,
+        0.0
+      ],
+      "first_mismatches": []
+    },
+    {
+      "label": "zero_volume_reversal",
+      "kernel": "average",
+      "bars": 80,
+      "signal_columns": [
+        "enter_long",
+        "exit_long"
+      ],
+      "reference_signal_counts": [
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        0,
+        0
+      ],
+      "mismatch_bars": 0,
+      "mismatch_flags": 0,
+      "maximum_indicator_absolute_error": [
+        2.9778092880405893e-08,
+        6.045974387802744e-08
+      ],
+      "first_mismatches": []
+    },
+    {
+      "label": "zero_volume_reversal",
+      "kernel": "trend",
+      "bars": 80,
+      "signal_columns": [
+        "enter_long",
+        "enter_short",
+        "exit_long",
+        "exit_short"
+      ],
+      "reference_signal_counts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mismatch_bars": 0,
+      "mismatch_flags": 0,
+      "maximum_indicator_absolute_error": [
+        5.7808888342947284e-08,
+        0.0
+      ],
+      "first_mismatches": []
+    },
+    {
+      "label": "minimum_price",
+      "kernel": "average",
+      "bars": 50,
+      "signal_columns": [
+        "enter_long",
+        "exit_long"
+      ],
+      "reference_signal_counts": [
+        1,
+        1
+      ],
+      "port_signal_counts": [
+        0,
+        0
+      ],
+      "mismatch_bars": 2,
+      "mismatch_flags": 2,
+      "maximum_indicator_absolute_error": [
+        9.189868897775878e-09,
+        6.144567105704683e-09
+      ],
+      "first_mismatches": [
+        {
+          "index": 30,
+          "open_time": "1704499200000",
+          "close": "0.00000002",
+          "reference": [
+            1,
+            0
+          ],
+          "port": [
+            0,
+            0
+          ],
+          "reference_indicators": [
+            1.222222222222222e-08,
+            1.0909090909090913e-08
+          ],
+          "port_indicators": [
+            1e-08,
+            1e-08
+          ]
+        },
+        {
+          "index": 42,
+          "open_time": "1704672000000",
+          "close": "0.00000001",
+          "reference": [
+            0,
+            1
+          ],
+          "port": [
+            0,
+            0
+          ],
+          "reference_indicators": [
+            1.4323902650119514e-08,
+            1.4616504211648899e-08
+          ],
+          "port_indicators": [
+            1e-08,
+            1e-08
+          ]
+        }
+      ]
+    },
+    {
+      "label": "minimum_price",
+      "kernel": "trend",
+      "bars": 50,
+      "signal_columns": [
+        "enter_long",
+        "enter_short",
+        "exit_long",
+        "exit_short"
+      ],
+      "reference_signal_counts": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "port_signal_counts": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "mismatch_bars": 1,
+      "mismatch_flags": 1,
+      "maximum_indicator_absolute_error": [
+        6.324274576171308e-09,
+        0.0
+      ],
+      "first_mismatches": [
+        {
+          "index": 40,
+          "open_time": "1704643200000",
+          "close": "0.00000001",
+          "reference": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "port": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "reference_indicators": [
+            1.5721962711774042e-08,
+            1.0
+          ],
+          "port_indicators": [
+            1e-08,
+            1.0
+          ]
+        }
+      ]
+    }
+  ],
+  "input_rejections": [
+    {
+      "case": "missing_bar",
+      "result": "rejected",
+      "reason": "non-contiguous candle schedule"
+    },
+    {
+      "case": "duplicate_bar",
+      "result": "rejected",
+      "reason": "non-contiguous candle schedule"
+    },
+    {
+      "case": "nan_price",
+      "result": "rejected",
+      "reason": "non-finite input"
+    },
+    {
+      "case": "excess_precision",
+      "result": "rejected",
+      "reason": "input exceeds canonical precision"
+    },
+    {
+      "case": "negative_volume",
+      "result": "rejected",
+      "reason": "input outside canonical bounds"
+    }
+  ]
+}

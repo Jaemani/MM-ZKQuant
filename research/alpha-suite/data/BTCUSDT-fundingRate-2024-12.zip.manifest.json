@@ -1,0 +1,8 @@
+{
+  "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-12.zip",
+  "retrieved_at": "2026-09-17T11:43:26.545430+00:00",
+  "sha256": "069409f525ebf6370ee1c7defe475167de4b97284c5ac8e68768652968cd3dc9",
+  "bytes": 808,
+  "authentication": "HTTPS retrieval only; no provider signature",
+  "historical_available_at": "unknown"
+}

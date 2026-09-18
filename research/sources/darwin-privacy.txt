@@ -1,0 +1,96 @@
+3 levels to protect your intellectual property
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+Skip to content
+English
+Čeština
+Español
+Français
+Italiano
+English
+Show submenu for translations
+Official Website
+Log in
+Sign up
+Open main navigation
+Close main navigation
+Official Website
+Log in
+Sign up
+English
+Čeština
+Español
+Français
+Italiano
+English
+Show submenu for translations
+Contact us
+Contact us
+Darwinex Docs
+There are no suggestions because the search field is empty.
+Darwinex Docs
+Providing a DARWIN
+3 levels to protect your intellectual property
+In this article, we are going to explain the 3 current privacy levels offered by Darwinex to traders like you with the aim of protecting your intellectual property.
+If you have been a member of our growing family for a while, I’m sure that you know this by heart, but for those of you who are newcomers -big welcome by the way!-, it is very important to know that Darwinex has always followed a
+“Trader First” ethos
+.
+The clearest example of this has been an ironclad protection of our Trader’s IP in order to dissuade copycats from lurking around in search of a “free lunch”.
+Besides
+never publishing your last 3 positions
+, so no one will ever be able to scan your live strategy, we have offered, up to now, two levels of control over what Investors can see:
+HIDE STRATEGY
+=> For Traders who don’t have a
+DARWIN
+yet -BTW, we think you’re missing out on a lifetime opportunity -, Darwinex offers you the option to hide all the details of your trading strategy. Upon activating this feature, other users will not be able to find your strategy in the Darwinex search engine.
+HIDE TRADES IN THE TRADING JOURNAL
+=> For our DARWIN providers, we grant you the chance to hide your
+Trading Journal
+details so your data is not visible to Investors. Do not worry for your IP if you don’t activate this option though since, as explained above, your last 3 positions will always remain hidden.
+However, and following recent feedback from some of our most “IP-concerned” traders –yes, we hear you out!-, an extra layer of IP protection has been implemented:
+HIDE ASSETS TRADED IN THE STATISTICS AND GRAPHS
+=> As of today, if you activate this option, other users will not be able to see the assets in which you have traded in any of the graphs/statistics in both your strategy and your DARWIN. Furthermore, all the trades in your trading journal will be automatically hidden.
+Please bear in mind that some investors could choose not to invest in your DARWIN if they consider that you are hiding too much trading info.
+Darwinex strongly believes that more transparent DARWINs/strategies are more attractive to Investors, but we also think that Trader’s should have full control over how much data they want to display.
+In order to set the privacy level for your trading strategy, please click on the settings wheel/privacy settings and a pop-up window will appear showing you the 3 options previously described -see pics below-.
+Step by step procedure to change your privacy settings from your strategy profile
+Step by step procedure to change your privacy settings from your DARWIN profile
+Your Darwinex Account
+Regulation & Money Safety
+Account Application
+Deposits & Withdrawals
+Partnerships
+Account security
+Trade with us
+First Steps as a Trader
+Trading Conditions
+Trading Basics
+MetaTrader Guide
+Tradingview & Dxtrade
+Providing a DARWIN
+Managing a DARWIN portfolio
+First Steps as an Investor
+The DARWIN product class
+Creating a DARWIN Portfolio
+World of Darwinex
+Darwinex Metrics and Graphs
+Investment Attributes
+DarwinIA Capital Allocation
+Algorithmic Trading
+From Trading as a Hobby, to Trading as a Profession
+DARWIN Data Analytics for Algorithmic Trading
+Algorithmic Trading: Training for and by Traders
+Darwinex & IBKR
+Darwinex Pro
+About Darwinex Pro
+Economics
+Regulation Umbrella
+Raising Capital
+Pro - how do I get started?
+The Pro investor experience
+Copyright © 2025, Darwinex
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+The Darwinex® brand and the Darwinex.com domain are commercial names used by Tradeslide Trading Tech Limited, a company regulated by the Financial Conduct Authority (FCA) in the United Kingdom with FRN 586466 and company registration number 08061368, by Sapiens Markets EU Sociedad de Valores SA, a company regulated by the Comisión Nacional del Mercado de Valores (CNMV) in Spain under the number 311, with CIF A10537348 and by Tradeslide Global Ltd., a company authorised and regulated by the Financial Services Authority (FSA) of Seychelles with number SD171, company registration number 8433817-1.
+Risk warning:
+CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 53% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.

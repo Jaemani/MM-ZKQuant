@@ -1,0 +1,14 @@
+{
+  "environment": "MONAD_TESTNET",
+  "expectedChainId": 10143,
+  "rpcUrlEnvironmentVariable": "MONAD_TESTNET_RPC_URL",
+  "signerKeyEnvironmentVariable": "MONAD_TESTNET_PRIVATE_KEY",
+  "existingRegistryEnvironmentVariable": "REGISTRY_ADDRESS",
+  "deploymentStatus": "NOT_DEPLOYED",
+  "registryAddress": null,
+  "transactionHash": null,
+  "publisher": null,
+  "contract": "EpochCommitmentRegistry",
+  "compilerEvmVersion": "shanghai",
+  "fundsCustody": false
+}

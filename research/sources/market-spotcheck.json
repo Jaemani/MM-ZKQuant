@@ -1,0 +1,116 @@
+[
+  {
+    "id": "darwin-product",
+    "url": "https://help.darwinex.com/what-is-a-darwin",
+    "final_url": "https://help.darwinex.com/what-is-a-darwin",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/darwin-product.txt",
+    "response_sha256": "167afd2127cd2c7f5177d6882ba83739962b32b43ac5befe60e8d993de7b739a",
+    "excerpts": [
+      "ion\nThe DARWIN automatically replicates trades opened/closed by the trader.\nHowever, this process takes place without revealing the trade details so as to protect the\nintellectual property of our traders\n.\nDARWIN vs. strategy\nOur own Risk Engine is the tool used at Darwinex to ensure that all the DARWINs are listed with the same level of risk.\nThe Risk Engine determines the size of th"
+    ]
+  },
+  {
+    "id": "darwin-payouts",
+    "url": "https://help.darwinex.com/performance-fees-darwin-provider",
+    "final_url": "https://help.darwinex.com/performance-fees-darwin-provider",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/darwin-payouts.txt",
+    "response_sha256": "f2d04f0008745a4c3ec506448596ff3cc2d586dc7e94a30ea409c3ce15240b92",
+    "excerpts": [
+      "n your DARWIN, updated daily. Please, click\nHERE\nto be get access to your performance fee section.\nMore than $5 M paid so far\nSo far we've paid DARWIN providers in excess of $5 million in performance fees. This information is public and is updated daily on the\nHall of Fame\nsection.\nYour Darwinex Account\nRegulation & Money Safety\nAccount Application\nDeposits & Withdrawals",
+      " to your performance fee section.\nMore than $5 M paid so far\nSo far we've paid DARWIN providers in excess of $5 million in performance fees. This information is public and is updated daily on the\nHall of Fame\nsection.\nYour Darwinex Account\nRegulation & Money Safety\nAccount Application\nDeposits & Withdrawals\nPartnerships\nAccount security\nTrade with us\nFirst Steps as a Trader\nTr"
+    ]
+  },
+  {
+    "id": "darwin-fees",
+    "url": "https://help.darwinex.com/investments-costs",
+    "final_url": "https://help.darwinex.com/investments-costs",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/darwin-fees.txt",
+    "response_sha256": "1812588fdbc16fed96aabb6a7dc2e48e4d64d6e4dc14f0e8af50d184aabe6fad",
+    "excerpts": [
+      "e DARWIN's quote mean?\nMinimum & Maximum investment and FIFO rule\nThe minimum amount\nto invest in a DARWIN is 200 units of your Wallet's base currency (EUR, USD, or GBP), and in increments of 25 units for subsequent investments or partial closures.\nThe maximum amount\nto invest in a DARWIN is 100,000 units of your Wallet's base currency. Get in touch with us (info@darwine",
+      "d swaps, DARWINs pay the same fees as retail traders.\nRead more:\nAssets and spreads\nManagement fees\nWe charge 1.2% annual management fees on invested equity.\nEvery business day (M-F) 1.2% / 261 is charged on the equity (invested + PnL without performance fees).\nFor each day, the average equity during the day is taken into account.\nTo calculate the average equity during th",
+      "nd spreads\nManagement fees\nWe charge 1.2% annual management fees on invested equity.\nEvery business day (M-F) 1.2% / 261 is charged on the equity (invested + PnL without performance fees).\nFor each day, the average equity during the day is taken into account.\nTo calculate the average equity during the day, the investment is weighted by the time it has been open during the"
+    ]
+  },
+  {
+    "id": "darwin-privacy",
+    "url": "https://help.darwinex.com/3-levels-protect-intellectual-property",
+    "final_url": "https://help.darwinex.com/3-levels-protect-intellectual-property",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/darwin-privacy.txt",
+    "response_sha256": "5e8a6dd69d4c479d7bef6f06564b838d3e7202852d2a020fe7c16f380078e320",
+    "excerpts": [
+      "es in your trading journal will be automatically hidden.\nPlease bear in mind that some investors could choose not to invest in your DARWIN if they consider that you are hiding too much trading info.\nDarwinex strongly believes that more transparent DARWINs/strategies are more attractive to Investors, but we also think that Trader’s should have full control over how much data they w",
+      "ar in mind that some investors could choose not to invest in your DARWIN if they consider that you are hiding too much trading info.\nDarwinex strongly believes that more transparent DARWINs/strategies are more attractive to Investors, but we also think that Trader’s should have full control over how much data they want to display.\nIn order to set the privacy level for your tr"
+    ]
+  },
+  {
+    "id": "darwin-correlations",
+    "url": "https://help.darwinex.com/correlation-between-darwins",
+    "final_url": "https://help.darwinex.com/correlation-between-darwins",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/darwin-correlations.txt",
+    "response_sha256": "8f663aff363922d0d4ef5a30c3219ddee652b62aab59242660ffd5a1cd4f2c61",
+    "excerpts": [
+      "ation among them.\nDo you want to learn more?\nWe use the standard correlation formula taking into account last 3 months.\nYour Darwinex Account\nRegulation & Money Safety\nAccount Application\nDeposits & Withdrawals\nPartnerships\nAccount security\nTrade with us\nFirst Steps as a Trader\nTrading Conditions\nTrading Basics\nMetaTrader Guide\nTradingview & Dxtrade\nProviding a DARWIN\nManagin"
+    ]
+  },
+  {
+    "id": "numerai-scoring",
+    "url": "https://docs.numer.ai/numerai-signals/scoring",
+    "final_url": "https://docs.numer.ai/numerai-signals/scoring",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/numerai-scoring.txt",
+    "response_sha256": "6339e7ac977019bb871b8de77c115e835e789a5a5f6b8a84e98f84a7dc025d8b",
+    "excerpts": [
+      "arch and do not currently determine payouts. Missing historical values are shown as unavailable, not as zero. Legacy MMC and FNCv4 history remains available through the API but is no longer shown as a current Signals score choice.\nFor a full list of detailed explanations please see the\ndefinitions docs\n.\nLeaderboard eligibility\n​\nA Signals model must have both NCORR and NMM",
+      " the model must not be archived. These reputations use fully resolved 60-day scores. Partial round scores and legacy 20-day reputations do not qualify a model for inclusion.\nNeutralization\n​\nA signal or target is considered \"neutral\" when it has zero correlation with some set of existing signals. The point of the neutralization is to isolate the original or orthogonal compo",
+      "e little to no orthogonal component after neutralization.\nNumerai has a variety of existing signals including Barra factors (like size, value, momentum, etc.), country and sector risk factors, and custom stock features. Not all of these existing signals are provided to you, which makes this process somewhat \"blackbox\".\nBy neutralizing your signal before scoring, Numerai al",
+      "own metric and are the scores to read for current Signals payouts. Canon CORR and Canon MMC remain continuous legacy series: past the rounds where Signals last selected an exact CORR or MMC source, they follow the payout metric that replaced it (FNC, then Alpha, and MPC respectively). Prefer Canon Alpha and Canon MPC when you need a specific metric, and do not read Canon CO"
+    ]
+  },
+  {
+    "id": "hyperliquid-vaults",
+    "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults",
+    "final_url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/vaults",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/hyperliquid-vaults.txt",
+    "response_sha256": "88143bb3fe699af81a412cabfeff0329155c9820c3d42b75201198eec95fb559",
+    "excerpts": [
+      "re\nOverview\nUSDC\nAPI servers\nClearinghouse\nOracle\nOrder book\nStaking\nVaults\nProtocol vaults\nHyperCore vaults (legacy)\nFor vault leaders (legacy)\nFor vault depositors (legacy)\nMulti-sig\nPermissionless spot quote assets\nAligned quote assets\nHyperEVM\nHyperliquid Improvement Proposals (HIPs)\nTrading\nValidators\nReferrals\nPoints\nHistorical data\nBug bounty program\nAudits\nBrand kit",
+      "s\nClearinghouse\nOracle\nOrder book\nStaking\nVaults\nProtocol vaults\nHyperCore vaults (legacy)\nFor vault leaders (legacy)\nFor vault depositors (legacy)\nMulti-sig\nPermissionless spot quote assets\nAligned quote assets\nHyperEVM\nHyperliquid Improvement Proposals (HIPs)\nTrading\nValidators\nReferrals\nPoints\nHistorical data\nBug bounty program\nAudits\nBrand kit\nFor developers\nAPI\nHyperEV",
+      "ook\nStaking\nVaults\nProtocol vaults\nHyperCore vaults (legacy)\nFor vault leaders (legacy)\nFor vault depositors (legacy)\nMulti-sig\nPermissionless spot quote assets\nAligned quote assets\nHyperEVM\nHyperliquid Improvement Proposals (HIPs)\nTrading\nValidators\nReferrals\nPoints\nHistorical data\nBug bounty program\nAudits\nBrand kit\nFor developers\nAPI\nHyperEVM\nNodes\nPowered by GitBook\nOn ",
+      " access to Core features including spot and HIP-3 in all quote assets.\nThis is a strict improvement over the \"legacy\" HyperCore vaults, which were introduced in 2023 and do not support HIP-3 or spot trading.\nPrevious\nStaking\nNext\nProtocol vaults\nLast updated\n3 months ago",
+      "troduced in 2023 and do not support HIP-3 or spot trading.\nPrevious\nStaking\nNext\nProtocol vaults\nLast updated\n3 months ago"
+    ]
+  },
+  {
+    "id": "etoro-copy",
+    "url": "https://www.etoro.com/copytrader/",
+    "final_url": "https://www.etoro.com/copytrader/",
+    "status": 200,
+    "retrieved_date": "2026-09-16",
+    "text_file": "research/sources/etoro-copy.txt",
+    "response_sha256": "d1f725532fba49cd3397891c4fec8e8deb4afdc2c79a251aaf35ea0dde5519c8",
+    "excerpts": [
+      "portfolio in real time\nInvest with invested traders\nBuy the assets they buy for themselves\nCopying is free\nNo additional charges for using the CopyTrader feature\nView our complete pricing policy\nhere\nSave time\nManage your portfolio without having to constantly watch the markets\nLeverage their expertise\nBenefit from their knowledge and experience\nMeet our\nPopular Investors\nThousands of",
+      "r investments may go up or down. Your capital is at risk.\nFAQ\nHow much will copy trading cost me?\nThere is no additional charge for copying another trader or traders. You will still be charged spreads on the trading and/or transaction fees where applicable. To view our complete pricing policy,\nclick here\n.\nWhat is the minimum amount required to copy a trader?\nThe minimum amount requir",
+      "here\n.\nWhat is the minimum amount required to copy a trader?\nThe minimum amount required to copy a trader is $200.\nPlease note that there is a minimum amount for each copied position of $1. Positions not meeting the $1 minimum will not be opened.\nHow does copy trading work? How do I set up my copy trading?\nSetting up your copy trading is simple. Choose the user that you’",
+      " Securities Exchange Commission (CySEC) under the license # 109/10.\nRegistered in Cyprus under Company No. HE 200585.  Registered Office: Neocleous Tower, 199 Archbishop Makarios III Avenue,  9th Floor,  Limassol 3030, Cyprus\netoro (UK) Ltd, a Financial Services Company authorised and regulated by the Financial Conduct Authority (FCA) under the license FRN 583263.\nRegist",
+      "er Australian Financial Services License 491139\nRegistered Office: Level 3, 60 Castlereagh Street, Sydney NSW 2000, Australia\netoro (Seychelles) Ltd. is licenced by the Financial Services Authority Seychelles (\"FSAS\") to provide broker-dealer services under the Securities Act 2007 License #SD076\nRegistered Office:  Suite 18, 3rd Floor, Vairam Building, Providence, Mahe, ",
+      "e Financial Services Authority Seychelles (\"FSAS\") to provide broker-dealer services under the Securities Act 2007 License #SD076\nRegistered Office:  Suite 18, 3rd Floor, Vairam Building, Providence, Mahe, Seychelles, is licensed to deal in securities either as an agent or principal.\netoro (ME) Limited, is licensed and regulated by the Abu Dhabi Global Market (“ADGM”)’s ",
+      "Providing Custody, (d) Arranging Custody and (e) Managing Assets (under Financial Services Permission Number 220073) under the Financial Services and Market Regulations 2015 (“FSMR”). Its registered office and its principal place of business is at 25th Floor, Al Sila Tower, ADGM Square, Al Maryah Island, Abu Dhabi, United Arab Emirates (\"UAE\").\nPast performance is not an",
+      " not contain advice or recommendations by or on behalf of etoro - Your Social Investment Network.\nCopyright © 2006-2026 etoro - Your Social Investment Network, All rights reserved.\nIt looks like you're in the United States.\nView our US site.\nGo to eToro USA\nAU users please click here to be directed to the eToro AU website.\nContinue\nSelect Your Language\nEnglish\nEspañol\nIt"
+    ]
+  }
+]

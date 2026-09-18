@@ -1,0 +1,15 @@
+{
+  "verified_date": "2026-09-16",
+  "command": "rtk proxy /Users/jaeman/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 research/adapter/replay.py",
+  "exit_code": 0,
+  "results_byte_identical": true,
+  "results_sha256": "36a3f6c5b515d51f96f561465de43b17c160aa756525f03ef163d697f0c9e004",
+  "scope": {
+    "complete_strategy_replays": 0,
+    "public_strategy_signal_kernels": 2,
+    "unmodified_strategy_method_bodies": 6,
+    "unmodified_helper_function_bodies": 2,
+    "zk_proofs": 0,
+    "actual_fills": 0
+  }
+}

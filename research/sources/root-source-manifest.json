@@ -1,0 +1,50 @@
+[
+  {
+    "id": "aima-ddq",
+    "url": "https://www.aima.org/sound-practices/due-diligence-questionnaires.html",
+    "retrieved_date": "2026-09-16",
+    "file": "research/sources/aima-ddq.html",
+    "sha256": "31df8a50402ba8603c2efc37679dd2d4a2ef66242b31b186a5dad60c086b237a",
+    "note": "Source-owner material; retrieval is not verification of all claims on the page."
+  },
+  {
+    "id": "cfa-gips",
+    "url": "https://www.gipsstandards.org/standards/gips-standards-for-firms/",
+    "retrieved_date": "2026-09-16",
+    "file": "research/sources/cfa-gips.html",
+    "sha256": "2c38393349b1b0d5545ae4903a6838a0009695f4464bd1110893d2eb41903188",
+    "note": "Source-owner material; retrieval is not verification of all claims on the page."
+  },
+  {
+    "id": "bailey-pbo",
+    "url": "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf",
+    "retrieved_date": "2026-09-16",
+    "file": "research/sources/bailey-pbo.pdf",
+    "sha256": "d8bfbadaaedb430d9dec929646d92f3580fdf18238f34121ae7738fa1c69a63d",
+    "note": "Source-owner material; retrieval is not verification of all claims on the page."
+  },
+  {
+    "id": "bailey-dsr",
+    "url": "https://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf",
+    "retrieved_date": "2026-09-16",
+    "file": "research/sources/bailey-dsr.pdf",
+    "sha256": "ca4a1e834a2954b84eb560776e903329cd9cef318d458aadf6d67bc8166d10b5",
+    "note": "Source-owner material; retrieval is not verification of all claims on the page."
+  },
+  {
+    "id": "gips-firms-standard",
+    "url": "https://www.gipsstandards.org/wp-content/uploads/2021/03/2020_gips_standards_firms.pdf",
+    "retrieved_date": "2026-09-16",
+    "file": "research/sources/gips-firms-standard.pdf",
+    "sha256": "9c45d87dfc8b653e22839fac8cb0db6f29e402ecb10a4c65ce30e461231d5532",
+    "note": "Source-owner material; retrieval is not verification of all claims on the page."
+  },
+  {
+    "id": "sp1-security",
+    "url": "https://docs.succinct.xyz/docs/sp1/security/security-model",
+    "retrieved_date": "2026-09-16",
+    "file": "research/sources/sp1-security.html",
+    "sha256": "99c6c30be6c240db18958fcd7339b1bfb61f22ec0d1f082790a0d44674140b90",
+    "note": "Source-owner material; retrieval is not verification of all claims on the page."
+  }
+]

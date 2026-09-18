@@ -1,0 +1,650 @@
+{
+  "schema": "mvp-blackbox-evidence-v1",
+  "startedAt": "2026-09-17T18:42:29.849Z",
+  "finishedAt": "2026-09-17T18:42:50.392Z",
+  "mode": "REAL_HTTP_REAL_PROCESS_REAL_CLOCK_CONTROLLED_PRICES",
+  "existingUserDataTouched": false,
+  "seedCapital": 100000,
+  "providerFixture": [
+    {
+      "id": "83b3a2f8-dcd5-4985-afda-4b693887b98d",
+      "name": "Bull",
+      "vectorBps": [
+        10000,
+        0,
+        0,
+        0
+      ],
+      "submitted": true,
+      "expectedFrozenWeightBps": 1000
+    },
+    {
+      "id": "950f86e2-29b7-4519-a670-ea4dcf2fb0d3",
+      "name": "Bear",
+      "vectorBps": [
+        -9000,
+        0,
+        0,
+        0
+      ],
+      "submitted": true,
+      "expectedFrozenWeightBps": 1000
+    },
+    {
+      "id": "9b544db6-f5f2-4321-8e64-a070297076b7",
+      "name": "Neutral",
+      "vectorBps": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "submitted": true,
+      "expectedFrozenWeightBps": 1000
+    },
+    {
+      "id": "cdf3a8b5-efd1-42b0-bdc0-ad3dfd93f4b2",
+      "name": "Missing",
+      "vectorBps": [
+        10000,
+        0,
+        0,
+        0
+      ],
+      "submitted": false,
+      "expectedFrozenWeightBps": 1000
+    }
+  ],
+  "beginPrices": {
+    "BTC": 100,
+    "ETH": 100,
+    "MON": 100,
+    "SOL": 100
+  },
+  "endPrices": {
+    "BTC": 110,
+    "ETH": 100,
+    "MON": 100,
+    "SOL": 100
+  },
+  "epochId": "c43fd543-7e06-404d-b75b-bc83f5286ee4",
+  "cutoffAt": "2026-09-17T18:42:40.094Z",
+  "endAt": "2026-09-17T18:42:50.094Z",
+  "oracle": {
+    "targetBps": 100,
+    "orderNotional": 1000,
+    "feesAndSlippage": 1.5,
+    "pnl": 98.5,
+    "nav": 100098.5,
+    "bullShadowNav": 102462.5,
+    "bearShadowNav": 97462.5,
+    "bullContributionBps": 101.2,
+    "bearContributionBps": -88.65
+  },
+  "observed": {
+    "execution": {
+      "orders": [
+        {
+          "asset": "BTC",
+          "side": "BUY",
+          "sliceIndex": 0,
+          "notional": 1000,
+          "signedNotional": 1000,
+          "quantity": 10,
+          "referencePrice": 100,
+          "fillPrice": 100.05,
+          "fee": 1,
+          "slippage": 0.5,
+          "cost": 1.5
+        }
+      ],
+      "turnoverNotional": 1000,
+      "fee": 1,
+      "slippage": 0.5,
+      "cost": 1.5,
+      "mode": "PAPER",
+      "status": "SIMULATED",
+      "executedAt": "2026-09-17T18:42:40.163Z",
+      "turnover": 1000
+    },
+    "evaluation": {
+      "fundReturn": 0.000985,
+      "nav": 100098.5,
+      "pnl": 98.5,
+      "returns": {
+        "BTC": 0.1,
+        "ETH": 0,
+        "MON": 0,
+        "SOL": 0
+      },
+      "contributions": [
+        {
+          "providerId": "83b3a2f8-dcd5-4985-afda-4b693887b98d",
+          "contribution": 0.01012,
+          "credits": 10000
+        },
+        {
+          "providerId": "950f86e2-29b7-4519-a670-ea4dcf2fb0d3",
+          "contribution": -0.008865000000000001,
+          "credits": 0
+        },
+        {
+          "providerId": "9b544db6-f5f2-4321-8e64-a070297076b7",
+          "contribution": 0,
+          "credits": 0
+        },
+        {
+          "providerId": "cdf3a8b5-efd1-42b0-bdc0-ad3dfd93f4b2",
+          "contribution": 0,
+          "credits": 0
+        }
+      ],
+      "rewardPreview": {
+        "poolUnits": 10000,
+        "allocatedUnits": 10000,
+        "unallocatedUnits": 0,
+        "credits": {
+          "83b3a2f8-dcd5-4985-afda-4b693887b98d": 10000,
+          "950f86e2-29b7-4519-a670-ea4dcf2fb0d3": 0,
+          "9b544db6-f5f2-4321-8e64-a070297076b7": 0,
+          "cdf3a8b5-efd1-42b0-bdc0-ad3dfd93f4b2": 0
+        }
+      },
+      "source": "USER_ASSERTED",
+      "lossBeyondCapital": 0,
+      "bankrupt": false
+    },
+    "bull": {
+      "shadowNav": 102462.5,
+      "shadowReturn": 0.024624999999999897,
+      "maxDrawdown": 0,
+      "hitRate": 1,
+      "ic": 1,
+      "icEpochs": 1,
+      "hitRateEpochs": 1,
+      "directionalSamples": 1,
+      "contribution": 0.01012,
+      "rewardCredits": 10000,
+      "samples": 1,
+      "turnoverBps": 2500,
+      "sharpe": null
+    },
+    "bear": {
+      "shadowNav": 97462.5,
+      "shadowReturn": -0.025375000000000036,
+      "maxDrawdown": -0.025375,
+      "hitRate": 0,
+      "ic": -1,
+      "icEpochs": 1,
+      "hitRateEpochs": 1,
+      "directionalSamples": 1,
+      "contribution": -0.008865000000000001,
+      "rewardCredits": 0,
+      "samples": 1,
+      "turnoverBps": 2500,
+      "sharpe": null
+    },
+    "missing": {
+      "id": "cdf3a8b5-efd1-42b0-bdc0-ad3dfd93f4b2",
+      "name": "Missing",
+      "kind": "HUMAN",
+      "registeredAt": "2026-09-17T18:42:30.091Z",
+      "required": 1,
+      "submitted": 0,
+      "missed": 1,
+      "completeness": 0,
+      "metrics": {
+        "shadowNav": 100000,
+        "shadowReturn": 0,
+        "maxDrawdown": 0,
+        "hitRate": null,
+        "ic": null,
+        "icEpochs": 0,
+        "hitRateEpochs": 0,
+        "directionalSamples": 0,
+        "contribution": 0,
+        "rewardCredits": 0,
+        "samples": 1,
+        "turnoverBps": 0,
+        "sharpe": null
+      }
+    }
+  },
+  "checks": [
+    {
+      "id": "H01",
+      "claim": "다른 키로 provider를 사칭하면 거부한다",
+      "expected": 401,
+      "actual": 401,
+      "pass": true
+    },
+    {
+      "id": "H02",
+      "claim": "같은 서명 판단의 재전송은 한 건으로 처리한다",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "id": "H03",
+      "claim": "본인 키여도 승인된 alpha를 교체할 수 없다",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "id": "H04",
+      "claim": "실제 마감 전 봉인은 거부한다",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "id": "H05",
+      "claim": "마감 뒤 새 판단은 거부한다",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "id": "H06",
+      "claim": "누락된 provider도 roster에 남는다",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "id": "H07",
+      "claim": "상반된 BTC 의견은 순 1%만 거래한다",
+      "expected": 100,
+      "actual": 100,
+      "pass": true
+    },
+    {
+      "id": "H08",
+      "claim": "외부로 보낼 모의 주문은 $1,000 한 건이다",
+      "expected": 1000,
+      "actual": 1000,
+      "pass": true
+    },
+    {
+      "id": "H09",
+      "claim": "모의 fee와 slippage 합은 $1.50이다",
+      "expected": 1.5,
+      "actual": 1.5,
+      "pass": true
+    },
+    {
+      "id": "H10",
+      "claim": "서버의 검증 코드를 쓰지 않고 원 제출의 포함을 확인한다",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "id": "H11",
+      "claim": "영수증을 유지하고 제출 vector만 바꾸면 독립 검증이 실패한다",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "id": "H12",
+      "claim": "공개 receipt를 고쳐도 독립 검증이 실패한다",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "id": "H13",
+      "claim": "평가 구간이 끝나기 전에는 결과 입력을 거부한다",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "id": "H14",
+      "claim": "$100,000의 순 1% 노출, BTC +10%, 비용 $1.50 → NAV $100,098.50",
+      "expected": 100098.5,
+      "actual": 100098.5,
+      "pass": true
+    },
+    {
+      "id": "H15",
+      "claim": "Bull standalone: +25% 노출 수익에서 $37.50 비용 차감",
+      "expected": 102462.5,
+      "actual": 102462.5,
+      "pass": true
+    },
+    {
+      "id": "H16",
+      "claim": "Bear standalone: −25% 노출 손실과 $37.50 비용 차감",
+      "expected": 97462.5,
+      "actual": 97462.5,
+      "pass": true
+    },
+    {
+      "id": "H17",
+      "claim": "Bull의 같은 초기 장부 기준 LOO 기여도는 +101.20 bps",
+      "expected": 101.2,
+      "actual": 101.2,
+      "pass": true
+    },
+    {
+      "id": "H18",
+      "claim": "Bear의 같은 초기 장부 기준 LOO 기여도는 −88.65 bps",
+      "expected": -88.65,
+      "actual": -88.65000000000002,
+      "pass": true
+    },
+    {
+      "id": "H19",
+      "claim": "누락자는 submitted=0, missed=1이다",
+      "expected": [
+        0,
+        1
+      ],
+      "actual": [
+        0,
+        1
+      ],
+      "pass": true
+    },
+    {
+      "id": "H20",
+      "claim": "공개 응답에 개인 vector·nonce·암호문·키를 내보내지 않는다",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "id": "H21",
+      "claim": "한번 정산한 결과를 다른 가격으로 덮어쓸 수 없다",
+      "expected": 409,
+      "actual": 409,
+      "pass": true
+    },
+    {
+      "id": "H22",
+      "claim": "실제 프로세스 재시작 뒤 NAV·root를 보존한다",
+      "expected": [
+        100098.5,
+        "0x2395635c3409babeb0856acf46a1cc7131df44059f3e2d36730be3f7c2c8d0cf"
+      ],
+      "actual": [
+        100098.5,
+        "0x2395635c3409babeb0856acf46a1cc7131df44059f3e2d36730be3f7c2c8d0cf"
+      ],
+      "pass": true
+    },
+    {
+      "id": "H23",
+      "claim": "재시작 후 정산 재전송도 NAV·이력·credit을 중복 반영하지 않는다",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "transcript": [
+    {
+      "at": "2026-09-17T18:42:30.067Z",
+      "method": "GET",
+      "path": "/api/state?workspace=forward",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.070Z",
+      "method": "GET",
+      "path": "/api/verification-key",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.075Z",
+      "method": "POST",
+      "path": "/api/providers",
+      "status": 201,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.080Z",
+      "method": "POST",
+      "path": "/api/providers",
+      "status": 201,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.084Z",
+      "method": "POST",
+      "path": "/api/providers",
+      "status": 201,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.088Z",
+      "method": "POST",
+      "path": "/api/providers",
+      "status": 201,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.092Z",
+      "method": "POST",
+      "path": "/api/epochs",
+      "status": 201,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.106Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 401,
+      "error": "Provider signature is invalid"
+    },
+    {
+      "at": "2026-09-17T18:42:30.110Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.116Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.120Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.125Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:30.129Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 409,
+      "error": "A different submission is already accepted for this epoch"
+    },
+    {
+      "at": "2026-09-17T18:42:30.133Z",
+      "method": "POST",
+      "path": "/api/epochs/c43fd543-7e06-404d-b75b-bc83f5286ee4/seal",
+      "status": 409,
+      "error": "The submission window is still open"
+    },
+    {
+      "at": "2026-09-17T18:42:40.149Z",
+      "method": "POST",
+      "path": "/api/submissions",
+      "status": 409,
+      "error": "Submission cutoff has passed"
+    },
+    {
+      "at": "2026-09-17T18:42:40.161Z",
+      "method": "POST",
+      "path": "/api/epochs/c43fd543-7e06-404d-b75b-bc83f5286ee4/seal",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:40.174Z",
+      "method": "GET",
+      "path": "/api/receipts/c43fd543-7e06-404d-b75b-bc83f5286ee4/83b3a2f8-dcd5-4985-afda-4b693887b98d?workspace=forward",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:40.177Z",
+      "method": "POST",
+      "path": "/api/epochs/c43fd543-7e06-404d-b75b-bc83f5286ee4/evaluate",
+      "status": 409,
+      "error": "Evaluation window has not ended"
+    },
+    {
+      "at": "2026-09-17T18:42:50.146Z",
+      "method": "POST",
+      "path": "/api/epochs/c43fd543-7e06-404d-b75b-bc83f5286ee4/evaluate",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:50.162Z",
+      "method": "GET",
+      "path": "/api/state?workspace=forward",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:50.164Z",
+      "method": "POST",
+      "path": "/api/epochs/c43fd543-7e06-404d-b75b-bc83f5286ee4/evaluate",
+      "status": 409,
+      "error": "Outcome already finalized with different marks"
+    },
+    {
+      "at": "2026-09-17T18:42:50.383Z",
+      "method": "GET",
+      "path": "/api/state?workspace=forward",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:50.386Z",
+      "method": "POST",
+      "path": "/api/epochs/c43fd543-7e06-404d-b75b-bc83f5286ee4/evaluate",
+      "status": 200,
+      "error": null
+    },
+    {
+      "at": "2026-09-17T18:42:50.389Z",
+      "method": "GET",
+      "path": "/api/state?workspace=forward",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "receiptEvidence": {
+    "pinnedServerKey": "MCowBQYDK2VwAyEAwtf8+FYcH/2M7WuopfnYe7TX5LOfrZ6Vfvo4IOw+nfw=",
+    "originalPayload": {
+      "version": 1,
+      "providerId": "83b3a2f8-dcd5-4985-afda-4b693887b98d",
+      "epochId": "c43fd543-7e06-404d-b75b-bc83f5286ee4",
+      "policyHash": "0xbf53374edaa5d1578a2949adb9e75ef565bf8a77989719272aac7c88f73ad7c4",
+      "universe": [
+        "BTC",
+        "ETH",
+        "MON",
+        "SOL"
+      ],
+      "vectorBps": [
+        10000,
+        0,
+        0,
+        0
+      ],
+      "nonce": "94138da31e449f47bdb69009f4b0530195cb05361f4d521cb3a2650ff753a04f"
+    },
+    "receipt": {
+      "version": 1,
+      "workspace": "forward",
+      "epochId": "c43fd543-7e06-404d-b75b-bc83f5286ee4",
+      "providerId": "83b3a2f8-dcd5-4985-afda-4b693887b98d",
+      "acceptedAt": "2026-09-17T18:42:30.114Z",
+      "cutoffAt": "2026-09-17T18:42:40.094Z",
+      "policyHash": "0xbf53374edaa5d1578a2949adb9e75ef565bf8a77989719272aac7c88f73ad7c4",
+      "leafHash": "0x50758de3da71f4d1f59fdffd98cf0fcd91415ffa268db172484b303a3096e7b4",
+      "leaf": {
+        "domain": "MM_ALPHA_SUBMISSION_V1",
+        "epochId": "c43fd543-7e06-404d-b75b-bc83f5286ee4",
+        "providerId": "83b3a2f8-dcd5-4985-afda-4b693887b98d",
+        "status": "SUBMITTED",
+        "payloadHash": "0x2f6232cac41490da3627a2d9afd12c5d9511e5ba14eef6591f5bfd11e29e09eb"
+      },
+      "clock": "WALL",
+      "trust": "TRUSTED_SERVER_NO_TEE",
+      "serverPublicKey": "MCowBQYDK2VwAyEAwtf8+FYcH/2M7WuopfnYe7TX5LOfrZ6Vfvo4IOw+nfw=",
+      "root": "0x2395635c3409babeb0856acf46a1cc7131df44059f3e2d36730be3f7c2c8d0cf",
+      "proof": [
+        {
+          "side": "right",
+          "hash": "0x28aeaa94679b6b72813af1a970cca32bc2df3c03763ac953f4044c5de9960a26"
+        },
+        {
+          "side": "right",
+          "hash": "0x57cf3d357bcd212765440ab1abf92bbc6c6de1b7acad5918ceace756108aebd0"
+        }
+      ],
+      "manifest": {
+        "domain": "MM_ALPHA_EPOCH_V1",
+        "epochId": "c43fd543-7e06-404d-b75b-bc83f5286ee4",
+        "workspace": "forward",
+        "policyHash": "0xbf53374edaa5d1578a2949adb9e75ef565bf8a77989719272aac7c88f73ad7c4",
+        "rosterHash": "0x983d838079c965961dbbff1f344a64b2e909f7e968d03256234ab1793fa93f5d",
+        "weightsHash": "0x7f1bcadccc776fbcc4f63431ef9f2c6fa9935bb0211998f5077e7af27cfc4bd8",
+        "submissionRoot": "0x2395635c3409babeb0856acf46a1cc7131df44059f3e2d36730be3f7c2c8d0cf",
+        "cutoffAt": "2026-09-17T18:42:40.094Z",
+        "startAt": "2026-09-17T18:42:40.163Z",
+        "endAt": "2026-09-17T18:42:50.094Z",
+        "sealedAt": "2026-09-17T18:42:40.164Z",
+        "previousManifestHash": null,
+        "clock": "WALL"
+      },
+      "manifestHash": "0x83e595eefa79047d0a0a8277d873796b8ac8ab130e91d5b230f5efe012292b50",
+      "anchor": {
+        "status": "LOCAL_ONLY",
+        "chain": null
+      },
+      "serverSignature": "Ne7YZOyTOWemeg+roRA0DSzi5aSIHjX/vnzRdUDc8FLIpNuM89zJSUihZD9dVJy+dRu8ZjadeWiGw/Mvz4oYCw=="
+    },
+    "verification": {
+      "valid": true,
+      "signature": true,
+      "included": true,
+      "opening": true,
+      "manifest": true,
+      "context": true,
+      "independentTimeProof": false
+    }
+  },
+  "boundaries": {
+    "keyTrustedFromLocalServer": true,
+    "independentTimeProof": false,
+    "marketPriceProvenance": "USER_ASSERTED",
+    "actualVenueFill": false,
+    "onchainCapital": false,
+    "actualPayout": false,
+    "tee": false
+  }
+}

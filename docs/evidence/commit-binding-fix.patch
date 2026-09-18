@@ -1,0 +1,50 @@
+--- a/src/server/service.js
++++ b/src/server/service.js
+@@ -36,10 +36,43 @@
+   epoch(state, id) { const epoch = state.epochs.find(e => e.id === id); insist(epoch, 'Epoch not found', 404); return epoch; }
+   active(state) { return state.epochs.find(e => ['OPEN', 'AWAITING_OUTCOME'].includes(e.status)); }
+   payloadProviders(epoch) {
+-    return epoch.roster.map(provider => {
+-      const payload = epoch.submissions[provider.id] ? decryptEnvelope(epoch.submissions[provider.id].envelope, this.keys.encryptionPrivateKey).payload : null;
+-      return { id: provider.id, vectorBps: payload ? Object.fromEntries(UNIVERSE.map((asset, i) => [asset, payload.vectorBps[i]])) : null };
+-    });
++    const message = 'Stored epoch commitment or submission is invalid; operation rejected';
++    const check = condition => insist(condition, message, 409);
++    try {
++      // Encryption authenticates a ciphertext, not its relationship to the
++      // accepted submission. Bind every input again before using it in a book.
++      check(hash(epoch.policy) === epoch.policyHash);
++      check(epoch.manifest?.domain === 'MM_ALPHA_EPOCH_V1' && hash(epoch.manifest) === epoch.manifestHash);
++      check(epoch.manifest.epochId === epoch.id && epoch.manifest.workspace === epoch.workspace
++        && epoch.manifest.policyHash === epoch.policyHash && epoch.manifest.submissionRoot === epoch.root);
++      check(hash(epoch.roster) === epoch.manifest.rosterHash && hash(epoch.weightsBps) === epoch.manifest.weightsHash);
++      check(epoch.leaves.length === epoch.roster.length && merkleTree(epoch.leaves).root === epoch.root);
++      const rosterIds = new Set(epoch.roster.map(provider => provider.id));
++      check(rosterIds.size === epoch.roster.length && Object.keys(epoch.submissions).every(id => rosterIds.has(id)));
++      return epoch.roster.map((provider, index) => {
++        const leaf = epoch.leaves[index], submission = epoch.submissions[provider.id];
++        check(leaf.domain === 'MM_ALPHA_SUBMISSION_V1' && leaf.epochId === epoch.id && leaf.providerId === provider.id);
++        if (!submission) {
++          check(leaf.status === 'MISSED' && typeof leaf.salt === 'string' && /^[0-9a-f]{64}$/.test(leaf.salt));
++          return { id: provider.id, vectorBps: null };
++        }
++        const { payload, signature } = decryptEnvelope(submission.envelope, this.keys.encryptionPrivateKey) ?? {};
++        check(payload && typeof payload === 'object' && !Array.isArray(payload));
++        check(Object.keys(payload).sort().join(',') === ['version', 'providerId', 'epochId', 'policyHash', 'universe', 'vectorBps', 'nonce'].sort().join(','));
++        check(payload.version === 1 && typeof payload.nonce === 'string' && /^[0-9a-f]{64}$/.test(payload.nonce));
++        check(payload.providerId === provider.id && payload.epochId === epoch.id && payload.policyHash === epoch.policyHash
++          && canonicalJson(payload.universe) === canonicalJson(UNIVERSE));
++        check(Array.isArray(payload.vectorBps) && payload.vectorBps.length === UNIVERSE.length);
++        const vectorBps = Object.fromEntries(UNIVERSE.map((asset, i) => [asset, payload.vectorBps[i]]));
++        validateVector(vectorBps);
++        check(verifyObject(payload, signature, provider.publicKey));
++        const payloadHash = hash(payload);
++        const expectedLeaf = { domain: 'MM_ALPHA_SUBMISSION_V1', epochId: epoch.id, providerId: provider.id, status: 'SUBMITTED', payloadHash };
++        check(submission.payloadHash === payloadHash && canonicalJson(submission.leaf) === canonicalJson(expectedLeaf)
++          && submission.leafHash === leafHash(expectedLeaf) && canonicalJson(leaf) === canonicalJson(expectedLeaf));
++        return { id: provider.id, vectorBps };
++      });
++    } catch { throw new AppError(message, 409); }
+   }
+   register(workspace, input) {
+     return this.run(workspace, state => this.registerInternal(state, input));

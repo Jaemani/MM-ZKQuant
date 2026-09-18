@@ -1,0 +1,24 @@
+{
+  "evidenceVersion": "local-anchor-v1",
+  "environment": "LOCAL_EVM",
+  "runtime": "@ethereumjs/vm",
+  "inputProvenance": "SUPPLIED_MANIFEST",
+  "chainId": 31337,
+  "contractAddress": "0x1d273c34e216a8e8f20df9b43db58c2388ba269b",
+  "publisher": "0xb6e610921b0a0f6f608c0e1f29a845552bc6db2c",
+  "epochId": "c001907d-1566-4434-b599-4ddc712444b3",
+  "root": "0xf4f40a006c42bc136ce8c3592be582226bc3473ca35bdb2061f35955fa80a0e6",
+  "manifestHash": "0x34511b8b84b75bb7fca22bb76b343f932cebfc2781facea8ebd4a44a33d19196",
+  "epochKey": "0x9cab0dcdd5234f5aa49134e249fd10dd39ae10f9e444688957cec7efe8f0dce3",
+  "transactionHash": "0xd1ac2a84f200696c4b6984e326fdaac814e79859fc729fcbd03be7e99ec68f7d",
+  "blockNumber": 2,
+  "anchoredAt": 1800000002,
+  "verified": true,
+  "compilerVersion": "0.8.37+commit.f401782d.Emscripten.clang",
+  "sourceSha256": "4e3617c099f87762acf4a9225e5d4155564ee0d01e343aea3404262e3a1a7402",
+  "limitations": [
+    "In-memory EVM with simulated block times; this transaction was not submitted to Monad.",
+    "Publication alone does not establish that submission preceded the evaluation window.",
+    "No fund custody, execution, confidential computation, or performance verification."
+  ]
+}
