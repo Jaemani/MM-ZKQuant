@@ -34,6 +34,10 @@ main{padding:35px 38px 20px;max-width:1700px;margin:auto}.page-heading{display:f
 
 /* Concept v0.2: strategy selection, independent ownership, shared custody. */
 .strategy-market { display:grid; gap:20px; }
+.strategy-market .card { padding:22px; }
+.strategy-market p { line-height:1.65; }
+.strategy-market a { color:#086d59; text-decoration:underline; overflow-wrap:anywhere; }
+.strategy-market summary { cursor:pointer; font-weight:600; }
 .strategy-intro h2 { font-size:26px; margin:10px 0; }
 .strategy-review-label { color:#875b20; background:#fff5df; padding:10px 14px; border-radius:8px; margin:16px 0; }
 .strategy-investor { display:flex; align-items:center; flex-wrap:wrap; gap:14px; }
@@ -49,4 +53,6 @@ main{padding:35px 38px 20px;max-width:1700px;margin:auto}.page-heading{display:f
 .strategy-choice>span { display:block; font-size:11px; color:#737e76; margin-top:15px; }
 .strategy-allocate { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-bottom:14px; }
 .strategy-accounting summary { cursor:pointer; font-weight:600; }
-@media(max-width:1000px){.strategy-catalog{grid-template-columns:1fr}.strategy-choice p{min-height:0}.strategy-allocate{align-items:stretch;flex-direction:column}}
+@media(max-width:1000px){.strategy-catalog{grid-template-columns:repeat(2,minmax(0,1fr))}.strategy-choice p{min-height:0}.strategy-allocate{align-items:stretch;flex-direction:column}}
+
+@media(max-width:650px){.strategy-catalog{grid-template-columns:1fr}.strategy-market .card{padding:16px}}

@@ -1,0 +1,27 @@
+{
+  "verdict": "RPC_REVERIFICATION_PASS",
+  "chainId": 10143,
+  "vault": "0xA39D15F83eC207c1868Be1D52771dfDb64b4b921",
+  "confirmedTransactions": 15,
+  "finalizedHead": 63608485,
+  "verifiedAt": "2026-09-18T13:27:51.522Z",
+  "sourceHash": "0xcce196d2c0eb1d41314d193d6cf4950d6d17ee5c76e8553cd0d92a2174094879",
+  "transactionHashes": [
+    "0x6912b5cd798b185c27bf212f1939b96f53ce690219281c6fd301d32ebc93bc69",
+    "0x41cf43400a6475695ead2479b0eb70aa5de16b8a9e6cb2bf8c292f9c0bf6c4fe",
+    "0x5cbd29c4bddd36d181616d9503cb978b3b7a39666702148a114150f666ce11ed",
+    "0x056eef56f3314b199586f00222cebc4d7f0f40bc4978385732d8e0c77aa7a079",
+    "0x7d3aedab7b355e0d51415bfd81a96388d0920d03e2c9eddc4ab9d701f7cf60ba",
+    "0x3440ebf2b089262e164e257e08a5370a124f1a44df9916a4a6a3b9bf6a99b539",
+    "0xb0582e1e7438ba08a0857a5eb8aac21964b93c4b7ebf6941c051ce3339e18711",
+    "0x98dcc3bd7d2c008797dd4916821f120ac227cda48c8e9f283ebcfbf7179289eb",
+    "0x5f46950acf067bde3f0dc959193bee58afcdc37ab7057068b09680ba41de2362",
+    "0x8aa41214ab36ebf7e520d442be382bdcfdc0049d42a9475b0a913d85c27c6f99",
+    "0x7c5f1faa5db3de02712f1f29e46aed55fb431b15316dd8e7208858717c275365",
+    "0x7c89bcadd9f7c398913bd0db11235b3a119694916def80642ae3bf3cf8c2159e",
+    "0x76b43958dabc967dbe47e0f4ea3397a4e06640540a5c0a03bf41f71a6e6c1c2d",
+    "0xba914c09a8f85208b40d8e9fee08f8cdb2dceeb03f2305371363a4b46f78adeb",
+    "0x856352b953ff53a69a98d1e2076619b72f69ba9ffa62fd3cd0db24bf9e9918c1"
+  ],
+  "scope": "Independently fetched receipts, block hashes, finalized head, compiled runtime bytecode (immutable slots masked), bytecode hash and current final cash; private attribution still trusts the operator without TEE."
+}

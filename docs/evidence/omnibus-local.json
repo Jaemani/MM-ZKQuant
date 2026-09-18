@@ -1,0 +1,1044 @@
+{
+  "version": "CONFIDENTIAL_ALPHA_V02",
+  "verdict": "SIGNED_OMNIBUS_EXECUTION_PASS",
+  "environment": "LOCAL_EVM",
+  "chainId": 31337,
+  "tee": false,
+  "testAssetsOnly": true,
+  "controlledParticipants": true,
+  "controlledMarketTrade": true,
+  "operatorTrusted": true,
+  "vault": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+  "venue": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+  "cash": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+  "compiler": "0.8.37+commit.f401782d.Emscripten.clang",
+  "sourceHash": "0xcce196d2c0eb1d41314d193d6cf4950d6d17ee5c76e8553cd0d92a2174094879",
+  "codeHash": "0xec3443f5abe04b8dbcd1f8996a6e9b13f9704f0fa5e57a26c9797f265d82a06e",
+  "before": {
+    "a": {
+      "mode": "LOCAL_EVM",
+      "chainId": 31337,
+      "chainConnected": true,
+      "tee": false,
+      "vault": {
+        "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+        "balanced": true,
+        "vaultEquity": "229995659466",
+        "strategyEquity": "229995659466",
+        "protocolAccrual": "0",
+        "valuationRounding": "0"
+      },
+      "venue": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+      "cash": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+      "catalog": [
+        {
+          "id": "btc-trend",
+          "name": "BTC 상승 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "해당 전략 자본만 사용하는 BTC 매수 전략",
+          "feeBps": 1000,
+          "units": "100000000000",
+          "investorEquity": "102175023632",
+          "unitPrice": "1021750",
+          "providerAccrual": "241669292",
+          "settledRounds": 1
+        },
+        {
+          "id": "btc-hedge",
+          "name": "BTC 하락 전략",
+          "provider": "0xe1fAE9b4fAB2F5726677ECfA912d96b0B683e6a9",
+          "description": "해당 전략 담보로만 BTC를 차입·매도하는 전략",
+          "feeBps": 1000,
+          "units": "100000000000",
+          "investorEquity": "97578966542",
+          "unitPrice": "975789",
+          "providerAccrual": "0",
+          "settledRounds": 1
+        },
+        {
+          "id": "cash-reserve",
+          "name": "현금 유지 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "같은 제공자의 별도 현금 전략",
+          "feeBps": 1000,
+          "units": "30000000000",
+          "investorEquity": "30000000000",
+          "unitPrice": "1000000",
+          "providerAccrual": "0",
+          "settledRounds": 0
+        }
+      ],
+      "portfolio": [
+        {
+          "strategyId": "btc-trend",
+          "name": "BTC 상승 전략",
+          "units": "100000000000",
+          "claim": "102175023632",
+          "canRedeem": true
+        },
+        {
+          "strategyId": "cash-reserve",
+          "name": "현금 유지 전략",
+          "units": "30000000000",
+          "claim": "30000000000",
+          "canRedeem": true
+        }
+      ],
+      "receipts": [
+        {
+          "type": "ALLOCATE",
+          "strategyId": "btc-trend",
+          "hash": "0xb0ff7453a4d0f27c33336fdc623473fcdc9d3c58584dda88343062efefe1dd1f",
+          "block": 30,
+          "gas": "86827"
+        },
+        {
+          "type": "ALLOCATE",
+          "strategyId": "cash-reserve",
+          "hash": "0x56c7706907e11602e129a4cbc136bd2c9dee355bfa4b259be5a457effaf96c1d",
+          "block": 31,
+          "gas": "69727"
+        }
+      ],
+      "investor": "0x83279FAE0994Aa1A563377E889Cc2a1d96ADb3B1",
+      "wallet": "70000000000",
+      "pending": false,
+      "testAssetsOnly": true,
+      "operatorTrusted": true
+    },
+    "b": {
+      "mode": "LOCAL_EVM",
+      "chainId": 31337,
+      "chainConnected": true,
+      "tee": false,
+      "vault": {
+        "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+        "balanced": true,
+        "vaultEquity": "229995659466",
+        "strategyEquity": "229995659466",
+        "protocolAccrual": "0",
+        "valuationRounding": "0"
+      },
+      "venue": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+      "cash": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+      "catalog": [
+        {
+          "id": "btc-trend",
+          "name": "BTC 상승 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "해당 전략 자본만 사용하는 BTC 매수 전략",
+          "feeBps": 1000,
+          "units": "100000000000",
+          "investorEquity": "102175023632",
+          "unitPrice": "1021750",
+          "providerAccrual": "241669292",
+          "settledRounds": 1
+        },
+        {
+          "id": "btc-hedge",
+          "name": "BTC 하락 전략",
+          "provider": "0xe1fAE9b4fAB2F5726677ECfA912d96b0B683e6a9",
+          "description": "해당 전략 담보로만 BTC를 차입·매도하는 전략",
+          "feeBps": 1000,
+          "units": "100000000000",
+          "investorEquity": "97578966542",
+          "unitPrice": "975789",
+          "providerAccrual": "0",
+          "settledRounds": 1
+        },
+        {
+          "id": "cash-reserve",
+          "name": "현금 유지 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "같은 제공자의 별도 현금 전략",
+          "feeBps": 1000,
+          "units": "30000000000",
+          "investorEquity": "30000000000",
+          "unitPrice": "1000000",
+          "providerAccrual": "0",
+          "settledRounds": 0
+        }
+      ],
+      "portfolio": [
+        {
+          "strategyId": "btc-hedge",
+          "name": "BTC 하락 전략",
+          "units": "100000000000",
+          "claim": "97578966542",
+          "canRedeem": true
+        }
+      ],
+      "receipts": [
+        {
+          "type": "ALLOCATE",
+          "strategyId": "btc-hedge",
+          "hash": "0x7690cab79768d0c62243a5ddf3fd1541275c2c4520f19ae2dff276138319c0de",
+          "block": 32,
+          "gas": "69727"
+        }
+      ],
+      "investor": "0x45dE2eDdbE199F4FE133B728A40e8ed516D1B015",
+      "wallet": "100000000000",
+      "pending": false,
+      "testAssetsOnly": true,
+      "operatorTrusted": true
+    }
+  },
+  "after": {
+    "a": {
+      "mode": "LOCAL_EVM",
+      "chainId": 31337,
+      "chainConnected": true,
+      "tee": false,
+      "vault": {
+        "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+        "balanced": true,
+        "vaultEquity": "127578966542",
+        "strategyEquity": "127578966542",
+        "protocolAccrual": "0",
+        "valuationRounding": "0"
+      },
+      "venue": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+      "cash": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+      "catalog": [
+        {
+          "id": "btc-trend",
+          "name": "BTC 상승 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "해당 전략 자본만 사용하는 BTC 매수 전략",
+          "feeBps": 1000,
+          "units": "0",
+          "investorEquity": "0",
+          "unitPrice": "1000000",
+          "providerAccrual": "0",
+          "settledRounds": 1
+        },
+        {
+          "id": "btc-hedge",
+          "name": "BTC 하락 전략",
+          "provider": "0xe1fAE9b4fAB2F5726677ECfA912d96b0B683e6a9",
+          "description": "해당 전략 담보로만 BTC를 차입·매도하는 전략",
+          "feeBps": 1000,
+          "units": "100000000000",
+          "investorEquity": "97578966542",
+          "unitPrice": "975789",
+          "providerAccrual": "0",
+          "settledRounds": 1
+        },
+        {
+          "id": "cash-reserve",
+          "name": "현금 유지 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "같은 제공자의 별도 현금 전략",
+          "feeBps": 1000,
+          "units": "30000000000",
+          "investorEquity": "30000000000",
+          "unitPrice": "1000000",
+          "providerAccrual": "0",
+          "settledRounds": 0
+        }
+      ],
+      "portfolio": [
+        {
+          "strategyId": "cash-reserve",
+          "name": "현금 유지 전략",
+          "units": "30000000000",
+          "claim": "30000000000",
+          "canRedeem": true
+        }
+      ],
+      "receipts": [
+        {
+          "type": "ALLOCATE",
+          "strategyId": "btc-trend",
+          "hash": "0xb0ff7453a4d0f27c33336fdc623473fcdc9d3c58584dda88343062efefe1dd1f",
+          "block": 30,
+          "gas": "86827"
+        },
+        {
+          "type": "ALLOCATE",
+          "strategyId": "cash-reserve",
+          "hash": "0x56c7706907e11602e129a4cbc136bd2c9dee355bfa4b259be5a457effaf96c1d",
+          "block": 31,
+          "gas": "69727"
+        },
+        {
+          "type": "REDEEM",
+          "strategyId": "btc-trend",
+          "hash": "0xafea51ecf01d12f510e2a83251cb95030e1eb6aff288dfd9fef72ec4db3ac138",
+          "block": 42,
+          "gas": "62472"
+        }
+      ],
+      "investor": "0x83279FAE0994Aa1A563377E889Cc2a1d96ADb3B1",
+      "wallet": "172175023632",
+      "pending": false,
+      "testAssetsOnly": true,
+      "operatorTrusted": true
+    },
+    "b": {
+      "mode": "LOCAL_EVM",
+      "chainId": 31337,
+      "chainConnected": true,
+      "tee": false,
+      "vault": {
+        "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+        "balanced": true,
+        "vaultEquity": "127578966542",
+        "strategyEquity": "127578966542",
+        "protocolAccrual": "0",
+        "valuationRounding": "0"
+      },
+      "venue": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+      "cash": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+      "catalog": [
+        {
+          "id": "btc-trend",
+          "name": "BTC 상승 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "해당 전략 자본만 사용하는 BTC 매수 전략",
+          "feeBps": 1000,
+          "units": "0",
+          "investorEquity": "0",
+          "unitPrice": "1000000",
+          "providerAccrual": "0",
+          "settledRounds": 1
+        },
+        {
+          "id": "btc-hedge",
+          "name": "BTC 하락 전략",
+          "provider": "0xe1fAE9b4fAB2F5726677ECfA912d96b0B683e6a9",
+          "description": "해당 전략 담보로만 BTC를 차입·매도하는 전략",
+          "feeBps": 1000,
+          "units": "100000000000",
+          "investorEquity": "97578966542",
+          "unitPrice": "975789",
+          "providerAccrual": "0",
+          "settledRounds": 1
+        },
+        {
+          "id": "cash-reserve",
+          "name": "현금 유지 전략",
+          "provider": "0x083ED08F75C4cb12e97C13c07F9d836e93DF5E60",
+          "description": "같은 제공자의 별도 현금 전략",
+          "feeBps": 1000,
+          "units": "30000000000",
+          "investorEquity": "30000000000",
+          "unitPrice": "1000000",
+          "providerAccrual": "0",
+          "settledRounds": 0
+        }
+      ],
+      "portfolio": [
+        {
+          "strategyId": "btc-hedge",
+          "name": "BTC 하락 전략",
+          "units": "100000000000",
+          "claim": "97578966542",
+          "canRedeem": true
+        }
+      ],
+      "receipts": [
+        {
+          "type": "ALLOCATE",
+          "strategyId": "btc-hedge",
+          "hash": "0x7690cab79768d0c62243a5ddf3fd1541275c2c4520f19ae2dff276138319c0de",
+          "block": 32,
+          "gas": "69727"
+        }
+      ],
+      "investor": "0x45dE2eDdbE199F4FE133B728A40e8ed516D1B015",
+      "wallet": "100000000000",
+      "pending": false,
+      "testAssetsOnly": true,
+      "operatorTrusted": true
+    }
+  },
+  "finalReconciliation": {
+    "balanced": true,
+    "vaultEquity": "0",
+    "strategyEquity": "0",
+    "protocolAccrual": "0",
+    "valuationRounding": "0",
+    "equities": [
+      {
+        "strategyId": "btc-trend",
+        "equity": "0",
+        "investorClaims": {},
+        "providerAccrual": "0"
+      },
+      {
+        "strategyId": "btc-hedge",
+        "equity": "0",
+        "investorClaims": {},
+        "providerAccrual": "0"
+      },
+      {
+        "strategyId": "cash-reserve",
+        "equity": "0",
+        "investorClaims": {},
+        "providerAccrual": "0"
+      }
+    ]
+  },
+  "transactions": [
+    {
+      "type": "ALLOCATE",
+      "strategyId": "btc-trend",
+      "receipt": {
+        "tag": "0x9a52fc8153f118871e1548f2d1481eca06452fb8649b39cfd6f025d735fb64ab",
+        "intent": "0x25cfed242d341b9ca7ae7842af5da8a25929f2fbc93ef0cb3fb09bb5c54cc1d9",
+        "transactionHash": "0xb0ff7453a4d0f27c33336fdc623473fcdc9d3c58584dda88343062efefe1dd1f",
+        "blockNumber": 30,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0x83279fae0994aa1a563377e889cc2a1d96adb3b1",
+        "gasUsed": "86827",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "868270",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000174876e800"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x182fa52899142d44ff5c45a6354d3b3e868d5b07db6a65580b39bd321bdaf8ac",
+              "0x9a52fc8153f118871e1548f2d1481eca06452fb8649b39cfd6f025d735fb64ab",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000174876e800"
+          }
+        ]
+      },
+      "anchor": null
+    },
+    {
+      "type": "ALLOCATE",
+      "strategyId": "cash-reserve",
+      "receipt": {
+        "tag": "0x4368116473b5643f6b25f222da7f0ac1b82ee3e8e60da97efa552b9772bfa0d3",
+        "intent": "0x16f495cad2c52e7d9f4507a6bcdfe7e18076289c7d7f804abc88f0355b1d7f3b",
+        "transactionHash": "0x56c7706907e11602e129a4cbc136bd2c9dee355bfa4b259be5a457effaf96c1d",
+        "blockNumber": 31,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0x83279fae0994aa1a563377e889cc2a1d96adb3b1",
+        "gasUsed": "69727",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "697270",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000006fc23ac00"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x182fa52899142d44ff5c45a6354d3b3e868d5b07db6a65580b39bd321bdaf8ac",
+              "0x4368116473b5643f6b25f222da7f0ac1b82ee3e8e60da97efa552b9772bfa0d3",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000006fc23ac00"
+          }
+        ]
+      },
+      "anchor": null
+    },
+    {
+      "type": "ALLOCATE",
+      "strategyId": "btc-hedge",
+      "receipt": {
+        "tag": "0x31d43565125bc94c92ac6161d73cf13508f1fa88de461ec5bf68ccafba0436dc",
+        "intent": "0xd4e763517174c3f112ae02ffbf3a8d9d3f92889005cfc33df0b49b30447006ba",
+        "transactionHash": "0x7690cab79768d0c62243a5ddf3fd1541275c2c4520f19ae2dff276138319c0de",
+        "blockNumber": 32,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0x45de2eddbe199f4fe133b728a40e8ed516d1b015",
+        "gasUsed": "69727",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "697270",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x00000000000000000000000045de2eddbe199f4fe133b728a40e8ed516d1b015",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000174876e800"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x182fa52899142d44ff5c45a6354d3b3e868d5b07db6a65580b39bd321bdaf8ac",
+              "0x31d43565125bc94c92ac6161d73cf13508f1fa88de461ec5bf68ccafba0436dc",
+              "0x00000000000000000000000045de2eddbe199f4fe133b728a40e8ed516d1b015"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000174876e800"
+          }
+        ]
+      },
+      "anchor": null
+    },
+    {
+      "type": "ORDER",
+      "strategyId": "btc-trend",
+      "receipt": {
+        "tag": "0x8d0ce5e602d237cff0645a88b3fd08b0f325768cf2afca7bc156280ab3df33cc",
+        "intent": "0x85ffa0889506a8ea608f8e2473ece6ab4b64d63b4a94febf505d0438b329f7c9",
+        "transactionHash": "0x51d7dea75ceb7353db685fdb6b01d5d4dab33b5bb9035f9f92af76e518a9ea07",
+        "blockNumber": 34,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "125395",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "1253950",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000005d21dba00"
+          },
+          {
+            "address": "0x7464401ea2983497060cd6da27e0c4ed58af8e98",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000edcce03"
+          },
+          {
+            "address": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+            "topics": [
+              "0x4dee48698954f7574468d5274868e3b4b96b3e453ba91daf5a3464ce6906cd6f",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000005d21dba00000000000000000000000000000000000000000000000000000000000edcce0300000000000000000000000000000000000000000000000000000000002625a0"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x6e17beccfec5e3f338c982ce5eb523f7f2ffe89bc658742b9570ba5c62cf5f5f",
+              "0x8d0ce5e602d237cff0645a88b3fd08b0f325768cf2afca7bc156280ab3df33cc"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000edcce0300000000000000000000000000000000000000000000000000000005d21dba0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "anchor": {
+        "tag": "0x8d0ce5e602d237cff0645a88b3fd08b0f325768cf2afca7bc156280ab3df33cc-commit",
+        "intent": "0xf6297c3789ca6078daebc3f5a4a7ebc677a7cbf2b9cc192665b780794eeb8bd4",
+        "transactionHash": "0x1d3465a36fe1eb2416b9141ac33fbc58af0a570b743456a9c4d1714f18871f03",
+        "blockNumber": 33,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "70610",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "706100",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x932e36f01918139333bf346f0c198d472d64f36ddcd8a2c2922c345fa07ba09b",
+              "0x8d0ce5e602d237cff0645a88b3fd08b0f325768cf2afca7bc156280ab3df33cc"
+            ],
+            "data": "0x4f59bdcf7773c52aa5dd2cbc8735b4804d23e43ce9614bba0fe51cf335dc3872"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ORDER",
+      "strategyId": "btc-hedge",
+      "receipt": {
+        "tag": "0xd81307b3b00425added86670cf7a9372cb2e36480882c4ed579a490e14724f31",
+        "intent": "0x098a4ea747f050bc46e2ead029ee0c484a65a454d83ce439fc473309ed2ba2cf",
+        "transactionHash": "0x1ae35edf58728860f196bf549a1c73e87dd208be500a5a97791c3ba24418b810",
+        "blockNumber": 36,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "176722",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "1767220",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000005d21dba00"
+          },
+          {
+            "address": "0x7464401ea2983497060cd6da27e0c4ed58af8e98",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000ed3b230"
+          },
+          {
+            "address": "0x7464401ea2983497060cd6da27e0c4ed58af8e98",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000ed3b230"
+          },
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000005ce42d7b3"
+          },
+          {
+            "address": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+            "topics": [
+              "0x4dee48698954f7574468d5274868e3b4b96b3e453ba91daf5a3464ce6906cd6f",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ed3b23000000000000000000000000000000000000000000000000000000005ce42d7b3000000000000000000000000000000000000000000000000000000000000612c"
+          },
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000005ce42d7b3"
+          },
+          {
+            "address": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+            "topics": [
+              "0xd60773502dcc849dad8aa5e901c220bb3900db69d99493ef9a32a5ff4bf3ada3",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000ed3b2300000000000000000000000000000000000000000000000000000000ba06091b3"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x6e17beccfec5e3f338c982ce5eb523f7f2ffe89bc658742b9570ba5c62cf5f5f",
+              "0xd81307b3b00425added86670cf7a9372cb2e36480882c4ed579a490e14724f31"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ed3b23000000000000000000000000000000000000000000000000000000005d21dba000000000000000000000000000000000000000000000000000000000ba06091b38755957c0557a4323ae960ef5c4e0e7f8d1bc4890eb26a84a307ec1faac5baa5"
+          }
+        ]
+      },
+      "anchor": {
+        "tag": "0xd81307b3b00425added86670cf7a9372cb2e36480882c4ed579a490e14724f31-commit",
+        "intent": "0x62d7da993618a41965ed1e232a214ae26245fcea78107ff265a020cb991dac6a",
+        "transactionHash": "0x7d5b28a6d9e6905ca628ff1ba6d6a759b16685e2f7dda4ed8b97869516100770",
+        "blockNumber": 35,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "70610",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "706100",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x932e36f01918139333bf346f0c198d472d64f36ddcd8a2c2922c345fa07ba09b",
+              "0xd81307b3b00425added86670cf7a9372cb2e36480882c4ed579a490e14724f31"
+            ],
+            "data": "0x5f15e1ca0e973b090ba55229723c2406460e1129c737f0271ec3b988ff3711ba"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ORDER",
+      "strategyId": "btc-trend",
+      "receipt": {
+        "tag": "0x8ad0a123ad052a9bf4f36877d4e148b477028a2b416013496c76eb1530ae2dda",
+        "intent": "0x97044aab6ff94c24eb63baed670500d02406ad7d1efc42d8b7856f98b952963e",
+        "transactionHash": "0xa85549dc4685eb7eb59d80ea47955c9467a3d372c40bd892979483ac3cc5b3a0",
+        "blockNumber": 39,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "103575",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "1035750",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0x7464401ea2983497060cd6da27e0c4ed58af8e98",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000edcce03"
+          },
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000006622988bc"
+          },
+          {
+            "address": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+            "topics": [
+              "0x4dee48698954f7574468d5274868e3b4b96b3e453ba91daf5a3464ce6906cd6f",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000edcce0300000000000000000000000000000000000000000000000000000006622988bc0000000000000000000000000000000000000000000000000000000000006168"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x6e17beccfec5e3f338c982ce5eb523f7f2ffe89bc658742b9570ba5c62cf5f5f",
+              "0x8ad0a123ad052a9bf4f36877d4e148b477028a2b416013496c76eb1530ae2dda"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000edcce0300000000000000000000000000000000000000000000000000000006622988bc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "anchor": {
+        "tag": "0x8ad0a123ad052a9bf4f36877d4e148b477028a2b416013496c76eb1530ae2dda-commit",
+        "intent": "0x18313260598ee6d9aa039bdc6ab0bb72f80d480a4f203c98d0c3462e287ea58b",
+        "transactionHash": "0xf6f93242d3eff2663ccb3882c82eb9fcfe2ec59f3a7e2791bd084ba881729610",
+        "blockNumber": 38,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "70610",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "706100",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x932e36f01918139333bf346f0c198d472d64f36ddcd8a2c2922c345fa07ba09b",
+              "0x8ad0a123ad052a9bf4f36877d4e148b477028a2b416013496c76eb1530ae2dda"
+            ],
+            "data": "0x7d4ca954c9333547502f2361b81657113a51a0a96b1f433e18faa8d336f957a7"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ORDER",
+      "strategyId": "btc-hedge",
+      "receipt": {
+        "tag": "0x6816adf3e169b333a685e49d00881128d8d58a26413ae29bc092e1db0f663b2d",
+        "intent": "0xd4eb605bdafe26fb44df35ff1db0fd1f2f6d40f8fc68389bdcbf1a5a5e957740",
+        "transactionHash": "0x0a748d33bd155a541445048b28c60cb63d558330c60384bb7a97cda82ff989d5",
+        "blockNumber": 41,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "126283",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "1262830",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000000000000ba06091b3"
+          },
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000065e90e1a5"
+          },
+          {
+            "address": "0x7464401ea2983497060cd6da27e0c4ed58af8e98",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000ed3b230"
+          },
+          {
+            "address": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+            "topics": [
+              "0x4dee48698954f7574468d5274868e3b4b96b3e453ba91daf5a3464ce6906cd6f",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000065e90e1a5000000000000000000000000000000000000000000000000000000000ed3b230000000000000000000000000000000000000000000000000000000000029be14"
+          },
+          {
+            "address": "0x7464401ea2983497060cd6da27e0c4ed58af8e98",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000c822e839bfe2e48e3161353d196fa411266b5647"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000ed3b230"
+          },
+          {
+            "address": "0xc822e839bfe2e48e3161353d196fa411266b5647",
+            "topics": [
+              "0x09cc5a2a7458290de8b24cec556b1777f07279f934e56781efeb8f3ba422daa8",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x0000000000000000000000000000000000000000000000000000000000000000"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000ed3b2300000000000000000000000000000000000000000000000000000000541cfb00e"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x6e17beccfec5e3f338c982ce5eb523f7f2ffe89bc658742b9570ba5c62cf5f5f",
+              "0x6816adf3e169b333a685e49d00881128d8d58a26413ae29bc092e1db0f663b2d"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ed3b230000000000000000000000000000000000000000000000000000000065e90e1a50000000000000000000000000000000000000000000000000000000ba06091b38755957c0557a4323ae960ef5c4e0e7f8d1bc4890eb26a84a307ec1faac5baa5"
+          }
+        ]
+      },
+      "anchor": {
+        "tag": "0x6816adf3e169b333a685e49d00881128d8d58a26413ae29bc092e1db0f663b2d-commit",
+        "intent": "0x85fe553be97dc59c7ad5a6c219409e1ce517e3874d0f08863d3826decb626d5f",
+        "transactionHash": "0xc43512c5326646d879a3e57397070b9337463880c42f19b9ff7afc6552ccd676",
+        "blockNumber": 40,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "70598",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "705980",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x932e36f01918139333bf346f0c198d472d64f36ddcd8a2c2922c345fa07ba09b",
+              "0x6816adf3e169b333a685e49d00881128d8d58a26413ae29bc092e1db0f663b2d"
+            ],
+            "data": "0xe3649f2c76cd06b052b90dc6a03e78775df284f47933156bd618b839191c8236"
+          }
+        ]
+      }
+    },
+    {
+      "type": "REDEEM",
+      "strategyId": "btc-trend",
+      "receipt": {
+        "tag": "0xa044286296f1381d78b3921c61430f0d0f3b13122b698f86e0fc9e09c7a45872",
+        "intent": "0x1eb57ecb03e7a411f22f82c54d420b9778f0adf38bbc57bc92709583e26d1768",
+        "transactionHash": "0xafea51ecf01d12f510e2a83251cb95030e1eb6aff288dfd9fef72ec4db3ac138",
+        "blockNumber": 42,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "62472",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "624720",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000017ca1b2210"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x028ab133c73f6c00ad0c5896ef40eff18378acd3d7f2ecf573c2706582bf73bf",
+              "0xa044286296f1381d78b3921c61430f0d0f3b13122b698f86e0fc9e09c7a45872",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000017ca1b2210"
+          }
+        ]
+      },
+      "anchor": null
+    },
+    {
+      "type": "PAY_PROVIDER",
+      "strategyId": "btc-trend",
+      "receipt": {
+        "tag": "0x6290fb916643aa52067cda05bdc24fa7ab96aacd4e413197e81e860ef37bb016",
+        "intent": "0x37b347fad974f58bc3f65400f9ae59035928081ad7ceb027bce3c50ee550fc63",
+        "transactionHash": "0xf3ad44e0b4dc3ea3dc9979cb37402e6dea89ae9ddb69bb7160fe41dce9028fcb",
+        "blockNumber": 43,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "79560",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "795600",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x000000000000000000000000083ed08f75c4cb12e97c13c07f9d836e93df5e60"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000e6794ac"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x028ab133c73f6c00ad0c5896ef40eff18378acd3d7f2ecf573c2706582bf73bf",
+              "0x6290fb916643aa52067cda05bdc24fa7ab96aacd4e413197e81e860ef37bb016",
+              "0x000000000000000000000000083ed08f75c4cb12e97c13c07f9d836e93df5e60"
+            ],
+            "data": "0x000000000000000000000000000000000000000000000000000000000e6794ac"
+          }
+        ]
+      },
+      "anchor": null
+    },
+    {
+      "type": "REDEEM",
+      "strategyId": "btc-hedge",
+      "receipt": {
+        "tag": "0xceb8c160bc7d66b6091ba2eccd12dc8de90b9cbb76be256d0c0ecd92a794df7a",
+        "intent": "0x827d987b61e69fae2c5819c31bfe7d8e71f5875285afdea420e24791720602e2",
+        "transactionHash": "0xcdc90fee8e9c63c737e49f83e8942a64aa394e5cab95d8e1d6dbbb9a273b6163",
+        "blockNumber": 44,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "62472",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "624720",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x00000000000000000000000045de2eddbe199f4fe133b728a40e8ed516d1b015"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000016b828de0e"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x028ab133c73f6c00ad0c5896ef40eff18378acd3d7f2ecf573c2706582bf73bf",
+              "0xceb8c160bc7d66b6091ba2eccd12dc8de90b9cbb76be256d0c0ecd92a794df7a",
+              "0x00000000000000000000000045de2eddbe199f4fe133b728a40e8ed516d1b015"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000016b828de0e"
+          }
+        ]
+      },
+      "anchor": null
+    },
+    {
+      "type": "REDEEM",
+      "strategyId": "cash-reserve",
+      "receipt": {
+        "tag": "0x5cbc06b9c41a1d6c305e215727a5f96642e1251d5f7883f2d8ae6dfb5f1b9888",
+        "intent": "0x8beb7e4401ffab2ccfcd11d979f69484cb3c5551183f5533775b7010f1324f6c",
+        "transactionHash": "0xb9aafba13c1c12cd7cd7e739319c4136d6b276d63a9576f7e2e545a4875aed8c",
+        "blockNumber": 45,
+        "blockTimestamp": 1800000000,
+        "status": 1,
+        "environment": "LOCAL_EVM",
+        "sender": "0xfa17c5b66a985f44bc249c8e8fabd64767f414b1",
+        "gasUsed": "57660",
+        "gasPriceWei": "10",
+        "nativeGasCostWei": "576600",
+        "contractAddress": null,
+        "logs": [
+          {
+            "address": "0xe34fc310eff344ba5b1e76ce643569594d11e0f6",
+            "topics": [
+              "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+              "0x000000000000000000000000839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000006fc23ac00"
+          },
+          {
+            "address": "0x839d2ba7b20c7b2973c440ef181557fe4ddc0e0d",
+            "topics": [
+              "0x028ab133c73f6c00ad0c5896ef40eff18378acd3d7f2ecf573c2706582bf73bf",
+              "0x5cbc06b9c41a1d6c305e215727a5f96642e1251d5f7883f2d8ae6dfb5f1b9888",
+              "0x00000000000000000000000083279fae0994aa1a563377e889cc2a1d96adb3b1"
+            ],
+            "data": "0x00000000000000000000000000000000000000000000000000000006fc23ac00"
+          }
+        ]
+      },
+      "anchor": null
+    }
+  ],
+  "limitations": [
+    "Test tokens and self-hosted constant-product venue; not production DEX integration",
+    "Reference signers, not independent users or provider performance validation",
+    "Private ledger and authorization trust the operator; no TEE",
+    "Short insolvency fails closed; automated liquidation and bankruptcy resolution are not implemented"
+  ]
+}

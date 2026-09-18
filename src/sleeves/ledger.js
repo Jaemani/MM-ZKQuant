@@ -58,7 +58,7 @@ export class SleeveLedger {
     if(n(s.units)===0n)s.highWater=UNIT_PRICE_SCALE.toString();
     this.state.flows.push(requestId);return {amount:str(amount),units:str(units)};
   }
-  recordFill({strategyId,orderId,asset,side,quantity,quote,fee,lotId}){
+  recordFill({strategyId,orderId,asset,side,quantity,quote,fee,lotId,collateral,escrow}){
     const s=this.sleeve(strategyId);quantity=n(quantity);quote=n(quote);fee=n(fee);
     requireThat(orderId&&['BTC','ETH','MON','SOL'].includes(asset)&&quantity>0n&&quote>0n&&fee>=0n&&fee<quote,'체결 값 오류');
     requireThat(!this.state.orders.some(o=>o.orderId===orderId),'중복 체결');
@@ -71,8 +71,9 @@ export class SleeveLedger {
       const basis=n(p.cost)*quantity/n(p.quantity);s.cash=str(n(s.cash)+quote-fee);
       s.positions[asset]={quantity:str(n(p.quantity)-quantity),cost:str(n(p.cost)-basis)};s.realizedPnl=str(n(s.realizedPnl)+quote-fee-basis);
     }else if(side==='SHORT_OPEN'){
-      requireThat(lotId&&!s.shorts[lotId]&&quote<=available&&fee<quote,'해당 전략의 숏 담보 부족 또는 중복 차입');
-      s.cash=str(n(s.cash)-quote);s.shorts[lotId]={asset,debt:str(quantity),escrow:str(2n*quote-fee),collateral:str(quote),entryProceeds:str(quote-fee)};
+      const margin=collateral===undefined?quote:n(collateral),locked=escrow===undefined?margin+quote-fee:n(escrow);
+      requireThat(lotId&&!s.shorts[lotId]&&margin>0n&&margin<=available&&locked===margin+quote-fee,'해당 전략의 숏 담보 부족 또는 중복 차입');
+      s.cash=str(n(s.cash)-margin);s.shorts[lotId]={asset,debt:str(quantity),escrow:str(locked),collateral:str(margin),entryProceeds:str(quote-fee)};
     }else if(side==='SHORT_CLOSE'){
       const lot=s.shorts[lotId];requireThat(lot&&lot.asset===asset&&n(lot.debt)===quantity,'차입 귀속 또는 상환 수량 불일치');
       const returned=n(lot.escrow)-quote-fee;requireThat(returned+available>=0n,'숏 손실을 다른 전략에 전가할 수 없습니다.');

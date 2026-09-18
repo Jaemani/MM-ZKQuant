@@ -1,15 +1,17 @@
 # Confidential Alpha Protocol · Concept v0.2
 
-**Many private strategies. One shared vault.** 투자자가 고른 전략마다 자본·지분·주문·체결·비용·손익을 따로 귀속하고, 실제 보관과 실행만 하나의 Omnibus Vault에서 공유합니다. Provider alpha를 하나의 공통 전략으로 합치지 않습니다.
+**Many private strategies. One shared vault.** 투자자가 전략을 직접 고르고, 지분·주문·손익·보수는 전략별로 귀속합니다. 실제 보관과 체결만 공동 Omnibus Vault를 사용합니다.
 
-현재 기본 화면은 **Strategies**입니다. 독립 전략 장부, 투자자의 전략별 배정·환매, 롱/숏 비용 귀속과 공동 장부 대사를 격리된 로컬 회계 환경에서 검토할 수 있습니다. 표시된 전략과 체결은 명시적인 검토 예제이며 실제 제공자의 forward 성과나 새 Omnibus 체인 운용이 아닙니다. 기존 테스트넷 자금은 변경하지 않았습니다.
+현재는 서명 검증 → 실제 테스트 토큰 예치 → 전략별 매수/차입매도 → 정산 → 개별 환매 → 제공자 보수 지급을 연결했습니다. 새 Monad 테스트넷 Vault에서 11개 작업과 4개 사전 commitment를 검증했습니다. TEE는 제외했고, 운영자 신뢰·테스트 자산·자체 AMM 범위입니다.
 
-- [승인된 Concept Specification v0.2](docs/confidential-alpha-v0.2.md)
-- [새 회계·화면·API와 아직 필요한 연결](docs/sleeves-v0.2.md)
-- [구조 변경 결정](docs/adr/0002-independent-sleeves-shared-custody.md)
-- [독립 전략 회계 검토 결과](docs/evidence/sleeves-review.json)
+- [Concept Specification v0.2](docs/confidential-alpha-v0.2.md)
+- [개발 구조, 검증 결과, 실행 방법과 남은 범위](docs/sleeves-v0.2.md)
+- [테스트넷 실행 증거](docs/evidence/omnibus-testnet.json) · [RPC 재검증](docs/evidence/omnibus-rpc-verification.json)
+- [테스트넷 Vault](https://testnet.monadexplorer.com/address/0xA39D15F83eC207c1868Be1D52771dfDb64b4b921)
 
-`rtk npm run build` 후 `rtk npm start`로 localhost:8790에서 검토합니다. `rtk npm run prove:mvp -- --strict`는 새 구조의 회계를 검사하고, 외부 연결이 미완료이므로 종료 2를 반환합니다. 이전 공동 합성 펀드 검증은 `rtk npm run prove:pilot -- --strict`로 보존합니다. 이전 판정을 새 제품의 완료 판정으로 사용하지 않습니다.
+`rtk npm run build` 후 `rtk npm start`로 localhost:8790에서 조작합니다. 기본 화면은 실제 Solidity 계약을 실행하는 로컬 EVM이며 테스트 지갑 서명은 서버가 생성합니다. 외부 지갑 모드는 개발 문서에 설명했습니다. 이전 `.data/sleeve-review` 회계 시뮬레이터와 기존 PilotFund 증거는 새 실행 경로와 구분합니다.
+
+`rtk npm run prove:omnibus`로 로컬 EVM 통합 검증, `rtk npm run verify:omnibus`로 테스트넷 영수증 재검증을 실행합니다. `rtk npm run prove:pilot`은 이전 공동 합성 펀드 기록용입니다.
 
 ---
 
