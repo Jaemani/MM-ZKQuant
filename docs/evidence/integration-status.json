@@ -1,0 +1,35 @@
+{
+  "updatedAt": "2026-09-19T09:40:52.411Z",
+  "externalDexFork": {
+    "status": "PASS",
+    "sourceChainId": 143,
+    "executionChainId": 31337,
+    "forkBlock": 106143120,
+    "evidence": "external-fork.json",
+    "independentVerification": "external-fork-verification.json"
+  },
+  "regressionTests": {
+    "passed": 109,
+    "failed": 0
+  },
+  "teeImage": {
+    "status": "BUILT_AMD64",
+    "localImageId": "sha256:578c045631d4f57b63bbb8318a9cb856209e16184b595c3fb71336292eb2cc82",
+    "socketAbsentStartup": "REJECTED_AS_EXPECTED"
+  },
+  "actualTEE": {
+    "status": "PENDING_ACCOUNT_AND_DEPLOYMENT",
+    "hardwareAttestationVerified": false
+  },
+  "actualMainnetExecution": {
+    "status": "PENDING_TEE_ENROLLMENT_AND_SPENDING_LIMIT",
+    "broadcast": false
+  },
+  "limitations": [
+    "Experimental separate integration path, not full migration of existing Dapp",
+    "Two strategies; one spot pair; flat-only allocation/redemption; zero performance fee",
+    "No emergency exit for credited funds after permanent signing-key loss",
+    "Attestation verifier trusts Phala hosted DCAP verification and independently supplied measurement pins",
+    "Public-network coordinator trusts configured RPC finalized state"
+  ]
+}

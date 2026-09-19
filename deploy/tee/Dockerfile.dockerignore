@@ -1,0 +1,14 @@
+**
+!package.json
+!package-lock.json
+!src
+!src/integration
+!src/integration/**
+!src/shared
+!src/shared/protocol.js
+!contracts
+!contracts/integration
+!contracts/integration/**
+!deploy
+!deploy/tee
+!deploy/tee/Dockerfile

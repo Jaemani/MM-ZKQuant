@@ -1,0 +1,13 @@
+.git
+.data
+.env
+.env.*
+node_modules
+dist
+artifacts
+*.log
+**/*.pem
+**/*.key
+**/*.sqlite*
+**/*.db
+.DS_Store

@@ -1,0 +1,19 @@
+{
+  "status": "PASS_INDEPENDENT_FORK_RECEIPT_VERIFICATION",
+  "verifiedAt": "2026-09-19T09:38:00.943Z",
+  "forkBlock": 106143120,
+  "vault": "0x91A1EeE63f300B8f41AE6AF67eDEa2e2ed8c3f79",
+  "signedTransitions": 6,
+  "verifiedTransactions": 15,
+  "checks": [
+    "RPC receipts",
+    "canonical fork block hashes",
+    "EIP-712 signatures",
+    "fixed signer and policy",
+    "sequence/checkpoint hash chain",
+    "deployed code hashes",
+    "zero final accounted balances"
+  ],
+  "hardwareTEE": false,
+  "mainnetBroadcast": false
+}

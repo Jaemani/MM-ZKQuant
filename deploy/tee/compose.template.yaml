@@ -1,0 +1,14 @@
+services:
+  executor:
+    # Replace with a built image digest. Never attest a mutable image tag.
+    image: ${MM_TEE_IMAGE:?supply registry/image@sha256:digest}
+    ports:
+      - "8080:8080"
+    environment:
+      MM_TEE_CONFIG_JSON: ${MM_TEE_CONFIG_JSON:?supply encrypted Phala environment configuration}
+    volumes:
+      - /var/run/dstack.sock:/var/run/dstack.sock
+      - sealed-state:/data
+    restart: unless-stopped
+volumes:
+  sealed-state:
