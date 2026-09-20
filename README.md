@@ -14,6 +14,7 @@
 | [원본 구조도](docs/specs/protocol-architecture.png) | TEE, ZK Prover, State Controller, Vault, Adapter, Virtual Books의 관계 |
 | [팀 개발명세·작업 분담](docs/team-development.md) | 데이터·상태 전이·도메인 경계·개발 순서·담당 역할·인수 조건 |
 | [구현 및 검증 상태](docs/team-status.md) | 검증된 증거, 개발 중인 부분, 남은 결정, Phala 비용 제한 |
+| [구현 착수 판단](docs/implementation-readiness.md) | 추가 회로 검사 30개, 통합 구현을 시작할 근거, 다음 단계 종료 조건 |
 | [용어](CONTEXT.md) | Virtual Book, Omnibus Vault, 자기자본, 성과 staking의 의미 |
 
 명세 v0.1과 이전 Concept v0.2는 서로 다른 문서의 버전입니다. **이번 팀 PDF를 현재 개발 방향으로 삼습니다.** 과거 문서에 남아 있는 alpha 합성, 기여도 기반 배분, PAPER 대시보드는 현재 목표 구조가 아닙니다. 미확정 경제 수치를 구현자가 임의로 확정하지 않습니다.

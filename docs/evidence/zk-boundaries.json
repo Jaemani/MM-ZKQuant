@@ -1,0 +1,166 @@
+{
+  "createdAt": "2026-09-20T10:19:56.803Z",
+  "status": "PASS_LOCAL_CIRCUIT_BOUNDARIES",
+  "hardwareTEE": false,
+  "externalNetworkBroadcast": false,
+  "circuitSha256": "4a14528dea0e1c08e5af76ba9785b6c7885c94b8f9adafe5f7e89e7dad10146e",
+  "r1csSha256": "1b950abeb92ffa45f2a3a78849a744c37e8c474029611e3583cfc76340555d29",
+  "wasmSha256": "02ef0196ab18214b8f035284fe555fc08fbdb41978b6af87bdb8a1e0479671f3",
+  "checks": [
+    {
+      "name": "book-0-buy-authorization",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "book-0-buy-settlement-at-minimum",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "invalid-phase",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "nonboolean-book-selector",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "nonboolean-direction",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "provider-key-replacement",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "other-book-sequence-change",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "other-book-asset-creation",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "authorization-with-realized-fill",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "wrong-cash-total",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "wrong-asset-total",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "policy-over-100-percent",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "signed-zero-amount",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "signed-zero-minimum",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "signed-one-unit-over-cash-cap",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "signed-96-bit-amount-overflow",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "signed-96-bit-deadline-overflow",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "fill-one-unit-below-minimum",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "settlement-retains-reservation",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "settlement-increments-provider-sequence",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "settlement-changes-precommitted-book",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "settlement-changes-precommitted-amount",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "settlement-without-pending-commitment",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "provider-sequence-overflow",
+      "expected": "REJECT",
+      "passed": true
+    },
+    {
+      "name": "book-0-sell-authorization",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "book-0-sell-settlement-at-minimum",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "book-1-buy-authorization",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "book-1-buy-settlement-at-minimum",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "book-1-sell-authorization",
+      "expected": "ACCEPT",
+      "passed": true
+    },
+    {
+      "name": "book-1-sell-settlement-at-minimum",
+      "expected": "ACCEPT",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Synthetic circuit tests only; no hardware or DEX path re-executed",
+    "Accepted witnesses checked against R1CS; no additional Groth16 proofs generated",
+    "Single synchronous order, trusted initial allocation; full protocol acceptance remains pending"
+  ]
+}
