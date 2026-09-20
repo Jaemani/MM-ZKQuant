@@ -22,7 +22,8 @@ try {
     await new Promise(r=>setTimeout(r,250));
   }
   if(!ready)throw Error('Fork startup timeout: '+failure);
-  for(const script of ['scripts/prove-external-fork.mjs','scripts/verify-external-fork.mjs']){
+  const scripts=process.argv.includes('--zk')?['scripts/prove-zk-fork.mjs','scripts/verify-zk-evidence.mjs']:['scripts/prove-external-fork.mjs','scripts/verify-external-fork.mjs'];
+  for(const script of scripts){
     const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,MM_FORK_RPC:rpcUrl}});
     const code=await new Promise((r,j)=>{child.on('error',j);child.on('exit',r);});if(code!==0)throw Error(script+' failed');
   }

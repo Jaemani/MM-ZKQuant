@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-09-19T23:52:00.162Z",
+  "status": "PASS_PROOFS_AND_LIVE_FORK_RECEIPTS",
+  "proofs": 10,
+  "circuitSha256": "4a14528dea0e1c08e5af76ba9785b6c7885c94b8f9adafe5f7e89e7dad10146e",
+  "liveReceiptsVerified": true,
+  "productionSetup": false,
+  "hardwareTEE": false,
+  "transactions": 15,
+  "settledCursor": "4"
+}

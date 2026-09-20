@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { verifiedTdxBody } from './tdx-quote.js';
 import { hash } from './protocol.js';
 
 const hex=x=>String(x||'').replace(/^0x/,'').toLowerCase();
@@ -18,12 +18,10 @@ export async function verifyIdentity(attestation,expected,{fetchImpl=fetch}={}) 
   const response=await fetchImpl('https://cloud-api.phala.com/api/v1/attestations/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hex:raw}),signal:AbortSignal.timeout(30000)});
   must(response.ok,'Hardware verification service failed');const result=await response.json();
   must(result.success===true&&result.quote?.verified===true,'Hardware signature/collateral rejected');
-  must(hex(result.checksum)===createHash('sha256').update(Buffer.from(raw,'hex')).digest('hex'),'Verifier quote checksum mismatch');
-  const header=result.quote.header,body=result.quote.body;
-  must(header.tee_type===129||header.tee_type==='TEE_TDX','Expected Intel TDX');
+  const {body,quoteHash}=verifiedTdxBody(raw,result);
   must(hex(body.reportdata)===hex(identityBinding(attestation.identity,expected.challenge)).padEnd(128,'0'),'Quote key/challenge binding mismatch');
   // TDX attributes are serialized little endian; bit zero enables debug.
   const attributes=hex(body.tdattributes);must(/^[0-9a-f]{16}$/.test(attributes)&&!(parseInt(attributes.slice(0,2),16)&1),'Debug TEE or missing attributes');
   for(const field of ['mrtd','rtmr0','rtmr1','rtmr2','rtmr3'])must(hex(body[field])===hex(expected.measurements[field]),'Measurement mismatch: '+field);
-  return {status:'VERIFIED_PINNED_TDX_VIA_PHALA',quoteHash:result.checksum,identity:attestation.identity,challenge:expected.challenge,measurements:expected.measurements,verifiedAt:new Date().toISOString(),trust:'Phala HTTPS DCAP verifier; enrollment must independently approve OS, compose/image and KMS governance'};
+  return {status:'VERIFIED_PINNED_TDX_VIA_PHALA',quoteHash,identity:attestation.identity,challenge:expected.challenge,measurements:expected.measurements,verifiedAt:new Date().toISOString(),trust:'Phala HTTPS DCAP verifier; enrollment must independently approve OS, compose/image and KMS governance'};
 }

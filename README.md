@@ -4,7 +4,7 @@
 
 > **팀 공용 기준 · 2026-09-20**
 >
-> 기존 다중 전략 MVP와 TEE·DEX 연결 실험을 아래 팀 설계로 발전시키고 있습니다. **실제 TEE 검증, ZK 전체 장부 검증, 운용자 자기자본·staking, 비상 환매까지 완료된 제품은 아닙니다.** 화면이 열리거나 기존 테스트가 통과했다는 사실만으로 새 명세의 MVP 완료로 판단하지 않습니다.
+> 기존 다중 전략 MVP와 TEE·DEX 연결 실험을 아래 팀 설계로 발전시키고 있습니다. **실제 TEE에서의 합성 입력·증명 생성과, 로컬 DEX 포크에서의 ZK 승인·정산을 각각 검증했습니다. 전체 장부·운용자 자기자본·staking·비상 환매까지 완료된 제품은 아닙니다.** 화면이 열리거나 기존 테스트가 통과했다는 사실만으로 새 명세의 MVP 완료로 판단하지 않습니다.
 
 ## 팀원이 먼저 읽을 문서
 
@@ -50,11 +50,16 @@ flowchart LR
 |---|---|---|
 | 기존 다중 전략 MVP: src/sleeves, contracts/sleeves | 하나의 Vault, 전략별 장부·투자자 지분·보수, 테스트 토큰과 자체 AMM 실행 | TEE, ZK 장부 검증, 실제 외부 시장과 동일한 운용 조건 |
 | 외부 연결 PoC: src/integration, ApprovedVault | Monad 상태를 복제한 로컬 환경에서 Uniswap WMON/USDC 거래, 승인 서명, 체결 복구, 전략 간 분리 | 실제 메인넷 거래, 실제 TEE 하드웨어 검증, 장부 계산의 ZK 검증 |
-| 팀 설계 전환 작업 | 두 Book의 ZK 주문 승인·예약·체결 정산 회로 및 연구용 Vault 개발 중 | 통과 확인 전에는 완료로 표시하지 않음. 입출금 지분·staking·전체 위험 규칙·복구는 별도 작업 |
+| ZK 연구 경로: circuits, src/zk, ZkBookVault | 두 Book의 운용자 서명·주문 예약·실제 체결 정산. 32개 검사, 10개 Groth16 proof, 포크 트랜잭션 15개 | 신뢰된 초기 배정·현물 한 쌍·연구용 setup. 입출금 지분·staking·전체 위험 규칙·복구 미구현 |
+| 실제 Phala TDX 실험: deploy/tee/probe | 실제 quote 검증, 암호화 입력, 변조·재전송 거부, TEE 내부 Groth16 생성·로컬 검증 | 합성 장부 실험. TEE→DEX 전체 연결·운영 이미지 독립 승인·영속 장부 복구 미검증 |
 
 기존 승인 서명은 등록된 키가 승인했다는 의미입니다. **장부 계산의 정확성을 검증하는 ZK 증명과 다릅니다.** 해시·Merkle 포함 증명도 그 자체로 장부 상태 전이의 정확성을 증명하지 않습니다.
 
-저장된 2026-09-19 검증 기록:
+검증 기록 (서로 다른 범위이므로 합산하여 전체 완료로 표시하지 않습니다):
+
+- 최신 회귀 테스트 **111개 통과**, 프런트엔드 build 통과. 아래 기존 109개 기록과 별도의 현재 실행 결과입니다.
+- 2026-09-20 ZK + DEX 포크 **32개 검사 통과**: [실행 증거](docs/evidence/zk-book-fork.json), [proof·실제 RPC 재검증](docs/evidence/zk-book-verification.json), [재현 안내](docs/zk-transition-runbook.md)
+- 2026-09-20 실제 TDX **암호화 입력·증명 생성 통과**: [실행 증거](docs/evidence/tee-hardware-probe.json), [TEE 실험 안내](docs/tee-hardware-probe.md). tdx.small에서 증명 생성 4,917ms, 프로세스 최대 RSS 340,544KiB. 전체 요청 시간이나 처리량 측정은 아닙니다.
 
 - 회귀 테스트 **109개 통과**: [통합 상태](docs/evidence/integration-status.json)
 - 외부 DEX 로컬 포크 **16개 검사 통과**: [실행 증거](docs/evidence/external-fork.json), [RPC 재검증](docs/evidence/external-fork-verification.json)
@@ -87,18 +92,23 @@ rtk npm start
 # 실제 외부 DEX 배포 코드를 로컬 Monad 포크에서 실행
 rtk npm run prove:external
 
+# 새 ZK 승인·정산과 외부 DEX 포크
+rtk npm run build:zk
+rtk npm run prove:zk
+rtk npm run verify:zk
+
 # 기존 자체 AMM·다중 전략 경로
 rtk npm run prove:omnibus
 rtk npm run verify:omnibus
 ```
 
-prove:external은 원격 RPC에서 상태를 읽지만 트랜잭션은 로컬 Anvil로만 보냅니다. 포크 거래 해시는 메인넷 거래 해시가 아닙니다. 새 ZK 재현 명령과 결과는 검증이 끝나면 팀 상태 문서와 함께 갱신합니다.
+prove:external은 원격 RPC에서 상태를 읽지만 트랜잭션은 로컬 Anvil로만 보냅니다. 포크 거래 해시는 메인넷 거래 해시가 아닙니다. ZK 경로도 로컬 chain 31337로 제한합니다. build:zk는 로컬 연구용 setup을 생성하며 실자금에 사용하지 않습니다.
 
 ## TEE 실험과 비용
 
 Phala 가입과 $20 크레딧 확보를 확인했습니다. 2026-09-20 과금 화면에서 **Prepaid / Auto-topup off**로 전환된 것을 확인했습니다. 첫 실험의 사용자 승인 예산은 **최대 $2**입니다.
 
-현재 배포·하드웨어 검증 완료를 주장하지 않습니다. 사양·시간당 요금·종료 후 잔여 과금을 확인한 뒤 짧게 실험합니다. 카드·API 키·운용 키·비공개 입력·witness는 GitHub에 올리지 않습니다. [TEE 운영 안내](docs/external-integration-runbook.md)와 [팀 상태](docs/team-status.md)를 따릅니다.
+tdx.small(1 vCPU·2GB·20GB, 표시 요금 $0.06074/시간)에서 실험을 완료하고 VM 전원 종료를 확인했습니다. 과금 화면은 사용 $0.01·크레딧 $19.99였으며 영구 삭제는 확인 대기 중입니다. 최종 정리·과금 상태는 [실험 기록](docs/tee-hardware-probe.md)에 기록합니다. 애플리케이션의 자동 종료만으로 VM 과금이 멈추지 않습니다. 카드·API 키·운용 키·비공개 입력·witness는 GitHub에 올리지 않습니다. [TEE 운영 안내](docs/external-integration-runbook.md)와 [팀 상태](docs/team-status.md)를 따릅니다.
 
 ## 과거 문서
 
