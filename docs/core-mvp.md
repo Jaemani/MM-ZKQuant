@@ -69,3 +69,18 @@ npm run verify:perpl
 ## Phala 종료·비용 관측
 
 2026-09-23 실험 종료 후 UI에서 `stopped` 확인. 기존 VM 재사용, 디스크 삭제는 하지 않았다. UI 관측 누적 사용액 $0.25 / 크레딧 $19.75(실험 전 $0.24 / $19.76). 이는 청구 화면의 반올림·반영 시점 값이며 확정 정산액을 뜻하지 않는다. 중지된 VM의 잔여 보관 비용이 있을 수 있다. 상한 $2 증액 없음.
+
+## 단일 트랜잭션 추가 검증
+
+2026-09-23 `npm run prove:perpl:atomic` 통과: 총 32개 검사, 10개 증명, 성공 주문 6건의 내부 호출 추적. [원본 증거](evidence/perpl-atomic-mvp.json)의 `atomicity`에 call trace와 실패 전후 상태를 저장했다. 이번 추가 실행은 로컬 CPU 증명 + 로컬 Perpl 포크이며 기존 TDX 실행과 별도로 기록한다. 유료 VM을 재시작하지 않았다.
+
+성공 거래에서는 같은 최상위 거래 안에서 verifier가 true를 반환한 다음 Perpl `execOrder`가 실행됨을 확인했다. 주문은 IOC이며 요청량은 목표와 실제 사전 포지션의 차이와 일치한다. 전량 회수 후 유효한 증명으로 신규 주문을 보냈을 때, 실제 Perpl 호출이 revert했고 nonce·A/B 계정·A 포지션·투자자 및 계약의 AUSD 잔액이 모두 이전 값과 같았다. 실패 거래의 가스는 소비되며 relayer의 가스 잔액까지 복원된다는 뜻은 아니다.
+
+TEE의 입력 수신·증명 생성과 입금·거래·회수 전체가 하나의 거래라는 뜻은 아니다. 단일 거래 보장은 `execute` 안의 증명 검증→주문→실제 결과 확인에 한정된다.
+
+```sh
+npm run prove:perpl:atomic
+npm run verify:perpl -- docs/evidence/perpl-atomic-mvp.json
+```
+
+[검토 시나리오](core-mvp-scenarios.md)를 통해 이 범위를 확인한다. 공개 Monad 테스트넷의 실제 체인 영수증과 오라클 갱신·네트워크 실패는 다음 검증 단계다.

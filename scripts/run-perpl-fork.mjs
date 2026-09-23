@@ -25,7 +25,7 @@ try {
     await new Promise(r=>setTimeout(r,250));
   }
   if(!ready)throw Error('Fork timeout: '+failure);
-  const child=spawn(process.execPath,['scripts/prove-perpl-fork.mjs',...process.argv.slice(2).filter(x=>['--zk','--tee'].includes(x))],{stdio:'inherit',env:{...process.env,MM_PERPL_FORK_RPC:rpcUrl}});
+  const child=spawn(process.execPath,['scripts/prove-perpl-fork.mjs',...process.argv.slice(2).filter(x=>['--zk','--tee','--atomic'].includes(x))],{stdio:'inherit',env:{...process.env,MM_PERPL_FORK_RPC:rpcUrl}});
   const code=await new Promise((res,rej)=>{child.on('error',rej);child.on('exit',res);});
   if(code!==0)throw Error(`Perpl fork check failed (${code})`);
 } finally { anvil.kill('SIGTERM'); }

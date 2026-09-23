@@ -8,7 +8,8 @@ import solc from 'solc';
 
 const url=process.env.MM_PERPL_FORK_RPC;
 const tee=process.argv.includes('--tee');
-const zk=tee||process.argv.includes('--zk');
+const atomic=process.argv.includes('--atomic');
+const zk=tee||atomic||process.argv.includes('--zk');
 mkdirSync('.data/perpl-mvp',{recursive:true});
 assert.ok(url && ['127.0.0.1','localhost'].includes(new URL(url).hostname),'Local fork only');
 const rpc=new JsonRpcProvider(url,undefined,{batchMaxCount:1,cacheTimeout:-1});rpc.pollingInterval=50;
@@ -156,6 +157,43 @@ try {
   await send('recover-B',b.account.recover({gasLimit:4000000}));
   const receivedB=(await cash.balanceOf(beneficiary))-beforeBWallet;assert.ok(receivedB>0n);good('B-collateral-recovered');
   evidence.recoveries={A:beforeBWallet-beforeWallet,B:receivedB,unit:'AUSD base units (6 decimals)'};
+  if(atomic){
+    const flatten=frame=>[frame,...(frame.calls||[]).flatMap(flatten)];
+    const verifierAddress=(await verifier.getAddress()).toLowerCase();
+    const execSelector=venue.interface.getFunction('execOrder').selector;
+    evidence.atomicity={successfulExecutions:[]};
+    for(const o of evidence.observations){
+      const trace=await rpc.send('debug_traceTransaction',[o.tx,{tracer:'callTracer'}]);
+      const calls=flatten(trace);
+      const verification=calls.find(c=>c.to?.toLowerCase()===verifierAddress);
+      const execution=calls.find(c=>c.to?.toLowerCase()===EXCHANGE.toLowerCase()&&c.input?.startsWith(execSelector));
+      assert.ok(verification&&!verification.error,'Verifier call must succeed');
+      assert.equal(BigInt(verification.output),1n);
+      assert.ok(execution&&!execution.error,'Perpl execution must succeed');
+      assert.ok(calls.indexOf(verification)<calls.indexOf(execution),'Proof must precede venue execution');
+      assert.equal(trace.to.toLowerCase(),evidence.accounts.find(x=>x.label===o.product).address.toLowerCase());
+      const order=venue.interface.decodeFunctionData('execOrder',execution.input)[0];
+      assert.equal(order.immediateOrCancel,true);
+      assert.equal(order.lotLNS,BigInt(o.target)>BigInt(o.before)?BigInt(o.target)-BigInt(o.before):BigInt(o.before)-BigInt(o.target));
+      evidence.atomicity.successfulExecutions.push({tx:o.tx,product:o.product,verifier:{to:verification.to,output:verification.output},venue:{to:execution.to,selector:execSelector,lots:order.lotLNS,ioc:order.immediateOrCancel},trace});
+    }
+    good('six-transactions-trace-proof-then-perpl-in-one-call');
+    // A has recovered all collateral. A valid proof now reaches Perpl but cannot fund a new position.
+    const [,mark]=await a.account.position();
+    const intent=await sign(a,100n,mark*10050n/10000n);
+    const snapshot=async()=>json({nonce:await a.account.nonce(),A:await venue.getAccountByAddr(await a.account.getAddress()),B:await venue.getAccountByAddr(await b.account.getAddress()),positionA:await a.account.position(),wallet:await cash.balanceOf(beneficiary),contract:await cash.balanceOf(await a.account.getAddress())});
+    const before=await snapshot();let failed;
+    try{await(await a.account.connect(relayer).execute(intent.target,intent.limitPrice,intent.nonce,intent.deadline,intent.signature,{gasLimit:12000000})).wait();assert.fail('unfunded trade unexpectedly succeeded');}
+    catch(e){failed=e.receipt;assert.equal(failed?.status,0);}
+    const trace=await rpc.send('debug_traceTransaction',[failed.hash,{tracer:'callTracer'}]);
+    const calls=flatten(trace),verification=calls.find(c=>c.to?.toLowerCase()===verifierAddress),execution=calls.find(c=>c.to?.toLowerCase()===EXCHANGE.toLowerCase()&&c.input?.startsWith(execSelector));
+    assert.ok(verification&&!verification.error);assert.equal(BigInt(verification.output),1n);
+    assert.ok(execution?.error,'Revert must originate at the real venue');assert.ok(trace.error);
+    const after=await snapshot();assert.equal(after,before,'Whole transaction state must roll back');
+    evidence.transactions.push({label:'venue-revert-after-valid-proof',hash:failed.hash,block:failed.blockNumber,gasUsed:failed.gasUsed,status:0});
+    evidence.atomicity.venueFailure={tx:failed.hash,before:JSON.parse(before),after:JSON.parse(after),trace};
+    good('valid-proof-venue-revert-rolls-back-nonce-position-and-collateral');
+  }
   if(zk){for(const p of evidence.proofs)assert.equal(await groth16.verify(evidence.verificationKey,p.publicSignals,p.proof),true);good('all-generated-proofs-independently-verify');}
   for(const tx of evidence.transactions){const receipt=await rpc.getTransactionReceipt(tx.hash);assert.equal(receipt.status,tx.status??1);}
   good('all-transaction-receipts-requeried');
@@ -165,7 +203,7 @@ try {
   console.error(evidence.error);process.exitCode=1;
 } finally {
   writeFileSync('.data/perpl-mvp/latest.json',json(evidence)+'\n');
-  if(evidence.status.startsWith('PASS_'))writeFileSync(tee?'docs/evidence/perpl-tee-mvp.json':zk?'docs/evidence/perpl-zk-mvp.json':'docs/evidence/perpl-fork-mvp.json',json(evidence)+'\n');
+  if(evidence.status.startsWith('PASS_'))writeFileSync(atomic?'docs/evidence/perpl-atomic-mvp.json':tee?'docs/evidence/perpl-tee-mvp.json':zk?'docs/evidence/perpl-zk-mvp.json':'docs/evidence/perpl-fork-mvp.json',json(evidence)+'\n');
   rpc.destroy();
   if(zk)await(await curves.getCurveFromName('bn128')).terminate();
 }
