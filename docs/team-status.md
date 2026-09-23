@@ -1,5 +1,7 @@
 # 팀 진행 상태 · 2026-09-23
 
+> **2026-09-23 코어 MVP 추가:** [실험 결과와 재현](core-mvp.md). 두 전용 Product 계정의 Perpl 포크 거래·실제 체결 동기화·회수, 최소 ZK 목표 승인, 실제 TDX 증명→로컬 거래 연결을 통과했다. 이는 아래 전체 v1 마일스톤의 완료 처리가 아니다. 실제 전략/TEE relayer, 공개 테스트넷 거래, Ledger·지분·보수·공유 slot·복구는 남아 있다.
+
 기준은 [제품 v1.4 / 개발 v0.1](specs/README.md)이다. 앞선 현물 Vault·Virtual Book·의무 자기자본/staking 중심 문서는 [이전 팀 상태](archive/team-status-before-perpl.md)로 보존했다. 개발 §0에 따라 Manager 자기자본은 선택, v1 의무 staking/slashing은 제외한다.
 
 **현재: M0 미종료, 독립적인 M1 기반 작업 일부 완료. M2 이후 구현 완료를 주장하지 않는다.** 인코딩 검사 통과와 운영 프로토콜 통과를 구분한다.

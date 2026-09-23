@@ -1,0 +1,327 @@
+{
+  "createdAt": "2026-09-23T11:46:25.833Z",
+  "status": "PASS_LOCAL_PERPL_FEASIBILITY",
+  "environment": "LOCAL_MONAD_TESTNET_FORK",
+  "hardwareTEE": false,
+  "zeroKnowledge": false,
+  "externalNetworkBroadcast": false,
+  "checks": [
+    {
+      "name": "contract-owned-account-funded-A",
+      "passed": true
+    },
+    {
+      "name": "contract-owned-account-funded-B",
+      "passed": true
+    },
+    {
+      "name": "changed-signed-target-rejected",
+      "passed": true
+    },
+    {
+      "name": "cross-product-signature-rejected",
+      "passed": true
+    },
+    {
+      "name": "signed-over-cap-rejected",
+      "passed": true
+    },
+    {
+      "name": "signed-price-band-violation-rejected",
+      "passed": true
+    },
+    {
+      "name": "unauthorized-recovery-rejected",
+      "passed": true
+    },
+    {
+      "name": "A-actual-IOC-fill",
+      "passed": true
+    },
+    {
+      "name": "consumed-intent-replay-rejected",
+      "passed": true
+    },
+    {
+      "name": "withdraw-open-position-rejected",
+      "passed": true
+    },
+    {
+      "name": "B-capital-unchanged-after-A-trade",
+      "passed": true
+    },
+    {
+      "name": "zero-fill-keeps-actual-position",
+      "passed": true
+    },
+    {
+      "name": "zero-fill-intent-is-still-one-use",
+      "passed": true
+    },
+    {
+      "name": "partial-fill-records-25-not-requested-100",
+      "passed": true
+    },
+    {
+      "name": "B-unchanged-after-zero-and-partial-fill",
+      "passed": true
+    },
+    {
+      "name": "A-flat",
+      "passed": true
+    },
+    {
+      "name": "A-wallet-received-collateral",
+      "passed": true
+    },
+    {
+      "name": "double-recovery-rejected",
+      "passed": true
+    },
+    {
+      "name": "B-actual-short-fill",
+      "passed": true
+    },
+    {
+      "name": "B-flat",
+      "passed": true
+    },
+    {
+      "name": "B-collateral-recovered",
+      "passed": true
+    },
+    {
+      "name": "all-transaction-receipts-requeried",
+      "passed": true
+    }
+  ],
+  "transactions": [
+    {
+      "label": "local-only-collateral-fixture",
+      "hash": "0xdbb93910c8d45ea4c0baa317112f3a4b5945fccb862d494dd61b508a7d037415",
+      "block": 65006608,
+      "gasUsed": "54172"
+    },
+    {
+      "label": "deploy-A",
+      "hash": "0x94c3bbaac3379baa585617f28a0f0544abeef1e4142de73269f238219dbde8f5",
+      "block": 65006609,
+      "gasUsed": "1531888"
+    },
+    {
+      "label": "approve-A",
+      "hash": "0x454e430faee9f6d0aa8d6f1a0dae67c07a84fefb7bf258223d452fd09c27bc10",
+      "block": 65006610,
+      "gasUsed": "50958"
+    },
+    {
+      "label": "fund-A",
+      "hash": "0x89cb6ba43736fd011fb71d998642c542da91324de0b2c64600c079462fdca519",
+      "block": 65006611,
+      "gasUsed": "206609"
+    },
+    {
+      "label": "deploy-B",
+      "hash": "0xba8e1f69edd8321791b46c2508717c8129bf0c6ebe2113148eb6c5b621103c4d",
+      "block": 65006612,
+      "gasUsed": "1531876"
+    },
+    {
+      "label": "approve-B",
+      "hash": "0x16bd96dc7a67429119997de385e6a60fc307529affee1091eeaf160424ea8ac0",
+      "block": 65006613,
+      "gasUsed": "50958"
+    },
+    {
+      "label": "fund-B",
+      "hash": "0x5dc7f442cf915154406d4f11cc5115203cd87eb0c10ce1e63bbbfc623035c116",
+      "block": 65006614,
+      "gasUsed": "206609"
+    },
+    {
+      "label": "execute-A-100",
+      "hash": "0x88a00cafaffd416154e6c6bc60c661d856b2a5862e8c65dbe8cfc07db61bf78e",
+      "block": 65006615,
+      "gasUsed": "307042"
+    },
+    {
+      "label": "execute-A-200",
+      "hash": "0xd52fedd6f4cdbf65b226c750ca6b5da2610b9938f8ae371a418b6dddcd762542",
+      "block": 65006616,
+      "gasUsed": "137343"
+    },
+    {
+      "label": "fund-controlled-counterparty",
+      "hash": "0x176b488e5036c09bb1523bb3061f482c4cd3eeafdbd29ae14ff62a6685fb338f",
+      "block": 65006617,
+      "gasUsed": "49372"
+    },
+    {
+      "label": "counterparty-approve",
+      "hash": "0x061cadd59266ce3a089beafe568bab8a76500f94cb63c73978a1b0a189a8f83e",
+      "block": 65006618,
+      "gasUsed": "50958"
+    },
+    {
+      "label": "counterparty-create",
+      "hash": "0xdc247dae875293e51a870dda434c33ac70c3114d62d4d95ebe064e858f6c199e",
+      "block": 65006619,
+      "gasUsed": "138397"
+    },
+    {
+      "label": "counterparty-post-25-lots",
+      "hash": "0x98e136a51d4b3e6c8ded2d9903c3aba7d6cfe52360e272a33ef204f588a5298c",
+      "block": 65006620,
+      "gasUsed": "164256"
+    },
+    {
+      "label": "execute-A-200",
+      "hash": "0x8ba83a1f8a6cbe9f4c37914171f4569be9a67defa13c639edf4b92f4088a3634",
+      "block": 65006621,
+      "gasUsed": "310270"
+    },
+    {
+      "label": "execute-A-0",
+      "hash": "0xef1f1061795a375e2c9568d051e59f3403794339c0e4a82b8c6d570161e91c7d",
+      "block": 65006622,
+      "gasUsed": "232557"
+    },
+    {
+      "label": "recover-A",
+      "hash": "0x3d44578ebff4e208710a1eb134db1d5f54217db8caf711f7e57e9c55d798c171",
+      "block": 65006623,
+      "gasUsed": "175067"
+    },
+    {
+      "label": "execute-B--100",
+      "hash": "0xe0c6f2c35e71961d023f3d3b3322ca5feb067aca8ba99b9c9801ce3507515b6f",
+      "block": 65006624,
+      "gasUsed": "287404"
+    },
+    {
+      "label": "execute-B-0",
+      "hash": "0x6e64bbeaa76ef3f78ae2115a261053d9ecdbe43b914da348f01e17c4b852b7f8",
+      "block": 65006625,
+      "gasUsed": "244206"
+    },
+    {
+      "label": "recover-B",
+      "hash": "0x80c2de9394fe57eb3123faffac33235c3f9e5878ac7dc090e62049235dc15ef4",
+      "block": 65006626,
+      "gasUsed": "147524"
+    }
+  ],
+  "observations": [
+    {
+      "product": "A",
+      "target": "100",
+      "before": "0",
+      "after": "100",
+      "mark": "855396",
+      "limit": "859672",
+      "tx": "0x88a00cafaffd416154e6c6bc60c661d856b2a5862e8c65dbe8cfc07db61bf78e"
+    },
+    {
+      "product": "A",
+      "target": "200",
+      "before": "100",
+      "after": "100",
+      "mark": "855396",
+      "limit": "427698",
+      "tx": "0xd52fedd6f4cdbf65b226c750ca6b5da2610b9938f8ae371a418b6dddcd762542"
+    },
+    {
+      "product": "A",
+      "target": "200",
+      "before": "100",
+      "after": "125",
+      "mark": "855396",
+      "limit": "855768",
+      "tx": "0x8ba83a1f8a6cbe9f4c37914171f4569be9a67defa13c639edf4b92f4088a3634"
+    },
+    {
+      "product": "A",
+      "target": "0",
+      "before": "125",
+      "after": "0",
+      "mark": "855396",
+      "limit": "851119",
+      "tx": "0xef1f1061795a375e2c9568d051e59f3403794339c0e4a82b8c6d570161e91c7d"
+    },
+    {
+      "product": "B",
+      "target": "-100",
+      "before": "0",
+      "after": "-100",
+      "mark": "855396",
+      "limit": "851119",
+      "tx": "0xe0c6f2c35e71961d023f3d3b3322ca5feb067aca8ba99b9c9801ce3507515b6f"
+    },
+    {
+      "product": "B",
+      "target": "0",
+      "before": "-100",
+      "after": "0",
+      "mark": "855396",
+      "limit": "859672",
+      "tx": "0x6e64bbeaa76ef3f78ae2115a261053d9ecdbe43b914da348f01e17c4b852b7f8"
+    }
+  ],
+  "limitations": [
+    "Local fork, not public testnet transactions",
+    "Ordinary EIP-712 authorization; no ZK or TEE",
+    "One investor and one dedicated account per Product; no fund shares/fees/committee",
+    "Collateral seeded by local-only impersonation; not a live faucet",
+    "No claim of private submission or attribution privacy"
+  ],
+  "forkBlock": 65006607,
+  "forkBlockHash": "0x1ee576bfd00206084e5a8d9f0368e60f8973935353baa967199a3d4379aaca28",
+  "sourceSha256": "9b1d03060f5695386bd892d638eb87af14017cb57d2a30cfc20cd7165fe47982",
+  "exchange": "0x1964C32f0bE608E7D29302AFF5E61268E72080cc",
+  "collateral": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+  "market": "16",
+  "exchangeCodeHash": "0x63411cb4bdb3d2085146b23dca998134a387312f7ea092e05386066a85f9f7a1",
+  "version": [
+    "1",
+    "7",
+    "5"
+  ],
+  "marketSnapshot": {
+    "symbol": "BTC",
+    "mark": "855396",
+    "markTimestamp": "1790163956",
+    "oracle": "855468",
+    "oracleTimestamp": "1790163976",
+    "base": "50000",
+    "bestAsk": "805769",
+    "bestBid": "805669",
+    "priceDecimals": "1",
+    "lotDecimals": "5",
+    "status": "4"
+  },
+  "accounts": [
+    {
+      "label": "A",
+      "address": "0xC0BF43A4Ca27e0976195E6661b099742f10507e5",
+      "accountId": "687",
+      "allocation": "1000000000"
+    },
+    {
+      "label": "B",
+      "address": "0x59C4e2c6a6dC27c259D6d067a039c831e1ff4947",
+      "accountId": "688",
+      "allocation": "1000000000"
+    }
+  ],
+  "controlledCounterparty": {
+    "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+    "lotLNS": "25",
+    "pricePNS": "855768",
+    "description": "Local seeded counterparty on unmodified fork venue, not external user traction"
+  },
+  "recoveries": {
+    "A": "999913719",
+    "B": "999930954",
+    "unit": "AUSD base units (6 decimals)"
+  }
+}
