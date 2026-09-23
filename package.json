@@ -44,7 +44,10 @@
     "prove:perpl:tee": "node scripts/run-perpl-fork.mjs --tee",
     "prepare:perpl:tee": "node scripts/prepare-perpl-tee.mjs",
     "verify:perpl": "node scripts/verify-perpl-evidence.mjs",
-    "prove:perpl:atomic": "node scripts/run-perpl-fork.mjs --atomic"
+    "prove:perpl:atomic": "node scripts/run-perpl-fork.mjs --atomic",
+    "preflight:perpl:testnet": "node scripts/prove-perpl-testnet.mjs",
+    "prove:perpl:testnet": "node scripts/prove-perpl-testnet.mjs --execute",
+    "test:perpl:testnet-runner": "node scripts/run-perpl-fork.mjs --testnet-rehearsal"
   },
   "dependencies": {
     "@phala/dstack-sdk": "0.5.8",

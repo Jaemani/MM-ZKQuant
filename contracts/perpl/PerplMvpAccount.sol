@@ -28,7 +28,7 @@ interface IPerplMvp {
     function getOrderLocks(uint256) external view returns(OrderLock[] memory);
 }
 
-/// Local-fork feasibility harness. One Product, one investor, one market per account.
+/// Test-only feasibility harness. One Product, one investor, one market per account.
 /// EIP-712 manager authorization only: NOT a ZK verifier, TEE, fund, or full v1 Gate.
 contract PerplMvpAccount {
     IPerplMvp public immutable venue;
@@ -48,7 +48,11 @@ contract PerplMvpAccount {
     modifier locked() { require(entered == 0,"REENTRANT"); entered=1; _; entered=0; }
 
     constructor(address exchange,address token,address manager_,address beneficiary_,uint256 market_,uint256 maxLots_) {
-        require(block.chainid == 31337,"LOCAL_RESEARCH_ONLY");
+        require(block.chainid == 31337 || block.chainid == 10143,"TEST_NETWORK_ONLY");
+        if(block.chainid == 10143) {
+            require(exchange == 0x1964C32f0bE608E7D29302AFF5E61268E72080cc && token == 0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC,"TESTNET_VENUE_ONLY");
+            require(market_ == 16 && maxLots_ <= 100,"TESTNET_SCOPE");
+        }
         require(exchange.code.length>0 && token.code.length>0 && manager_!=address(0) && beneficiary_!=address(0),"CONFIG");
         require(maxLots_>0 && maxLots_ < 2**63,"CAP");
         venue=IPerplMvp(exchange); collateral=ICollateral(token); manager=manager_; beneficiary=beneficiary_; market=market_; maxLots=maxLots_;

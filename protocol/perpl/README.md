@@ -1,6 +1,6 @@
 # Perpl core MVP experiment
 
-See [scope, results and reproduction](../../docs/core-mvp.md). These contracts only deploy on chain 31337.
+See [scope, results and reproduction](../../docs/core-mvp.md). These test-only contracts deploy on chain 31337, or chain 10143 with pinned venue/token, market 16 and cap <=100. See [public testnet readiness](../../docs/perpl-public-testnet.md).
 
 `exchange-abi.json` contains function/event entries selected from the official PerplFoundation/dex-sdk Exchange ABI at commit `5b5be46a3349d719fbb59a08cf3955194bc8dfd8`:
 https://raw.githubusercontent.com/PerplFoundation/dex-sdk/5b5be46a3349d719fbb59a08cf3955194bc8dfd8/crates/sdk/abi/dex/Exchange.json
