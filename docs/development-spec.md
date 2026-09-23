@@ -1,3 +1,5 @@
+> **이전 구조의 기록입니다.** 2026-09-23 이후 현재 기준은 [제품 v1.4 / 개발 v0.1](specs/README.md)과 [현재 팀 상태](team-status.md)입니다. 아래 완료 항목은 새 Perpl 프로토콜의 완료 증거가 아닙니다.
+
 # Alpha Provider Fund — 개발명세 v0.1
 
 > 후속 v2 구현과 최신 상태는 [Pilot 개발명세](pilot/development-spec.md), [실행 안내](pilot/runbook.md), [재현 결과](evidence/pilot-readiness.md)를 따른다. 아래 PAPER v1 규칙과 과거 검증 기록은 비교용으로 보존한다.

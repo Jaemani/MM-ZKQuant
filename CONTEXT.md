@@ -1,58 +1,31 @@
-# Confidential Alpha Protocol
+# Monad Metropolis
 
-투자자가 선택한 전략의 경제적 성과를 독립적으로 귀속시키고, 실제 자산의 보관과 거래는 하나의 공동 Vault에서 처리하는 프로토콜이다.
+프로토콜은 Confidential Trade Intent Execution이다. 투자자가 선택한 Manager의 비공개 운용 의도를 검증 후 Perpl에서 실행하고, Product별 자금·손익·지분의 귀속을 유지한다.
 
-## Language
+**Manager**: 하나의 Product를 운용하고 목표 포지션을 서명하는 주체다. 자기자본 참여는 선택이며 v1에서 의무 staking이나 slashing은 없다.
 
-**Alpha Provider**: 전략과 그 전략의 투자 판단을 제공하는 주체다. 하나 이상의 독립적인 Strategy Sleeve를 운용할 수 있다.
+**Product**: 한 Manager의 약정 아래 투자자 자금과 손익·지분·보수를 구분하는 단위다. _Avoid_: 여러 Product를 섞은 단일 전략, Alpha Provider의 다중 Sleeve.
 
-**Virtual Book**: 특정 전략의 자본·현금·포지션·거래·비용·성과·지분을 독립적으로 귀속시키는 논리적 투자 계정이다. 실제 별도 지갑이나 금고가 아니다. 기존 문서의 Strategy Sleeve에 대응한다.
-_Avoid_: 공동 펀드의 평가용 shadow book, 별도 vault
+**Mandate**: Product의 운용 조건·키·제출 정책 등 투자자와 합의한 규칙이다. **Policy**는 TEE가 실행하는 Manager별 운용 제한이다.
 
-**Strategy Sleeve**: Virtual Book의 이전 명칭이다.
+**Target Intent**: 특정 시점에 원하는 절대 목표 수량을 담은 일회성 서명 메시지다. 빠진 시장은 유지하고 목표 0은 청산을 뜻한다.
 
-**Omnibus Vault**: 모든 전략의 실제 자산을 함께 보관하고 동일한 신원으로 거래하는 공동 금고다. Vault 자체가 투자자가 선택하는 하나의 전략은 아니다.
+**Custody**: 아직 venue 증거금으로 보내지 않은 담보와 지급 재원을 보관하는 계약이다. Perpl로 보낸 증거금은 Custody 잔액과 구분한다.
 
-**Private Strategy Ledger**: 전략별 경제적 권리와 자산·주문·체결의 귀속 관계를 관리하는 비공개 장부다.
+**ExecutionGate**: 증명과 venue 상태를 검사하고 승인된 호출만 생성하는 계약이다. Perpl pool 계정의 소유자다.
 
-**Investor Allocation**: 투자자가 특정 Strategy Sleeve에 배정한 자본이다. 같은 투자자가 여러 전략에 각각 배정할 수 있다.
+**Slot**: pool 계정과 market의 쌍이다. **Lease**는 epoch로 구분된 slot 사용권이며, 정상 경로의 Product 귀속은 비공개다.
 
-**Strategy Unit**: 특정 전략의 투자자 귀속 순자산에 대한 비례적 권리다. 다른 전략이나 Vault 전체에 대한 공동 지분이 아니다.
+**slotCredit**: 계정의 공유 free balance 중 특정 slot에 귀속되는 공개 회계 값이다. Product 잔액이나 투자자 지분을 뜻하지 않는다.
 
-**Strategy Equity**: 해당 전략에 귀속된 현금·자산·담보에서 부채를 뺀 경제적 가치다. 투자자의 권리와 해당 전략의 제공자 미지급 보수를 포함한다.
+**State Note**: Product 운용 상태를 숨긴 commitment의 opening이다. **Nullifier**는 같은 note를 두 번 소비하지 못하게 하는 식별값이다.
 
-**Investor Claim**: 선택한 전략의 투자자 귀속 순자산 중 투자자가 보유한 지분에 해당하는 권리다.
+**Snapshot Accumulator**: Gate가 인증한 venue 상태 기록을 연결한 해시 체인이다. 현재 상태 관측과 과거 모든 사건의 재구성은 구분한다.
 
-**Provider Accrual**: 해당 전략의 사전 약정한 보수 규칙에 따라 발생했지만 아직 지급하지 않은 제공자의 권리다.
+**Ledger**: Product별 자본·지분·보수·출금 청구권을 확정하는 장부다. **Anchor**는 note가 참조하는 확정 장부 상태다.
 
-**Vault Equity**: 공동 보관된 실제 자산에서 실제 부채를 뺀 가치다. 전략별 장부를 대사하기 위한 총액이며 개별 투자자의 수익률이 아니다.
+**Fallback**: Manager 출금 창 이후 TEE가 허용된 범위로 포지션을 줄이는 경로다. **Forced Exit**는 committee 복호화를 통해 TEE 없이도 축소·정산을 진행하는 경로다.
 
-**Protocol Accrual**: 어느 전략의 투자자나 제공자에게도 속하지 않고 프로토콜에 귀속된 미정산 가치다.
+**Committee**: 복구·Forced Exit를 위한 threshold 복호화 키를 나눠 보유하는 독립 주체들의 집합이다. 5-of-9 가용성은 탈출 경로의 전제다.
 
-**Order Attribution**: 특정 주문·체결·비용을 하나의 전략에 연결하는 귀속 관계다. 동일 Vault에서 실행하더라도 이 관계를 섞지 않는다.
-
-**Private Alpha**: 제공자가 자기 전략에 대해 제출한 자산별 판단이다. 다른 제공자의 alpha와 합쳐 하나의 공통 전략으로 만들지 않는다.
-
-**Forward Track Record**: 결과가 나오기 전에 제출한 판단과 이후 해당 전략에 귀속된 실제 운용 결과를 연속적으로 기록한 이력이다.
-
-**Reconciliation**: Vault의 실제 자산·부채와 전략별 경제적 권리의 합이 일치하는지 확인하는 대사다.
-
-**Test Asset**: 기능 검증을 위해 발행한 자산이다. 이름에 대응하는 실제 통화나 코인으로 교환받을 권리를 제공하지 않는다.
-
-**Target Intent**: 운용자가 자기 Book에 대해 제출하는 목표 포지션과 유효 조건이다. 전략 코드나 다른 운용자와 합성할 공통 신호가 아니다.
-
-**Risk Mandate**: 운용자가 임의로 완화할 수 없는 자산·노출·비용·유동성·손실 대응에 관한 사전 약정이다.
-
-**Canonical Ledger Root**: 합의된 규칙에 따라 확정된 비공개 장부의 기준 commitment다. 실행 이력의 해시만으로 장부의 정확성이 보장되는 것은 아니다.
-
-**Authorization Transition**: 입력과 위험 조건을 확인하고 주문·자금 예약·체결 배분을 사전 확정하는 장부 변경이다.
-
-**Settlement Transition**: 실제 체결·비용·손익을 약정된 Book에 누락·중복 없이 귀속시키는 장부 변경이다.
-
-**Provider Own Capital**: 운용자가 자기 Book에 투자해 보유하는 지분의 현재 가치다. 일반 운용 손익을 다른 투자자와 함께 부담한다.
-
-**Locked Provider Shares**: Book 운용부터 종료 정산까지 출금·양도·다른 Book 이동이 제한된 운용자 지분이다.
-
-**Performance Stake**: 운용자 투자 지분 중 사전에 정한 평가기간의 추가 보상·차감 조건에 배정한 지분이다. 별도 원금이나 투자자 손실 보장금이 아니다.
-
-**First-loss**: 다른 투자자보다 먼저 특정 자본에 손실을 배분하는 약정이다. 현재 기본 설계에는 포함하지 않는다.
+**Pre-execution Confidentiality**: 제출 전 목표·장부 비밀과 귀속 추론 완화를 뜻한다. 이미 체결된 venue 포지션 전체의 비공개를 뜻하지 않는다.

@@ -1,0 +1,28 @@
+{
+  "status": "PASS_DRAFT_TWO_LANGUAGE_VECTORS",
+  "vectors": 302,
+  "accepted": 215,
+  "rejected": 87,
+  "implementations": [
+    "TypeScript",
+    "Rust"
+  ],
+  "milestoneM1Complete": false,
+  "createdAt": "2026-09-23T07:55:21.481Z",
+  "sha256": {
+    "protocol/vectors/draft-v0.1.json": "7d7043b20897c75663548bf1efdb9cd8aa7215617b6e07c21db9b6f4d4a71c2b",
+    "protocol/ts/encoding.mts": "404367760b59f5b189a19b42c3be57086a5a73a0aa5f85dbdcfecb640bff3309",
+    "protocol/ts/model.mts": "5ec1c9f9181db10df1e12c3ec10509c43bef47b53d02216b58df639917fb9579",
+    "protocol/ts/vector-runner.mts": "c54c2cf6261c966388c58d41f192058b40d62732591dda0cf48e73b5bae7b924",
+    "protocol/reference/src/lib.rs": "613a6e7f45f60f660a50c525f9bb9358d733f903b8ee372c26a23d1dd6738be4",
+    "protocol/reference/src/model.rs": "da6ede066450f2c95469e476184f413dfd8a27ebe01a78a50a0ea1fa1dfc5eae",
+    "protocol/reference/src/main.rs": "590ead61aea7606c9909ffea2f08986c79b7a94ab8144c403d16223640f59665",
+    "Cargo.lock": "e67481eec7d4801b78bc1568af8a6badce049bef684894d8d68dedecb32127c5",
+    "scripts/verify-protocol-vectors.mjs": "4d2d05ee754c0515e8cf159dc3b017f9016e127a09d3c61732409c68ce490655"
+  },
+  "limitations": [
+    "No Circom/Solidity comparison",
+    "No complete transition model or production circuit",
+    "No venue execution, hardware TEE, or proving benchmark"
+  ]
+}

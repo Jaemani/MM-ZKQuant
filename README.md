@@ -1,116 +1,61 @@
-# Confidential Alpha Protocol
+# Monad Metropolis
 
-**여러 운용자의 비공개 운용 의도를 하나의 Vault에서 실행하되, 자산·거래·손익·지분은 Virtual Book별로 구분하는 프로토콜입니다.** TEE는 비밀 데이터를 처리하고, ZK는 장부 변경이 약정된 규칙과 실제 체결에 맞는지 검증합니다.
+**운용자(Manager)가 비공개로 보낸 목표 포지션을 TEE가 처리하고, ZK 검증을 거친 주문만 ExecutionGate가 Perpl에서 실행하는 프로토콜입니다.** 투자자의 자금과 손익은 Product별로 귀속합니다. 하나의 Manager가 하나의 Product를 운용하며, 여러 전략을 섞어 단일 수익률로 보여주는 구조가 아닙니다.
 
-> **팀 공용 기준 · 2026-09-20**
->
-> 기존 다중 전략 MVP와 TEE·DEX 연결 실험을 아래 팀 설계로 발전시키고 있습니다. **실제 TEE에서의 합성 입력·증명 생성과, 로컬 DEX 포크에서의 ZK 승인·정산을 각각 검증했습니다. 전체 장부·운용자 자기자본·staking·비상 환매까지 완료된 제품은 아닙니다.** 화면이 열리거나 기존 테스트가 통과했다는 사실만으로 새 명세의 MVP 완료로 판단하지 않습니다.
+> **2026-09-23 기준: M0 외부 의존성 조사 + M1 참조 구현 일부 진행.** 새 Perpl 프로토콜은 아직 실제 자금을 맡길 수 있는 상태가 아닙니다. Rust·TypeScript의 302개 고정 벡터가 일치했고, 명세의 부분 체결·귀속 문제를 반례로 확인했습니다. 기존 현물 DEX 포크·TDX 실험 성공을 새 구조의 완료로 계산하지 않습니다.
 
 ## 팀원이 먼저 읽을 문서
 
-| 문서 | 확인할 내용 |
-|---|---|
-| [팀 원본 명세 PDF](docs/specs/confidential-alpha-protocol-v0.1.pdf) | 프로토콜 명세 v0.1, 작성일 2026-09-19. 아키텍처·요구사항 초안과 미확정 항목 |
-| [원본 구조도](docs/specs/protocol-architecture.png) | TEE, ZK Prover, State Controller, Vault, Adapter, Virtual Books의 관계 |
-| [팀 개발명세·작업 분담](docs/team-development.md) | 데이터·상태 전이·도메인 경계·개발 순서·담당 역할·인수 조건 |
-| [구현 및 검증 상태](docs/team-status.md) | 검증된 증거, 개발 중인 부분, 남은 결정, Phala 비용 제한 |
-| [구현 착수 판단](docs/implementation-readiness.md) | 추가 회로 검사 30개, 통합 구현을 시작할 근거, 다음 단계 종료 조건 |
-| [용어](CONTEXT.md) | Virtual Book, Omnibus Vault, 자기자본, 성과 staking의 의미 |
+1. [제품·프로토콜 v1.4 원문](docs/specs/2026-09-23-product-v1.4.md) — 누구의 자금을 어떤 조건으로 운용하고, 무엇을 공개하며, 어떻게 빠져나오는가.
+2. [개발 상세 v0.1 원문](docs/specs/2026-09-23-development-v0.1.md) — note·회로·계약·TEE·SDK의 인터페이스. **충돌 시 이 문서 §0이 우선합니다.**
+3. [현재 작업 분배·검수 기준](docs/team-status.md) — 담당 영역별 산출물과 선행 조건.
+4. [명세 반례와 수정 제안](docs/spec-review-2026-09-23.md) — 회로/계약을 확정하기 전에 해결해야 할 문제.
+5. [Perpl·Monad M0 조사](docs/research/2026-09-23-perpl-monad-m0.md) — 공식 API·실제 읽기 호출·미검증 사항.
+6. [새 코드 실행 안내](protocol/README.md) — 현재 구현 범위와 재현 명령.
 
-명세 v0.1과 이전 Concept v0.2는 서로 다른 문서의 버전입니다. **이번 팀 PDF를 현재 개발 방향으로 삼습니다.** 과거 문서에 남아 있는 alpha 합성, 기여도 기반 배분, PAPER 대시보드는 현재 목표 구조가 아닙니다. 미확정 경제 수치를 구현자가 임의로 확정하지 않습니다.
+## 자금과 데이터가 움직이는 순서
 
-## 설계가 작동하는 흐름
+1. **등록·투자:** Manager가 약정·정책·키를 등록합니다. 투자자는 Product를 골라 Custody에 담보를 입금하고, 확정된 장부 가격으로 지분을 받습니다. Manager 자기자본은 선택이며 v1 의무 staking·slashing은 없습니다.
+2. **비공개 목표 제출:** Manager SDK가 목표 수량을 서명·암호화해 TEE로 보냅니다. 평문 목표·비공개 장부·증명 witness·제출 키를 TEE 안에서 처리하는 설계입니다. 실제 체결 후의 포지션과 온체인 주문까지 비공개라는 뜻은 아닙니다.
+3. **거래 준비·검증:** TEE가 약정과 실제 포지션을 확인하고 IOC 주문 차이를 계산합니다. Trade proof는 최소 안전 규칙을 보장하고, Gate가 직접 읽은 venue 상태와 대조합니다. Manager의 개별 운용 정책은 TEE가 집행합니다.
+4. **실행·동기화:** Gate가 소유한 Perpl 계정의 `(account, market)` slot을 빌려 거래합니다. Gate가 호출 데이터를 조립하고 실제 실행 결과를 누산기에 기록합니다. Custody 밖으로 보낸 증거금은 Perpl에 있으므로 모든 자금이 항상 단일 Vault 안에 남아 있는 것은 아닙니다.
+5. **평가·정산:** Ledger proof가 인증된 스냅샷과 입출금 큐를 반영해 Product별 자본·지분·보수·청구권을 갱신합니다. 공개 지표는 지연·양자화를 적용하고, 개별 slot과 Product의 연결은 정상 경로에서 숨기는 설계입니다.
+6. **출금·장애 대응:** Manager의 축소 창 → TEE fallback → committee 5-of-9를 이용한 Forced Exit로 격상합니다. Forced Exit에서도 실제 체결 가능성과 Perpl 출금 한도의 제약은 남습니다.
 
-1. **투자·조건 설정:** 투자자는 Book을 선택합니다. 운용자는 자기 Book에 자기자본을 함께 투자하고 운용 중 지분을 유지합니다. 위험 한도·평가·보수 조건을 미리 정합니다.
-2. **비공개 입력:** 운용자는 전략 코드 대신 서명한 목표 포지션·운용 의도를 암호화해 TEE에 보냅니다. 권한·제출 순서·유효 기간을 확인합니다.
-3. **주문 승인 증명:** 비공개 장부와 위험 규칙에 따라 주문·예약 자금·체결 배분을 확정합니다. ZK로 기존 장부 R0에서 주문 예약 장부 R1로의 변경을 검증합니다.
-4. **실제 체결:** State Controller가 증명을 확인하고 승인한 주문을 Vault·Adapter를 통해 시장에 전달합니다. 동기식 거래에서는 승인·R1 채택·시장 호출·실제 체결 기록이 한 트랜잭션으로 성공하거나 함께 취소됩니다.
-5. **체결 정산 증명:** 실제 수량과 비용을 사전 확정한 기준대로 Book에 반영해 R1 → R2를 검증합니다. 손실 체결도 누락 없이 한 번만 반영합니다. 정산 전에는 다음 일반 거래를 승인하지 않습니다.
-6. **평가·보수·종료:** 확정 장부로 위험·성과를 계산하고 보수와 stake를 정산합니다. 운용자 원금은 Book 종료와 모든 정산 이후 해제합니다. 투자자 환매에는 실제 유동성과 청구권을 확인합니다.
+위 순서는 목표 구조입니다. 구현 상태는 아래 표와 작업 분배표를 기준으로 판단합니다.
 
-```mermaid
-flowchart LR
-    P[Alpha Provider] -->|서명·암호화 intent| T[TEE: 비공개 입력·장부·위험 계산]
-    I[Investor] -->|Book 지정 입출금 요청| C[State Controller]
-    T --> Z[TEE 내부 ZK Prover]
-    Z -->|승인·정산 증명| C
-    C --> R[Canonical Ledger Root]
-    C -->|검증된 주문| V[Omnibus Vault]
-    V --> A[Market Adapter]
-    A --> M[DEX / Market]
-    M -->|실제 체결| A
-    A -->|인증된 실행 기록| C
-    C -->|입출금·체결 기록| T
-```
+## 지금 구현된 것과 남은 것
 
-이 그림은 **목표 구조**입니다. 모든 연결이 현재 검증됐다는 뜻은 아닙니다. 외부 거래 자체는 체인에 공개되며, TEE·ZK가 모든 거래 추론을 제거하지는 않습니다. 서비스 화면은 각 흐름의 입력·상태·결과·검증 증거를 보여주는 인터페이스입니다.
-
-## 현재 구현 상태
-
-| 경로 | 실제로 확인한 것 | 아직 보장하지 않는 것 |
+| 영역 | 확인된 것 | 남은 검증 |
 |---|---|---|
-| 기존 다중 전략 MVP: src/sleeves, contracts/sleeves | 하나의 Vault, 전략별 장부·투자자 지분·보수, 테스트 토큰과 자체 AMM 실행 | TEE, ZK 장부 검증, 실제 외부 시장과 동일한 운용 조건 |
-| 외부 연결 PoC: src/integration, ApprovedVault | Monad 상태를 복제한 로컬 환경에서 Uniswap WMON/USDC 거래, 승인 서명, 체결 복구, 전략 간 분리 | 실제 메인넷 거래, 실제 TEE 하드웨어 검증, 장부 계산의 ZK 검증 |
-| ZK 연구 경로: circuits, src/zk, ZkBookVault | 두 Book의 운용자 서명·주문 예약·실제 체결 정산. 32개 검사, 10개 Groth16 proof, 포크 트랜잭션 15개 | 신뢰된 초기 배정·현물 한 쌍·연구용 setup. 입출금 지분·staking·전체 위험 규칙·복구 미구현 |
-| 실제 Phala TDX 실험: deploy/tee/probe | 실제 quote 검증, 암호화 입력, 변조·재전송 거부, TEE 내부 Groth16 생성·로컬 검증 | 합성 장부 실험. TEE→DEX 전체 연결·운영 이미지 독립 승인·영속 장부 복구 미검증 |
+| 명세 기준 | 새 원문 2개 보관, 변경 우선순위·용어·작업 분배 | note/회계/실행의 명세 반례 해소 |
+| M0 Perpl·Monad | 실제 RPC 조회, IOC/isolated 문서·ABI, BN254/PREVRANDAO 기본 호환 | 계약 계정 실행, 비동기 증거금 해제, slot별 외부 손익 귀속, 출금 한도, private 제출 |
+| M1 인코딩·참조 계산 | Rust·TypeScript 302개 벡터: 215 정상 / 87 거절. 수량·레버리지·자본 인출 계산 | 전체 참조 모델, Circom·Solidity와 대조, 최종 schema |
+| M2–M6 핵심 프로토콜 | 요구사항·차단 항목·검수 순서 정리 | 새 4개 회로, 운영 Gate/Adapter, TDX rapidsnark, 복구·회계·Forced Exit |
+| 기존 연구 경로 | 현물 DEX 포크 ZK 승인·정산, 실제 TDX 합성 입력 증명 생성 | 새 Perpl 경로와 별개. 새로운 성능·보안·회계 기준의 합격 근거가 아님 |
 
-기존 승인 서명은 등록된 키가 승인했다는 의미입니다. **장부 계산의 정확성을 검증하는 ZK 증명과 다릅니다.** 해시·Merkle 포함 증명도 그 자체로 장부 상태 전이의 정확성을 증명하지 않습니다.
+핵심 반례: 100에서 0으로 줄이는 IOC 주문이 10만 체결되면 실제 포지션은 90입니다. 이를 note에 0으로 쓰면 다음 거래의 위험 검사가 틀립니다. 공유 계정 잔액이 일치하더라도 손익을 올바른 Product에 배분했다는 증명이 되지는 않습니다. [수정 제안](docs/spec-review-2026-09-23.md)을 해결한 버전으로 TradeCircuit을 고정해야 합니다.
 
-검증 기록 (서로 다른 범위이므로 합산하여 전체 완료로 표시하지 않습니다):
+## 로컬 검증
 
-- 최신 회귀 테스트 **111개 통과**, 프런트엔드 build 통과. 아래 기존 109개 기록과 별도의 현재 실행 결과입니다.
-- 2026-09-20 ZK + DEX 포크 **32개 검사 통과**: [실행 증거](docs/evidence/zk-book-fork.json), [proof·실제 RPC 재검증](docs/evidence/zk-book-verification.json), [재현 안내](docs/zk-transition-runbook.md)
-- 2026-09-20 실제 TDX **암호화 입력·증명 생성 통과**: [실행 증거](docs/evidence/tee-hardware-probe.json), [TEE 실험 안내](docs/tee-hardware-probe.md). tdx.small에서 증명 생성 4,917ms, 프로세스 최대 RSS 340,544KiB. 전체 요청 시간이나 처리량 측정은 아닙니다.
+Node 22.23 이상, Rust stable/Cargo. 현재 새 참조 경로는 키·TEE·테스트 토큰 없이 실행합니다.
 
-- 회귀 테스트 **109개 통과**: [통합 상태](docs/evidence/integration-status.json)
-- 외부 DEX 로컬 포크 **16개 검사 통과**: [실행 증거](docs/evidence/external-fork.json), [RPC 재검증](docs/evidence/external-fork-verification.json)
-- 기존 자체 AMM 테스트넷 경로: [Omnibus 테스트넷 증거](docs/evidence/omnibus-testnet.json)
-
-각 경로의 기존 범위에 대한 기록이며, 새 팀 명세 전체의 인수 결과가 아닙니다. 최신 진행 상태는 [팀 상태 문서](docs/team-status.md)를 봅니다.
-
-## 운용자 책임과 위험 지표
-
-- **자기자본과 stake는 별도 원금을 두 번 요구하는 구조가 아닙니다.** 자기 Book에 투자한 지분을 유지하고 그 일부에 성과 연동 추가 보상·차감 조건을 부여합니다.
-- 일반 운용 손실은 지분 비율대로 반영합니다. **First-loss는 팀 명세의 기본안에서 제외**되어 있습니다.
-- 보상률·차감률·수혜자·재원·평가 기간·최소 자기자본·보수율은 미확정입니다. 예시 수치를 확정 정책으로 쓰지 않습니다.
-- 우선 검증할 위험 데이터는 노출·집중도, 현금·예약 자금·환매 가능액, 누적 회전율·비용, 고점 대비 하락, 자기자본·활성 stake·최대 차감액, 가격 시각·정산 지연입니다.
-- 수익률은 운용 성과입니다. 프로토콜의 회계·권한·체결 검증이 올바르다는 증거로 쓰지 않습니다.
-
-## 로컬 실행과 기존 증거 재현
-
-Node.js 22.13 이상이 필요합니다. 저장소 루트에서 실행합니다.
-
-```bash
-rtk npm ci
-rtk npm test
-rtk npm run build
-rtk npm start
+```sh
+npm ci
+npm run typecheck:protocol
+npm run test:protocol
+npm run test:reference
+npm run verify:protocol
 ```
 
-화면은 http://127.0.0.1:8790 입니다. 현재 화면은 기존 도메인 검토 도구이며 새 ZK·TEE 경로로 아직 이전되지 않았습니다. 기존 사용자 데이터를 자동 초기화하거나 덮어쓰지 않습니다.
+`verify:protocol`은 고정 기대값을 TypeScript와 별도 Rust 구현으로 비교합니다. [벡터](protocol/vectors/draft-v0.1.json)는 draft v0.1 호환 기준이며, 테스트 통과가 회로 soundness나 실제 체결 성공을 뜻하지 않습니다.
 
-```bash
-# 실제 외부 DEX 배포 코드를 로컬 Monad 포크에서 실행
-rtk npm run prove:external
+[검사 결과와 코드 해시](docs/evidence/protocol-v0.1-conformance.json), [실제 Monad 테스트넷 조회 기록](docs/evidence/perpl-readonly.json)을 보관합니다. `npm run probe:perpl`로 Perpl 버전·출금 한도 조회와 BN254/PREVRANDAO 기본 호환을 재현할 수 있습니다. 서명·배포·자금 이동은 없습니다.
 
-# 새 ZK 승인·정산과 외부 DEX 포크
-rtk npm run build:zk
-rtk npm run prove:zk
-rtk npm run verify:zk
+`npm test`는 기존 구현과 새 참조 모델의 JS 테스트를 함께 실행합니다. `npm run build`는 기존 화면의 빌드를 검사합니다. 기존 화면은 `npm run dev`로 열 수 있지만 새 명세를 구현한 제품 화면은 아닙니다. 이전 증거와 재현 방법은 [이전 README](docs/archive/readme-before-perpl.md)에 보존했습니다.
 
-# 기존 자체 AMM·다중 전략 경로
-rtk npm run prove:omnibus
-rtk npm run verify:omnibus
-```
+## 외부 비용과 공개 범위
 
-prove:external은 원격 RPC에서 상태를 읽지만 트랜잭션은 로컬 Anvil로만 보냅니다. 포크 거래 해시는 메인넷 거래 해시가 아닙니다. ZK 경로도 로컬 chain 31337로 제한합니다. build:zk는 로컬 연구용 setup을 생성하며 실자금에 사용하지 않습니다.
+이번 새 명세 작업은 로컬 검사와 공개 RPC 읽기만 사용하며 새 유료 인프라를 만들지 않았습니다. Phala의 이전 TDX 실험은 VM 전원 종료가 확인됐지만 디스크 영구 삭제는 확인되지 않았습니다. 당시 사용액 $0.01·잔액 $19.99는 9월 20일 관측값이며 현재 청구액이 아닙니다. 승인된 첫 실험 예산 $2를 증액하지 않습니다. [실험 기록](docs/tee-hardware-probe.md)을 참고하세요.
 
-## TEE 실험과 비용
-
-Phala 가입과 $20 크레딧 확보를 확인했습니다. 2026-09-20 과금 화면에서 **Prepaid / Auto-topup off**로 전환된 것을 확인했습니다. 첫 실험의 사용자 승인 예산은 **최대 $2**입니다.
-
-tdx.small(1 vCPU·2GB·20GB, 표시 요금 $0.06074/시간)에서 실험을 완료하고 VM 전원 종료를 확인했습니다. 과금 화면은 사용 $0.01·크레딧 $19.99였으며 영구 삭제는 확인 대기 중입니다. 최종 정리·과금 상태는 [실험 기록](docs/tee-hardware-probe.md)에 기록합니다. 애플리케이션의 자동 종료만으로 VM 과금이 멈추지 않습니다. 카드·API 키·운용 키·비공개 입력·witness는 GitHub에 올리지 않습니다. [TEE 운영 안내](docs/external-integration-runbook.md)와 [팀 상태](docs/team-status.md)를 따릅니다.
-
-## 과거 문서
-
-[이전 README](docs/archive/readme-before-team-spec.md), [Concept v0.2](docs/confidential-alpha-v0.2.md), [기존 다중 전략 기록](docs/sleeves-v0.2.md), [Pilot 기록](docs/pilot/development-spec.md)은 당시 구현 자료입니다. 현재 팀 명세·완료 상태와 구분합니다.
+기본 제출 정책은 `PRIVATE_ONLY`입니다. 보장된 private endpoint가 확인되지 않았으면 대기/만료하며, mandate의 명시적 `ALLOW_PUBLIC` 선택 없이 일반 RPC로 바꾸지 않습니다. 비밀키·실제 전략·witness·인증 토큰은 커밋하지 않습니다.

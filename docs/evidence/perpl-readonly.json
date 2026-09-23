@@ -1,0 +1,45 @@
+{
+  "createdAt": "2026-09-23T07:54:14.082Z",
+  "status": "PASS_READ_ONLY_BASIC_COMPATIBILITY",
+  "m0Complete": false,
+  "network": "Monad testnet",
+  "chainId": 10143,
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "blockNumber": "64960757",
+  "blockHash": "0xee0e19189f099d10a8b2ec8daa67b2074a837e4ebfc62463ef6bc6cf5e5f066f",
+  "blockGasLimit": "150000000",
+  "sdkCommit": "5b5be46a3349d719fbb59a08cf3955194bc8dfd8",
+  "abiUrl": "https://raw.githubusercontent.com/PerplFoundation/dex-sdk/5b5be46a3349d719fbb59a08cf3955194bc8dfd8/crates/sdk/abi/dex/Exchange.json",
+  "abiSha256": "766fc81326bdf27f243ca582f65c3e2ff72bc639d88674876697a63ae1c47cb3",
+  "exchange": "0x1964C32f0bE608E7D29302AFF5E61268E72080cc",
+  "exchangeRuntimeKeccak": "0x63411cb4bdb3d2085146b23dca998134a387312f7ea092e05386066a85f9f7a1",
+  "implementation": "0xbcbd3701ed0bde8acbb727f0d92a8b85a169adbb",
+  "implementationRuntimeKeccak": "0x29ef64f8efca11ce9cd1f0ab39ef08cd7bd02955b52075db44be95a8b4dcf620",
+  "version": [
+    "1",
+    "7",
+    "5"
+  ],
+  "withdrawAllowance": [
+    "6281218028181",
+    "64960944",
+    "64960757",
+    "749192274"
+  ],
+  "randao": "0x55c0ac95b54671be93d1502cea62c5e195f3e5e65180629cf37a70c2c5699035",
+  "checks": [
+    "version read",
+    "withdraw allowance read",
+    "PREVRANDAO equals block.mixHash",
+    "BN254 G1 add equals independent doubling",
+    "BN254 G1 mul equals independent doubling",
+    "BN254 infinity pairing 1 and 4 pairs"
+  ],
+  "limitations": [
+    "No state-changing transactions or contract-account test",
+    "No Groth16 proof verification or gas benchmark",
+    "Infinity pairings check dispatch only, not a nontrivial pairing relation",
+    "Runtime hashes record observed code, not reviewed or approved implementations",
+    "No private submission or slot accounting/withdrawal latency validation"
+  ]
+}
