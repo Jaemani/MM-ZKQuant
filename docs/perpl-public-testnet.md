@@ -13,7 +13,9 @@
 
 [현재 사전 검사](evidence/perpl-testnet-readiness.json), [실행 도구 리허설](evidence/perpl-testnet-rehearsal.json). 조회 당시 값이며 실행 전에 다시 검사한다. 메인넷 AUSD를 보내거나 구매하는 절차가 아니다.
 
-공식 SDK의 TestToken ABI는 로컬 테스트용이며 실제 테스트넷 AUSD의 bytecode와 달랐다. 실제 토큰의 `mint(address,uint256)` eth_call은 revert했다. 따라서 임의 mint 트랜잭션은 보내지 않았다. Perpl 팀이 제공하는 faucet/지급 경로 또는 팀이 이미 가진 **동일 테스트 토큰**이 필요하다.
+공식 SDK의 TestToken ABI는 로컬 테스트용이며 실제 테스트넷 AUSD의 bytecode와 달랐다. 실제 토큰의 `mint(address,uint256)` eth_call은 revert했다. 따라서 임의 mint 트랜잭션은 보내지 않았다. 공개 문서에서 faucet/지급 경로는 확인되지 않았다. Perpl 측에 테스트 담보 확보 방법을 문의해야 하며, 실제로 직접 지급해 준다는 보장도 아직 없다. 팀이 이미 가진 **동일 테스트 토큰**이 있다면 전송받는 것은 가능하다.
+
+[공식 소스 조사](research/2026-09-24-perpl-ausd-sources.md): GitHub API 문서의 정적 토큰 표와 현재 live context가 서로 다르다. 실행 설정은 현재 context와 일치하는 AUSD 주소를 유지하며 과거 USD 주소로 바꾸지 않는다. 200 AUSD는 이번 두 계정 테스트에 필요한 합계(현재 최소 100 × 2)다. 사용자가 찾아야 할 가이드를 놓쳤다고 판단할 근거는 없다.
 
 ## 구현한 실행 범위
 
