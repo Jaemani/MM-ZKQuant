@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-09-23T17:26:30.038Z",
+  "createdAt": "2026-09-24T01:12:07.078Z",
   "environment": "PUBLIC_MONAD_TESTNET",
   "status": "BLOCKED_PREFLIGHT",
   "externalNetworkBroadcast": false,
@@ -17,7 +17,7 @@
   "collateral": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
   "chainId": 10143,
   "preflight": {
-    "gasMON": "3.179234312",
+    "gasMON": "30.661008216",
     "walletAUSDBaseUnits": "0",
     "allocationPerProduct": "100000000",
     "requiredNewSessionAUSD": "200000000"

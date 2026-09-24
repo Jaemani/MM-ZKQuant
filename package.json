@@ -47,7 +47,11 @@
     "prove:perpl:atomic": "node scripts/run-perpl-fork.mjs --atomic",
     "preflight:perpl:testnet": "node scripts/prove-perpl-testnet.mjs",
     "prove:perpl:testnet": "node scripts/prove-perpl-testnet.mjs --execute",
-    "test:perpl:testnet-runner": "node scripts/run-perpl-fork.mjs --testnet-rehearsal"
+    "test:perpl:testnet-runner": "node scripts/run-perpl-fork.mjs --testnet-rehearsal",
+    "preflight:zk:testnet": "node scripts/prove-public-zk.mjs",
+    "test:zk:testnet-runner": "node scripts/run-perpl-fork.mjs --public-zk-rehearsal",
+    "prove:zk:testnet": "node scripts/prove-public-zk.mjs --execute",
+    "verify:zk:testnet": "node scripts/verify-public-zk.mjs"
   },
   "dependencies": {
     "@phala/dstack-sdk": "0.5.8",
