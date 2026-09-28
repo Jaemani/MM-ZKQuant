@@ -38,6 +38,7 @@
     "typecheck:protocol": "tsc -p protocol/ts/tsconfig.json",
     "test:reference": "cargo test --locked -p metropolis-reference",
     "probe:perpl": "node scripts/probe-perpl-readonly.mjs",
+    "probe:ausd:faucet": "node scripts/probe-ausd-faucet.mjs",
     "build:perpl-zk": "node scripts/build-perpl-zk.mjs",
     "prove:perpl": "node scripts/run-perpl-fork.mjs",
     "prove:perpl:zk": "node scripts/run-perpl-fork.mjs --zk",

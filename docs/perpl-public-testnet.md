@@ -2,6 +2,8 @@
 
 ## 현재 판정
 
+**2026-09-29 업데이트:** [Agora 공식 Monad 테스트넷 faucet](research/2026-09-29-perpl-test-collateral.md)을 확인했다. `requestFunds(address)` 경로가 있지만 현재 잔액 부족으로 호출 시뮬레이션이 실패한다. [조회 증거](evidence/ausd-faucet-readiness.json), 재확인 `npm run probe:ausd:faucet`. 아래 9월 24일의 지급 경로 미확인 설명은 당시 조사 기록이다. 현재 필요한 조치는 faucet 충전 또는 테스트 담보 직접 지급 요청이다.
+
 **Perpl 공개 네트워크 거래는 아직 미실행이다. 테스트 AUSD 잔액 부족으로 preflight가 중단한다.** 계약 컴파일과 동일 실행 도구의 로컬 리허설은 통과했다. 로컬 결과를 공개 테스트넷 성공으로 계산하지 않는다.
 
 담보가 필요 없는 별도 ZK probe는 공개 테스트넷에서 정상 승인·변조 거절·재사용 거절을 통과했다. [2026-09-24 팀 전달 문서](2026-09-24-core-validation-handoff.md). 이는 이 문서의 Perpl 거래 PASS 조건을 충족한 것이 아니다.

@@ -47,7 +47,9 @@
 
 [공개 ZK 검사](docs/evidence/public-zk-testnet.json)는 통과했고, `npm run verify:zk:testnet`으로 비밀키 없이 영수증·배포 코드·증명·당시 승인 횟수를 다시 확인할 수 있습니다. 테스트 MON 가스 총 `0.518226096`을 사용했습니다. Phala 재가동은 없습니다.
 
-[Perpl 실행 도구와 지급 조건](docs/perpl-public-testnet.md)은 준비됐고 로컬 리허설도 통과했습니다. **Perpl 실제 공개 거래는 테스트 AUSD 200개 확보 전이라 아직 미실행**입니다. `npm run preflight:perpl:testnet`으로 준비 상태를 확인합니다. 공개 faucet 경로는 확인되지 않았으므로 메인넷 AUSD 구매·전송으로 대체하지 않습니다.
+[Perpl 실행 도구와 지급 조건](docs/perpl-public-testnet.md)은 준비됐고 로컬 리허설도 통과했습니다. **Perpl 실제 공개 거래는 테스트 AUSD 200개 확보 전이라 아직 미실행**입니다. `npm run preflight:perpl:testnet`으로 준비 상태를 확인합니다.
+
+**2026-09-29 정정:** [Agora 공식 faucet을 찾았습니다](docs/research/2026-09-29-perpl-test-collateral.md). 현재 해당 계약의 잔액은 0.000001 AUSD이고, 1회 지급량은 10,000 AUSD라 지급 시뮬레이션이 `InsufficientFunds`로 실패합니다. 차단 사유는 이제 **공급 경로 미확인이 아니라 faucet 잔액 부족**입니다. `npm run probe:ausd:faucet`으로 키 없이 재확인할 수 있습니다. 해커톤 Perpl 멘토/운영진 또는 Agora에 faucet 충전이나 테스트 AUSD 200개 직접 지급을 요청하면 됩니다. 실제 지급 가능 여부는 아직 답변받지 않았습니다.
 
 ## 코어 MVP 실행
 

@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-09-28T19:28:29.820Z",
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "chainId": 10143,
+  "block": 66489411,
+  "blockHash": "0x6e40f65a2aea44e6bfb8498d968e5b2e81013fa77d910124fd8098b30c806dbf",
+  "blockTimestamp": 1790623709,
+  "readOnly": true,
+  "transactionsSent": 0,
+  "sources": {
+    "deployments": "https://docs.agora.finance/developer/contract-deployments",
+    "faucet": "https://testnet.monadscan.com/address/0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C",
+    "perplContext": "https://testnet.perpl.xyz/api/v1/pub/context"
+  },
+  "faucet": "0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C",
+  "token": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+  "wallet": "0xA761529aE65a0966125C47911DEDCC7F23951D57",
+  "decimals": 6,
+  "proxyCodeHash": "0x7ea12d4d718fd07f2a0076772648286b771d074b1edbda6582104eb9d7f574a3",
+  "implementation": "0xba804df5c476e8eaef87bf8085f295300cce2a49",
+  "faucetBalanceBaseUnits": "1",
+  "faucetBalanceAUSD": "0.000001",
+  "walletBalanceAUSD": "0.0",
+  "dripAmountAUSD": "10000.0",
+  "maxAmountToOwnAUSD": "100000.0",
+  "maxDripFrequencySeconds": "60",
+  "lastDripTimestamp": "1790323669",
+  "perplMinimumNewAccountAUSD": "100.0",
+  "claimSimulation": {
+    "status": "REVERT",
+    "reason": "InsufficientFunds",
+    "data": "0x356680b7"
+  }
+}
