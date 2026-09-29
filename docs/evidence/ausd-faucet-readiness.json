@@ -1,10 +1,10 @@
 {
-  "observedAt": "2026-09-28T19:28:29.820Z",
+  "observedAt": "2026-09-29T05:44:11.229Z",
   "rpcUrl": "https://testnet-rpc.monad.xyz",
   "chainId": 10143,
-  "block": 66489411,
-  "blockHash": "0x6e40f65a2aea44e6bfb8498d968e5b2e81013fa77d910124fd8098b30c806dbf",
-  "blockTimestamp": 1790623709,
+  "block": 66609444,
+  "blockHash": "0x7efe2ba5c1b3c125087154644f8da46fd96642a6698bf3275ea1e2915d2e5417",
+  "blockTimestamp": 1790660650,
   "readOnly": true,
   "transactionsSent": 0,
   "sources": {

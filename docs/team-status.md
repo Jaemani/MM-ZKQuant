@@ -1,6 +1,6 @@
 # 팀 진행 상태 · 2026-09-24
 
-> **2026-09-29 담보 경로 정정:** [Agora 공식 faucet을 확인](research/2026-09-29-perpl-test-collateral.md)했다. 현재 잔액 0.000001 AUSD / 지급량 10,000 AUSD로 `InsufficientFunds` 상태다. 해커톤 멘토·운영진/Agora에 faucet 충전 또는 테스트 AUSD 200개 직접 지급을 요청하는 단계다. 아직 요청 메시지를 발송하거나 담보를 받은 것은 아니다.
+> **2026-09-29 담보 경로 정정:** [Agora 공식 faucet을 확인](research/2026-09-29-perpl-test-collateral.md)했다. 현재 잔액 0.000001 AUSD / 지급량 10,000 AUSD로 `InsufficientFunds` 상태다. 해커톤 멘토·운영진/Agora에 faucet 충전 또는 테스트 AUSD 200개 직접 지급을 요청하는 단계다. 2026-09-29 17:31 KST [공식 지원 요청](research/2026-09-29-perpl-support-request.md)을 제출해 운영진 답변 대기 중이다. 담보 수령은 아직 확인되지 않았다.
 
 > **최신 추가 결과:** 공개 Monad 테스트넷에서 최소 목표 승인 ZK의 정상 승인·변조 거절·재사용 거절을 실제 트랜잭션으로 확인했다. [팀 전달용 판정표·트랜잭션·재현 명령](2026-09-24-core-validation-handoff.md). 이 검사는 합성 입력이며 Perpl 호출과 TEE 실행은 없다. Perpl 공개 거래는 테스트 AUSD 200개 부족으로 계속 차단돼 있다.
 

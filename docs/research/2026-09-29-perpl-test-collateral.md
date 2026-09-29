@@ -21,7 +21,7 @@
 - 우리 지갑에 대한 `requestFunds(address)` 읽기 전용 시뮬레이션: **`InsufficientFunds()`** (`0x356680b7`).
 - ABI 출처: [faucet 구현 계약](https://testnet.monadscan.com/address/0xba804DF5c476E8EaeF87BF8085F295300ccE2a49).
 
-따라서 가장 빠른 다음 단계는 **공식 faucet 충전 또는 우리 지갑으로 200 테스트 AUSD 직접 지급 요청**이다. 수령 성공·공개 거래 성공으로 표시하지 않는다. 아래 멘토·운영자 경로를 이용할 수 있다. [Agora 공식 문서](https://docs.agora.finance/developer/contract-deployments)에는 `support@agora.finance`도 명시되어 있다. 메시지는 아직 발송하지 않았다.
+따라서 가장 빠른 다음 단계는 **공식 faucet 충전 또는 우리 지갑으로 200 테스트 AUSD 직접 지급 요청**이다. 수령 성공·공개 거래 성공으로 표시하지 않는다. 아래 멘토·운영자 경로를 이용할 수 있다. [Agora 공식 문서](https://docs.agora.finance/developer/contract-deployments)에는 `support@agora.finance`도 명시되어 있다. 2026-09-29 17:31 KST 공식 지원 포럼에 [지원 요청](2026-09-29-perpl-support-request.md)을 제출했고 Awaiting organizer 상태를 확인했다.
 
 ## 확인한 공식 경로
 
@@ -49,7 +49,7 @@
 
 [재현 스크립트](../../scripts/probe-ausd-faucet.mjs)는 비밀키를 읽거나 거래를 전송하지 않고, 고정 블록에서 잔액·설정·지급 호출을 조회해 [증거 JSON](../evidence/ausd-faucet-readiness.json)을 갱신한다. `InsufficientFunds`는 우리 지갑 MON 부족이 아니라 faucet의 지급 토큰 부족이다. 다른 체인의 동명 AUSD가 해당 Perpl 계약에서 사용 가능하다고 가정하지 않는다.
 
-## Faucet 사용이 막힐 경우 문의 초안 — 아직 발송하지 않음
+## 문의 초안 — 실제 제출본은 별도 지원 요청 기록 참조
 
 > Hi Perpl team, we are building Confidential Alpha Protocol (MM-ZKQuant) for Monad Metropolis. We have verified our ZK authorization flow on Monad testnet and tested Perpl execution on a local fork. We now want to validate real public-testnet order execution and collateral recovery through two smart-contract accounts.
 >
