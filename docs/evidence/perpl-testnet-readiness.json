@@ -1,7 +1,7 @@
 {
-  "createdAt": "2026-09-24T01:12:07.078Z",
+  "createdAt": "2026-10-03T10:26:16.797Z",
   "environment": "PUBLIC_MONAD_TESTNET",
-  "status": "BLOCKED_PREFLIGHT",
+  "status": "READY_NOT_BROADCAST",
   "externalNetworkBroadcast": false,
   "hardwareTEE": false,
   "syntheticPublicTargets": true,
@@ -17,14 +17,12 @@
   "collateral": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
   "chainId": 10143,
   "preflight": {
-    "gasMON": "30.661008216",
-    "walletAUSDBaseUnits": "0",
+    "gasMON": "30.643690656",
+    "walletAUSDBaseUnits": "10000000000",
     "allocationPerProduct": "100000000",
     "requiredNewSessionAUSD": "200000000"
   },
   "sourceSha256": "53c46fc9c9eabaf0462cf0f135cd41c2a4d19579a4b8c3150a7d1f5c332075b8",
   "compilation": "PASS",
-  "blockers": [
-    "TEST_AUSD_REQUIRED"
-  ]
+  "blockers": []
 }

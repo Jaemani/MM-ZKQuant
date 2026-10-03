@@ -1,5 +1,8 @@
 # Perpl 테스트 AUSD 지원 요청
 
+> **2026-10-03 후속 결과:** 운영진이 9월 30일 faucet 충전을 안내했고, 공식 faucet에서 테스트 AUSD 수령 및 공개 Perpl 왕복 거래 검증을 완료했다. [최신 결과](../2026-10-03-public-perpl-validation.md). 아래 내용은 당시 기록이다.
+
+
 상태: **접수 완료 — Awaiting organizer**. 2026-09-29 17:31 KST, 사용자 로그인 후 Metropolis 공식 지원 포럼에 제출했다. 분류는 Something is broken이며, 운영진이 확인하고 이 요청에 답변한다는 접수 안내를 확인했다. 토큰 지급이나 문제 해결은 아직 확인되지 않았다.
 
 제출 경로: https://hackathon.monad.xyz/support

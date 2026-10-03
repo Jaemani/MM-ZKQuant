@@ -1,0 +1,47 @@
+{
+  "observedAt": "2026-10-03T10:25:50.453Z",
+  "status": "PASS_TEST_AUSD_RECEIVED",
+  "chainId": 10143,
+  "wallet": "0xA761529aE65a0966125C47911DEDCC7F23951D57",
+  "token": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+  "faucet": "0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C",
+  "transaction": "0xac5b15e675b44ac9504736e3a83462ed0e52da1abf09f4632ee7354d2afcbbb9",
+  "block": 67804951,
+  "blockHash": "0xeca681d4cacf4c937ce806967486ca3f7bba6bfcb66eea68223c7ed238d749cb",
+  "receiptStatus": 1,
+  "receivedAUSD": "10000.0",
+  "balanceAfterAUSD": "10000.0",
+  "feeMON": "0.01731756",
+  "explorer": "https://testnet.monadscan.com/tx/0xac5b15e675b44ac9504736e3a83462ed0e52da1abf09f4632ee7354d2afcbbb9",
+  "logs": [
+    {
+      "_type": "log",
+      "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "blockHash": "0xeca681d4cacf4c937ce806967486ca3f7bba6bfcb66eea68223c7ed238d749cb",
+      "blockNumber": 67804951,
+      "data": "0x00000000000000000000000000000000000000000000000000000002540be400",
+      "index": 4,
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000d236c18d274e54faccc3dd9dda4b27965a73ee6c",
+        "0x000000000000000000000000a761529ae65a0966125c47911dedcc7f23951d57"
+      ],
+      "transactionHash": "0xac5b15e675b44ac9504736e3a83462ed0e52da1abf09f4632ee7354d2afcbbb9",
+      "transactionIndex": 2
+    },
+    {
+      "_type": "log",
+      "address": "0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C",
+      "blockHash": "0xeca681d4cacf4c937ce806967486ca3f7bba6bfcb66eea68223c7ed238d749cb",
+      "blockNumber": 67804951,
+      "data": "0x00000000000000000000000000000000000000000000000000000002540be400",
+      "index": 5,
+      "topics": [
+        "0x4087832b44fdb3158fdf0e558259a49524c43a1e2fb21ee61859eb8ea5855e2e",
+        "0x000000000000000000000000a761529ae65a0966125c47911dedcc7f23951d57"
+      ],
+      "transactionHash": "0xac5b15e675b44ac9504736e3a83462ed0e52da1abf09f4632ee7354d2afcbbb9",
+      "transactionIndex": 2
+    }
+  ]
+}

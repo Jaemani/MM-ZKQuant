@@ -53,9 +53,17 @@ try {
     if(!state){state={wallet:wallet.address,sourceHash,allocation:String(allocation),steps:{},keys:[randomBytes(32).toString('hex'),randomBytes(32).toString('hex')],products:[],startedAt:new Date().toISOString()};save(statePath,state);}
     assert.equal(state.wallet,wallet.address);assert.equal(state.sourceHash,sourceHash,'Deployment sources changed; use existing code for recovery');
     const persist=()=>save(statePath,state);
+    const waitReceipt=async hash=>{
+      for(let n=0;n<90;n++){
+        const receipt=await rpc.getTransactionReceipt(hash);
+        if(receipt)return receipt;
+        await new Promise(resolve=>setTimeout(resolve,1000));
+      }
+      throw Error('Pending transaction: rerun to reconcile '+hash);
+    };
     for(const entry of Object.values(state.steps)){
       if(entry.hash&&entry.status==null){
-        const receipt=await rpc.getTransactionReceipt(entry.hash)||await rpc.waitForTransaction(entry.hash,1,90000);
+        const receipt=await waitReceipt(entry.hash);
         assert.ok(receipt,'Pending prior transaction: no further broadcasts');
         entry.status=receipt.status;entry.fee=String(receipt.fee);persist();
       }
@@ -66,16 +74,16 @@ try {
     // A recorded transaction is always reconciled before any attempt to send another.
     const step=async(label,prepare)=>{
       let entry=state.steps[label],receipt;
-      if(entry?.hash){receipt=await rpc.getTransactionReceipt(entry.hash);if(!receipt)receipt=await rpc.waitForTransaction(entry.hash,1,90000);assert.ok(receipt,'Pending transaction: rerun to reconcile, do not replace');}
+      if(entry?.hash){receipt=await waitReceipt(entry.hash);}
       else {
         const request=await prepare();
         const estimate=await wallet.estimateGas(request),fee=await rpc.getFeeData();
         const gasLimit=estimate*13n/10n,maxFeePerGas=fee.maxFeePerGas??fee.gasPrice,maxPriorityFeePerGas=fee.maxPriorityFeePerGas??0n;
         let used=0n;for(const e of Object.values(state.steps))used+=BigInt(e.fee||'0');
-        assert.ok(used+gasLimit*maxFeePerGas<=parseEther('0.5'),'Session test-MON cap 0.5');
+        assert.ok(used+gasLimit*maxFeePerGas<=parseEther('5'),'Session test-MON cap 5');
         const tx=await wallet.sendTransaction({...request,gasLimit,maxFeePerGas,maxPriorityFeePerGas});
         state.steps[label]={hash:tx.hash};persist();
-        receipt=await rpc.waitForTransaction(tx.hash,1,90000);assert.ok(receipt,'Pending transaction; session saved');
+        receipt=await waitReceipt(tx.hash);
       }
       state.steps[label]={hash:receipt.hash,block:receipt.blockNumber,status:receipt.status,fee:String(receipt.fee),gasUsed:String(receipt.gasUsed),contractAddress:receipt.contractAddress};persist();
       report.externalNetworkBroadcast=!rehearsal;
@@ -118,6 +126,10 @@ try {
     }
     for(const [name,entry]of Object.entries(state.steps)){const r=await rpc.getTransactionReceipt(entry.hash);assert.equal(r?.status,1);report.transactions.push({name,...entry,explorer:rehearsal?null:'https://testnet.monadexplorer.com/tx/'+entry.hash,logs:r.logs});}
     report.products=state.products;report.proofs=state.proofs;report.verificationKey=JSON.parse(readFileSync('artifacts/perpl-zk/verification-key.json'));
+    report.testMonSessionCap='5';report.totalFeeMON=formatEther(Object.values(state.steps).reduce((s,e)=>s+BigInt(e.fee||0),0n));
+    report.finalWalletAUSDBaseUnits=String(await cash.balanceOf(wallet.address));
+    report.walletNonceBefore=nonceBefore;report.walletNonceAfter=await rpc.getTransactionCount(wallet.address);
+    report.additionalTransactionsThisRun=report.walletNonceAfter-report.walletNonceBefore;
     assert.ok(state.products.every(p=>BigInt(p.openActual)!==0n),'IOC did not fill: round trip ended safely but trading validation incomplete');
     if(resumeRehearsal){assert.equal(await rpc.getTransactionCount(wallet.address),nonceBefore);report.resumeWithoutAdditionalTransactions=true;}
     report.status=rehearsal?'PASS_LOCAL_TESTNET_RUNNER_REHEARSAL':'PASS_PUBLIC_TESTNET_ZK_ROUNDTRIP';

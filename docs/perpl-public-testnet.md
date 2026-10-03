@@ -1,12 +1,10 @@
-# 공개 Monad 테스트넷 실행 준비 — 2026-09-24
+# 공개 Monad 테스트넷 실행 — 2026-10-03
 
 ## 현재 판정
 
-**2026-09-29 업데이트:** [Agora 공식 Monad 테스트넷 faucet](research/2026-09-29-perpl-test-collateral.md)을 확인했다. `requestFunds(address)` 경로가 있지만 현재 잔액 부족으로 호출 시뮬레이션이 실패한다. [조회 증거](evidence/ausd-faucet-readiness.json), 재확인 `npm run probe:ausd:faucet`. 아래 9월 24일의 지급 경로 미확인 설명은 당시 조사 기록이다. 현재 필요한 조치는 faucet 충전 또는 테스트 담보 직접 지급 요청이다.
+**공개 Perpl 거래 및 독립 읽기 전용 재검증 통과.** 공식 faucet 수령 후 A/B 각각 100 AUSD 입금→실제 +100/-100 lot 체결→전량 종료→회수했다. [결과·트랜잭션·검증 범위](2026-10-03-public-perpl-validation.md). 9월 29일 faucet 잔액 부족은 운영진 충전으로 해결됐다.
 
-**Perpl 공개 네트워크 거래는 아직 미실행이다. 테스트 AUSD 잔액 부족으로 preflight가 중단한다.** 계약 컴파일과 동일 실행 도구의 로컬 리허설은 통과했다. 로컬 결과를 공개 테스트넷 성공으로 계산하지 않는다.
-
-담보가 필요 없는 별도 ZK probe는 공개 테스트넷에서 정상 승인·변조 거절·재사용 거절을 통과했다. [2026-09-24 팀 전달 문서](2026-09-24-core-validation-handoff.md). 이는 이 문서의 Perpl 거래 PASS 조건을 충족한 것이 아니다.
+현재 공개 runner는 로컬 prover를 사용한다. 하드웨어 TEE→공개 Perpl 전체 경로는 아직 실행하지 않았다.
 
 - 테스트 지갑: `0xA761529aE65a0966125C47911DEDCC7F23951D57`
 - 네트워크: Monad testnet, chain ID `10143`
@@ -17,7 +15,7 @@
 
 [현재 사전 검사](evidence/perpl-testnet-readiness.json), [실행 도구 리허설](evidence/perpl-testnet-rehearsal.json). 조회 당시 값이며 실행 전에 다시 검사한다. 메인넷 AUSD를 보내거나 구매하는 절차가 아니다.
 
-공식 SDK의 TestToken ABI는 로컬 테스트용이며 실제 테스트넷 AUSD의 bytecode와 달랐다. 실제 토큰의 `mint(address,uint256)` eth_call은 revert했다. 따라서 임의 mint 트랜잭션은 보내지 않았다. 공개 문서에서 faucet/지급 경로는 확인되지 않았다. Perpl 측에 테스트 담보 확보 방법을 문의해야 하며, 실제로 직접 지급해 준다는 보장도 아직 없다. 팀이 이미 가진 **동일 테스트 토큰**이 있다면 전송받는 것은 가능하다.
+공식 SDK의 TestToken ABI는 로컬 테스트용이며 실제 테스트넷 AUSD의 bytecode와 달랐다. 실제 토큰의 `mint(address,uint256)` eth_call은 revert했다. 따라서 임의 mint 트랜잭션은 보내지 않았다. 이후 Agora 공식 문서의 faucet을 확인했고, 운영진 충전 후 `requestFunds(address)`로 실제 수령했다.
 
 [공식 소스 조사](research/2026-09-24-perpl-ausd-sources.md): GitHub API 문서의 정적 토큰 표와 현재 live context가 서로 다르다. 실행 설정은 현재 context와 일치하는 AUSD 주소를 유지하며 과거 USD 주소로 바꾸지 않는다. 200 AUSD는 이번 두 계정 테스트에 필요한 합계(현재 최소 100 × 2)다. 사용자가 찾아야 할 가이드를 놓쳤다고 판단할 근거는 없다.
 
@@ -32,6 +30,9 @@
 ## 실행 명령
 
 ```sh
+npm run verify:perpl:testnet # 기존 결과 재검증: 키 없이, 전송 없음
+npm run probe:ausd:faucet
+# 새 담보가 필요한 경우에만: npm run claim:ausd:testnet
 npm run preflight:perpl:testnet
 npm run test:perpl:testnet-runner
 # 공식 테스트 담보가 준비된 후에만 실제 공개 테스트넷 실행
@@ -42,7 +43,7 @@ npm run prove:perpl:testnet
 
 `test:perpl:testnet-runner`는 10143 체인 ID의 **로컬 Anvil fork**에서 동일 도구를 실행한다. 담보는 로컬 impersonation으로 마련하며 시간은 동결한다. 이어서 같은 세션을 재실행해 추가 거래 없이 기존 영수증으로 재개되는지 검사한다. 공개 네트워크 전송은 없다.
 
-`prove:perpl:testnet`은 공개 테스트넷에 전송한다. 가스 추정·현재 수수료를 확인하고 세션 테스트 MON 비용의 상한을 0.5로 둔다. 서명에 사용할 테스트 운용 키와 진행 상태는 `.data/perpl-testnet/session.json`에 0600 권한으로 기록한다. 정상 종료 전 이 파일을 삭제하거나 키·회로 산출물·계약 소스를 바꾸지 않는다.
+`prove:perpl:testnet`은 공개 테스트넷에 전송한다. 가스 추정·현재 수수료를 확인하고 세션 테스트 MON 비용의 상한을 5 테스트 MON으로 둔다(실제 이번 사용량 1.619336394). 서명에 사용할 테스트 운용 키와 진행 상태는 `.data/perpl-testnet/session.json`에 0600 권한으로 기록한다. 정상 종료 전 이 파일을 삭제하거나 키·회로 산출물·계약 소스를 바꾸지 않는다.
 
 ## 중단과 재실행
 
@@ -50,4 +51,4 @@ npm run prove:perpl:testnet
 
 종료 주문은 실행당 최대 3번 시도하며 매번 실제 잔량을 읽는다. 남은 포지션이 있으면 PASS를 내지 않는다. 동일 세션으로 재실행하면 다음 종료 시도를 이어간다. 이 재개 기능은 장기 장애·프로세스 임의 시점 crash·키 분실까지 해결한 운영 복구 시스템은 아니다.
 
-공개 테스트넷 PASS 조건은 두 Product의 실제 체결, 포지션 0, 회수액 > 0, 전체 영수증 재조회 성공이다. 그 결과가 나오기 전까지 [검토 시나리오](core-mvp-scenarios.md)의 공개 체인 단계는 미통과로 유지한다.
+공개 테스트넷 PASS 조건은 두 Product의 실제 체결, 포지션 0, 회수액 > 0, 전체 영수증 재조회 성공이다. 2026-10-03 이 조건을 충족했다. 별도 검증기가 4개 거래의 내부 호출과 실제 포지션·담보 이동을 다시 확인했다.

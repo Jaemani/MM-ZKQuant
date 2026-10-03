@@ -1,10 +1,10 @@
 {
-  "observedAt": "2026-09-29T05:44:11.229Z",
+  "observedAt": "2026-10-03T10:23:31.038Z",
   "rpcUrl": "https://testnet-rpc.monad.xyz",
   "chainId": 10143,
-  "block": 66609444,
-  "blockHash": "0x7efe2ba5c1b3c125087154644f8da46fd96642a6698bf3275ea1e2915d2e5417",
-  "blockTimestamp": 1790660650,
+  "block": 67804490,
+  "blockHash": "0x882621f199183eee80b65dba9464a6b6e433a3132c2e4dc6ffbce4d58794fad2",
+  "blockTimestamp": 1791023010,
   "readOnly": true,
   "transactionsSent": 0,
   "sources": {
@@ -18,17 +18,15 @@
   "decimals": 6,
   "proxyCodeHash": "0x7ea12d4d718fd07f2a0076772648286b771d074b1edbda6582104eb9d7f574a3",
   "implementation": "0xba804df5c476e8eaef87bf8085f295300cce2a49",
-  "faucetBalanceBaseUnits": "1",
-  "faucetBalanceAUSD": "0.000001",
+  "faucetBalanceBaseUnits": "998759950000001",
+  "faucetBalanceAUSD": "998759950.000001",
   "walletBalanceAUSD": "0.0",
   "dripAmountAUSD": "10000.0",
   "maxAmountToOwnAUSD": "100000.0",
   "maxDripFrequencySeconds": "60",
-  "lastDripTimestamp": "1790323669",
+  "lastDripTimestamp": "1791021332",
   "perplMinimumNewAccountAUSD": "100.0",
   "claimSimulation": {
-    "status": "REVERT",
-    "reason": "InsufficientFunds",
-    "data": "0x356680b7"
+    "status": "SIMULATION_PASS_NOT_CLAIMED"
   }
 }
