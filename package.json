@@ -56,7 +56,14 @@
     "prove:zk:testnet": "node scripts/prove-public-zk.mjs --execute",
     "verify:zk:testnet": "node scripts/verify-public-zk.mjs",
     "prove:perpl:tee:testnet": "node scripts/prove-perpl-testnet.mjs --tee --execute",
-    "verify:perpl:tee:testnet": "node scripts/verify-perpl-testnet.mjs --tee && node scripts/verify-perpl-tee-testnet.mjs"
+    "verify:perpl:tee:testnet": "node scripts/verify-perpl-testnet.mjs --tee && node scripts/verify-perpl-tee-testnet.mjs",
+    "build:cohort-zk": "node scripts/build-cohort-zk.mjs",
+    "test:cohort": "node --test tests/cohort-*.test.js",
+    "prove:cohort:fork": "node scripts/run-perpl-fork.mjs --cohort --operator",
+    "prove:cohort:profit": "node scripts/run-perpl-fork.mjs --cohort --operator --profit-fixture",
+    "prepare:cohort:tee": "node scripts/prepare-cohort-tee.mjs",
+    "prove:cohort:testnet": "node scripts/prove-cohort-testnet.mjs --execute",
+    "verify:cohort:testnet": "node scripts/verify-cohort-public.mjs"
   },
   "dependencies": {
     "@phala/dstack-sdk": "0.5.8",

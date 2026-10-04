@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-04T14:10:32.474Z",
+  "status": "PASS_INDEPENDENT_PUBLIC_COHORT_AUDIT",
+  "checks": [
+    "all-receipts-and-deployment-calldata-runtime-match",
+    "hardware-sender-actual-trades-and-same-tx-proof-verification",
+    "terminal-ledger-proof-and-independent-accounting-match",
+    "share-burn-and-owner-specific-transfers-conserve-assets",
+    "historical-tdx-quote-binds-enclave-operator-and-pinned-code"
+  ],
+  "traces": [
+    {
+      "name": "open",
+      "hash": "0xa4a40d6f34a11ab47c6888d4bafaff64c1e6226644c18f3b9c46a85da13d66ec",
+      "sender": "0xDA523a9D4B00904E56145E49F880293B4DBA7bBE",
+      "before": "0",
+      "after": "100",
+      "proofBeforePerpl": true
+    },
+    {
+      "name": "close-0",
+      "hash": "0x0379ed24e51118c4a2d2d9bec7be640e1b114f9c36a57f2eabee09d240d89c21",
+      "sender": "0xDA523a9D4B00904E56145E49F880293B4DBA7bBE",
+      "before": "100",
+      "after": "0",
+      "proofBeforePerpl": true
+    }
+  ],
+  "limitations": [
+    "RPC and vendor attestation verification trust",
+    "One terminal cohort; not full v1 Ledger",
+    "Historical attestation, not a fresh challenge"
+  ],
+  "settlement": {
+    "recovered": "199911176",
+    "claims": [
+      "59973352",
+      "139937824"
+    ],
+    "fee": "0",
+    "totalShares": "0",
+    "phase": "4"
+  }
+}

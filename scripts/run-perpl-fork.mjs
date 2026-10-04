@@ -27,7 +27,7 @@ try {
     await new Promise(r=>setTimeout(r,250));
   }
   if(!ready)throw Error('Fork timeout: '+failure);
-  const child=spawn(process.execPath,publicZkRehearsal?['scripts/prove-public-zk.mjs','--rehearsal','--execute']:testnetRehearsal?['scripts/prove-perpl-testnet.mjs','--fork-rehearsal']:['scripts/prove-perpl-fork.mjs',...process.argv.slice(2).filter(x=>['--zk','--tee','--atomic'].includes(x))],{stdio:'inherit',env:{...process.env,MM_PERPL_FORK_RPC:rpcUrl}});
+  const child=spawn(process.execPath,process.argv.includes('--cohort')?['scripts/prove-cohort-fork.mjs',...process.argv.slice(2).filter(x=>['--operator','--profit-fixture'].includes(x))]:publicZkRehearsal?['scripts/prove-public-zk.mjs','--rehearsal','--execute']:testnetRehearsal?['scripts/prove-perpl-testnet.mjs','--fork-rehearsal']:['scripts/prove-perpl-fork.mjs',...process.argv.slice(2).filter(x=>['--zk','--tee','--atomic'].includes(x))],{stdio:'inherit',env:{...process.env,MM_PERPL_FORK_RPC:rpcUrl}});
   const code=await new Promise((res,rej)=>{child.on('error',rej);child.on('exit',res);});
   if(code!==0)throw Error(`Perpl fork check failed (${code})`);
   if(testnetRehearsal){const resumed=spawn(process.execPath,['scripts/prove-perpl-testnet.mjs','--fork-rehearsal','--resume-rehearsal'],{stdio:'inherit',env:{...process.env,MM_PERPL_FORK_RPC:rpcUrl}});const result=await new Promise((resolve,reject)=>{resumed.on('error',reject);resumed.on('exit',resolve);});if(result!==0)throw Error('Rehearsal resume failed');}

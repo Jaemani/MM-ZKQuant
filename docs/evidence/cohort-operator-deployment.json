@@ -1,0 +1,14 @@
+{
+  "observedDateKST": "2026-10-04",
+  "composeHash": "6d649c00cdc95199574fa70c4b220266a0a61db28fe83aeba4e5926498315e30",
+  "sourceHashes": {
+    "deploy/tee/operator/server.mjs": "af685d09860ad96df25272a358f66b7b9a02a02106748f02f9f1fa16581619bf",
+    "deploy/tee/operator/engine.mjs": "6c0e4a89ba23aa91394f40c71d919d3cad42e918bc77cace5a39bad08be5949d",
+    "protocol/cohort/durable-submitter.mjs": "744c3e91d57e3cbf199b4517448e929e23ca5ca43b63c1d97b9116c52c4c35d4",
+    "protocol/perpl/target-prover.mjs": "2d1613c49e5161f388c4ede79be07ecbf20e2b5fde2e25cbe8c619c750dd319a",
+    "src/integration/sealed.js": "d7f11723c384e84df3ce967a0855cb404f8e6f795b137c4d1beab3edf0b01341"
+  },
+  "lockSha256": "d6ba52d6f49d643544d3b3b13d09479e20ba1b1e7215a9ba8196b6e0f3335340",
+  "experimentId": "12b867eba43588d812d8cfa4dcb4b197",
+  "budgetUSD": 2
+}
