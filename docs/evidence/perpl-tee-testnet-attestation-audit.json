@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-10-04T09:18:51.924Z",
+  "status": "PASS_HISTORICAL_TDX_QUOTE_REVERIFICATION",
+  "quotes": [
+    {
+      "quoteHash": "f62b4b94d456daf38d18afd1d6c7cea8d56417e1c0188375c631f9e11f3f82c3",
+      "composeHash": "ade408600a55ad9d302ae86c05be8855a17bf00a60b495c3bb7e600a6e67489e",
+      "verified": true
+    }
+  ],
+  "proofCount": 4,
+  "limitations": [
+    "Historical quote verification is not a fresh live challenge",
+    "Archived proof responses are not separately hardware-signed; live encrypted response binding was checked by the client",
+    "Client signing and public relaying remain outside TEE"
+  ]
+}

@@ -6,10 +6,13 @@ import {JsonRpcProvider,Contract,ContractFactory,AbiCoder,formatEther} from 'eth
 import {groth16,curves} from 'snarkjs';
 import solc from 'solc';
 import {field} from '../protocol/perpl/target-prover.mjs';
-const evidence=JSON.parse(readFileSync('docs/evidence/perpl-testnet-mvp.json'));
+const hardware=process.argv.includes('--tee');
+const evidence=JSON.parse(readFileSync(hardware?'docs/evidence/perpl-tee-testnet-mvp.json':'docs/evidence/perpl-testnet-mvp.json'));
+// This checker audits chain execution only; hardware provenance is checked separately.
+assert.equal(Boolean(evidence.hardwareTEE),hardware);
 const rpc=new JsonRpcProvider('https://testnet-rpc.monad.xyz',undefined,{batchMaxCount:1,cacheTimeout:-1});
 const audit={observedAt:new Date().toISOString(),status:'RUNNING',chainId:10143,checks:[],products:[],transactions:[],executionTraces:[],
-  limitations:['Same official RPC provider; no independent consensus verification','Local prover; no hardware TEE in this public run','Dedicated-account synthetic target MVP only, no full Ledger/shares/fees']};
+  limitations:['Same official RPC provider; no independent consensus verification',hardware?'Hardware provenance requires separate attestation verification':'Local prover; no hardware TEE in this public run','Dedicated-account synthetic target MVP only, no full Ledger/shares/fees']};
 try {
   assert.equal(evidence.status,'PASS_PUBLIC_TESTNET_ZK_ROUNDTRIP');
   assert.equal(evidence.environment,'PUBLIC_MONAD_TESTNET');
@@ -115,6 +118,6 @@ try {
   audit.status='PASS_PUBLIC_PERPL_INDEPENDENT_READONLY_AUDIT';
 } catch(error){audit.status='FAIL';audit.error=error.shortMessage||error.message;process.exitCode=1;}
 finally {
-  writeFileSync('docs/evidence/perpl-testnet-audit.json',JSON.stringify(audit,null,2)+'\n');
+  writeFileSync(hardware?'docs/evidence/perpl-tee-testnet-audit.json':'docs/evidence/perpl-testnet-audit.json',JSON.stringify(audit,null,2)+'\n');
   console.log(JSON.stringify(audit,null,2));rpc.destroy();await(await curves.getCurveFromName('bn128')).terminate();
 }

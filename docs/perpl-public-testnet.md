@@ -1,10 +1,13 @@
 # 공개 Monad 테스트넷 실행 — 2026-10-03
 
+> **2026-10-04 후속 결과:** 실제 TDX에서 생성한 증명 4개로 공개 Perpl A/B 진입·종료·담보 회수를 통과했다. [최신 결과와 남은 작업](2026-10-04-tee-public-validation.md). 클라이언트 서명·제출은 로컬이며 전체 Ledger·지분·보수는 미구현이다. 아래 과거 실험 범위와 구분한다.
+
+
 ## 현재 판정
 
 **공개 Perpl 거래 및 독립 읽기 전용 재검증 통과.** 공식 faucet 수령 후 A/B 각각 100 AUSD 입금→실제 +100/-100 lot 체결→전량 종료→회수했다. [결과·트랜잭션·검증 범위](2026-10-03-public-perpl-validation.md). 9월 29일 faucet 잔액 부족은 운영진 충전으로 해결됐다.
 
-현재 공개 runner는 로컬 prover를 사용한다. 하드웨어 TEE→공개 Perpl 전체 경로는 아직 실행하지 않았다.
+기본 공개 runner는 로컬 prover를 사용한다. `prove:perpl:tee:testnet`은 하드웨어 prover를 사용하며 10월 4일 실제 공개 거래를 통과했다. TEE 내부 relayer는 아직 없다.
 
 - 테스트 지갑: `0xA761529aE65a0966125C47911DEDCC7F23951D57`
 - 네트워크: Monad testnet, chain ID `10143`

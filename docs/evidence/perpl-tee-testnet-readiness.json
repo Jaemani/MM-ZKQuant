@@ -1,0 +1,148 @@
+{
+  "createdAt": "2026-10-04T09:18:29.521Z",
+  "environment": "PUBLIC_MONAD_TESTNET",
+  "status": "READY_NOT_BROADCAST",
+  "externalNetworkBroadcast": true,
+  "hardwareTEE": true,
+  "syntheticPublicTargets": true,
+  "transactions": [],
+  "limitations": [
+    "Hardware remote proving; client signs synthetic intent and relays publicly",
+    "Public synthetic targets only; not PRIVATE_ONLY strategy submission",
+    "One investor per dedicated account; no ledger/shares/fees",
+    "No guarantee of fills or withdrawal liquidity"
+  ],
+  "wallet": "0xA761529aE65a0966125C47911DEDCC7F23951D57",
+  "exchange": "0x1964C32f0bE608E7D29302AFF5E61268E72080cc",
+  "collateral": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+  "chainId": 10143,
+  "preflight": {
+    "gasMON": "27.405916182",
+    "walletAUSDBaseUnits": "9999668901",
+    "allocationPerProduct": "100000000",
+    "requiredNewSessionAUSD": "200000000"
+  },
+  "sourceSha256": "53c46fc9c9eabaf0462cf0f135cd41c2a4d19579a4b8c3150a7d1f5c332075b8",
+  "compilation": "PASS",
+  "blockers": [],
+  "sessionTransactions": {
+    "deploy-verifier": {
+      "hash": "0x9b37531c370507b1544ac86dac7df37c95cf2266df3fbbb86da501e2e8822387",
+      "block": 68076948,
+      "status": 1,
+      "fee": "87955926000000000",
+      "gasUsed": "862313",
+      "contractAddress": "0x424f8b42a1226cdb4D475A1da43048f40a2FC46E"
+    },
+    "deploy-A": {
+      "hash": "0xb3fe8ae34aa03796196bf697f856c0659c37f9eebe78a0f81346495a8ec02bf5",
+      "block": 68076953,
+      "status": 1,
+      "fee": "239558832000000000",
+      "gasUsed": "2348616",
+      "contractAddress": "0xcf939aFaDDf00349B65925e4087796a11F06C9fA"
+    },
+    "approve-A": {
+      "hash": "0x1f7002efecf95317d623ab727c8237b1f8e91afaf327f89b54d2c561f2961a40",
+      "block": 68076958,
+      "status": 1,
+      "fee": "9427656000000000",
+      "gasUsed": "92428",
+      "contractAddress": null
+    },
+    "fund-A": {
+      "hash": "0x799644710eff91f6e5f3f59250d7218bfd070a4991caad1f93281f83ee075d87",
+      "block": 68076963,
+      "status": 1,
+      "fee": "44519736000000000",
+      "gasUsed": "436468",
+      "contractAddress": null
+    },
+    "open-A": {
+      "hash": "0x56a7ce50783860d1fa9dd2e8b9f533cc858c684e25ee1cc4eea3abaef8de8c36",
+      "block": 68077016,
+      "status": 1,
+      "fee": "223410090000000000",
+      "gasUsed": "2190295",
+      "contractAddress": null
+    },
+    "close-A-0": {
+      "hash": "0x7b256d8964ae24902e12445a97949dc3461c7d428d9c643c6f56c6b00ad2ccca",
+      "block": 68077062,
+      "status": 1,
+      "fee": "212543724000000000",
+      "gasUsed": "2083762",
+      "contractAddress": null
+    },
+    "recover-A": {
+      "hash": "0x1a7d2c8456dcf3fcb2da5d1cdaba8f98dbf76e129414c72448077d3c64082b1d",
+      "block": 68077068,
+      "status": 1,
+      "fee": "35147670000000000",
+      "gasUsed": "344585",
+      "contractAddress": null
+    },
+    "deploy-B": {
+      "hash": "0x721f09c1f00d8a0d55ccc7e87f4c0e57f588d2616ce74771ab26235c99193356",
+      "block": 68077073,
+      "status": 1,
+      "fee": "239558832000000000",
+      "gasUsed": "2348616",
+      "contractAddress": "0x67f3b51eC2bADf087ced106EF7F46C0f10BA519d"
+    },
+    "approve-B": {
+      "hash": "0xa2897212773f4197c17687b563d77e5e20592d554de57ecc3ff3fd5ccb36daaf",
+      "block": 68077078,
+      "status": 1,
+      "fee": "9427656000000000",
+      "gasUsed": "92428",
+      "contractAddress": null
+    },
+    "fund-B": {
+      "hash": "0x58ba2d6cfb8f7308ece76bff0316960ac7048b0c865a8677a0325adef667225c",
+      "block": 68077083,
+      "status": 1,
+      "fee": "44519736000000000",
+      "gasUsed": "436468",
+      "contractAddress": null
+    },
+    "open-B": {
+      "hash": "0x02cff88f0fdcaae60a2127a8df5bea3a8b54721de0c1e435c2d8fc294e7dabb1",
+      "block": 68077120,
+      "status": 1,
+      "fee": "220685568000000000",
+      "gasUsed": "2163584",
+      "contractAddress": null
+    },
+    "close-B-0": {
+      "hash": "0x9669ba10c131b53efe1f2dcf49b736b9cf60262e6f5e9992ffa60b3e93561eb0",
+      "block": 68077157,
+      "status": 1,
+      "fee": "216886374000000000",
+      "gasUsed": "2126337",
+      "contractAddress": null
+    },
+    "recover-B": {
+      "hash": "0x5ecfb74e47f4a58e958cc43bf57fba2e05c5293482b052291b60ea706b36132c",
+      "block": 68077162,
+      "status": 1,
+      "fee": "34796280000000000",
+      "gasUsed": "341140",
+      "contractAddress": null
+    }
+  },
+  "products": [
+    {
+      "label": "A",
+      "address": "0xcf939aFaDDf00349B65925e4087796a11F06C9fA",
+      "openActual": "100",
+      "recovered": "99934363"
+    },
+    {
+      "label": "B",
+      "address": "0x67f3b51eC2bADf087ced106EF7F46C0f10BA519d",
+      "openActual": "-100",
+      "recovered": "99921249"
+    }
+  ]
+}

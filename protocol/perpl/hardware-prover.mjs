@@ -42,7 +42,7 @@ const wasm=readFileSync('artifacts/perpl-zk/perpl-target-mvp_js/perpl-target-mvp
 const zkey=readFileSync('artifacts/perpl-zk/perpl-target-mvp.zkey');
 assert.equal(sha(wasm),client.manifest.wasmSha256);
 assert.equal(sha(zkey),client.manifest.zkeySha256);
-const evidence={provider:'Phala',mode:att.identity.mode,challenge,binding,quoteHash,composeHash,identity:att.identity,quote:att.quote,vendorVerification:verified,scope:'Fresh vendor-verified TDX quote, bound encryption key, RTMR replay; remote proving only. Relayer and Perpl fork remain local.'};
+const evidence={provider:'Phala',mode:att.identity.mode,challenge,binding,quoteHash,composeHash,identity:att.identity,quote:att.quote,vendorVerification:verified,scope:'Fresh vendor-verified TDX quote, bound encryption key, RTMR replay; remote proving only. Client signs synthetic intent and relays transactions; quote does not attest venue execution.'};
 let count=0;
 const prove=async witness=>{
   assert.ok(++count<=12,'Hardware experiment request limit');

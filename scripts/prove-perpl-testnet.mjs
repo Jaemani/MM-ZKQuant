@@ -5,10 +5,13 @@ import { randomBytes,createHash } from 'node:crypto';
 import { Wallet,JsonRpcProvider,Contract,ContractFactory,parseEther,formatEther } from 'ethers';
 import { curves } from 'snarkjs';
 import solc from 'solc';
+import { createHardwareTargetProver } from '../protocol/perpl/hardware-prover.mjs';
 import { createTargetProver } from '../protocol/perpl/target-prover.mjs';
+const hardware=process.argv.includes('--tee');
 const rehearsal=process.argv.includes('--fork-rehearsal');
 const resumeRehearsal=rehearsal&&process.argv.includes('--resume-rehearsal');
-const execute=rehearsal||process.argv.includes('--execute'),dir=rehearsal?'.data/perpl-testnet-rehearsal':'.data/perpl-testnet';
+assert.ok(!(hardware&&rehearsal),'Hardware public run cannot be a local rehearsal');
+const execute=rehearsal||process.argv.includes('--execute'),dir=hardware?'.data/perpl-tee-testnet':rehearsal?'.data/perpl-testnet-rehearsal':'.data/perpl-testnet';
 const rpcUrl=rehearsal?process.env.MM_PERPL_FORK_RPC:'https://testnet-rpc.monad.xyz';
 if(rehearsal)assert.ok(rpcUrl&&new URL(rpcUrl).hostname==='127.0.0.1','Rehearsal requires loopback');
 mkdirSync(dir,{recursive:true,mode:0o700});
@@ -19,8 +22,8 @@ const rpc=new JsonRpcProvider(rpcUrl,undefined,{batchMaxCount:1,cacheTimeout:-1}
 const wallet=rehearsal?await rpc.getSigner(0):new Wallet(JSON.parse(readFileSync('.data/testnet-pilot/wallet.json')).privateKey,rpc);
 const venue=new Contract(EXCHANGE,JSON.parse(readFileSync('protocol/perpl/exchange-abi.json')),rpc);
 const cash=new Contract(TOKEN,['function balanceOf(address) view returns(uint256)','function approve(address,uint256) returns(bool)'],wallet);
-const statePath=dir+'/session.json';let state=(!rehearsal||resumeRehearsal)&&existsSync(statePath)?JSON.parse(readFileSync(statePath)):null,prover;
-const report={createdAt:new Date().toISOString(),environment:rehearsal?'LOCAL_TESTNET_RUNNER_REHEARSAL':'PUBLIC_MONAD_TESTNET',status:'PREFLIGHT',externalNetworkBroadcast:false,hardwareTEE:false,syntheticPublicTargets:true,transactions:[],limitations:['No hardware TEE in this public-network runner','Public synthetic targets only; not PRIVATE_ONLY strategy submission','One investor per dedicated account; no ledger/shares/fees','No guarantee of fills or withdrawal liquidity']};
+const statePath=dir+'/session.json';let state=(!rehearsal||resumeRehearsal)&&existsSync(statePath)?JSON.parse(readFileSync(statePath)):null,prover,remote;
+const report={createdAt:new Date().toISOString(),environment:rehearsal?'LOCAL_TESTNET_RUNNER_REHEARSAL':'PUBLIC_MONAD_TESTNET',status:'PREFLIGHT',externalNetworkBroadcast:false,hardwareTEE:hardware,syntheticPublicTargets:true,transactions:[],limitations:[hardware?'Hardware remote proving; client signs synthetic intent and relays publicly':'No hardware TEE in this public-network runner','Public synthetic targets only; not PRIVATE_ONLY strategy submission','One investor per dedicated account; no ledger/shares/fees','No guarantee of fills or withdrawal liquidity']};
 try {
   assert.equal((await rpc.getNetwork()).chainId,10143n);
   const minimum=await venue.getMinAccountOpenCNS(),allocation=minimum>100000000n?minimum:100000000n;
@@ -50,7 +53,12 @@ try {
   else if(!execute){report.status='READY_NOT_BROADCAST';}
   else {
     prover=await createTargetProver();
-    if(!state){state={wallet:wallet.address,sourceHash,allocation:String(allocation),steps:{},keys:[randomBytes(32).toString('hex'),randomBytes(32).toString('hex')],products:[],startedAt:new Date().toISOString()};save(statePath,state);}
+    if(hardware){
+      if(state?.steps['recover-A']?.status===1&&state?.steps['recover-B']?.status===1)report.tee=Object.values(state.proofs)[0].tee;
+      else {remote=await createHardwareTargetProver();report.tee=remote.evidence;}
+    }
+    if(!state){state={wallet:wallet.address,sourceHash,allocation:String(allocation),proofMode:hardware?'TEE':'LOCAL',steps:{},keys:[randomBytes(32).toString('hex'),randomBytes(32).toString('hex')],products:[],startedAt:new Date().toISOString()};save(statePath,state);}
+    assert.equal(state.proofMode||'LOCAL',hardware?'TEE':'LOCAL','Never mix proof modes in a session');
     assert.equal(state.wallet,wallet.address);assert.equal(state.sourceHash,sourceHash,'Deployment sources changed; use existing code for recovery');
     const persist=()=>save(statePath,state);
     const waitReceipt=async hash=>{
@@ -106,8 +114,9 @@ try {
         const nonce=await account.nonce(),deadline=BigInt((await rpc.getBlock('latest')).timestamp)+180n;
         const limitPrice=target>position?mark*10050n/10000n:mark*9950n/10000n;
         const witness=prover.input({chainId:10143n,account:address,market:16n,nonce,target,position,limitPrice,deadline,maxLots:100n},key);
-        const proof=await prover.prove(witness);
-        state.proofs??={};state.proofs[name]={proof:proof.proof,publicSignals:proof.publicSignals,milliseconds:proof.milliseconds};persist();
+        if(hardware)assert.ok(remote,'Hardware proof source required; no local fallback');
+        const proof=await (hardware?remote:prover).prove(witness);
+        state.proofs??={};state.proofs[name]={proof:proof.proof,publicSignals:proof.publicSignals,milliseconds:proof.milliseconds,...(remote?{tee:remote.evidence}: {})};persist();
         return account.execute.populateTransaction(target,limitPrice,nonce,deadline,proof.encodedProof);
       });
       const opened=await trade('open-'+label,i?-100n:100n);
@@ -125,6 +134,7 @@ try {
       assert.ok(recovered&&recovered.args.amount>0n);state.products[i].recovered=String(recovered.args.amount);persist();
     }
     for(const [name,entry]of Object.entries(state.steps)){const r=await rpc.getTransactionReceipt(entry.hash);assert.equal(r?.status,1);report.transactions.push({name,...entry,explorer:rehearsal?null:'https://testnet.monadexplorer.com/tx/'+entry.hash,logs:r.logs});}
+    if(hardware)assert.ok(Object.values(state.proofs).every(p=>p.tee?.quoteHash),'Every executed proof requires TEE evidence');
     report.products=state.products;report.proofs=state.proofs;report.verificationKey=JSON.parse(readFileSync('artifacts/perpl-zk/verification-key.json'));
     report.testMonSessionCap='5';report.totalFeeMON=formatEther(Object.values(state.steps).reduce((s,e)=>s+BigInt(e.fee||0),0n));
     report.finalWalletAUSDBaseUnits=String(await cash.balanceOf(wallet.address));
@@ -138,9 +148,9 @@ try {
 finally {
   if(state){report.sessionTransactions=state.steps;report.externalNetworkBroadcast=!rehearsal&&Object.values(state.steps).some(s=>s.hash);report.products=state.products;}
   save(dir+'/latest.json',report);
-  if(report.status==='PASS_PUBLIC_TESTNET_ZK_ROUNDTRIP')save('docs/evidence/perpl-testnet-mvp.json',report);
+  if(report.status==='PASS_PUBLIC_TESTNET_ZK_ROUNDTRIP')save(hardware?'docs/evidence/perpl-tee-testnet-mvp.json':'docs/evidence/perpl-testnet-mvp.json',report);
   else if(report.status==='PASS_LOCAL_TESTNET_RUNNER_REHEARSAL')save('docs/evidence/perpl-testnet-rehearsal.json',report);
-  else if(!execute)save('docs/evidence/perpl-testnet-readiness.json',report);
+  else if(!execute)save(hardware?'docs/evidence/perpl-tee-testnet-readiness.json':'docs/evidence/perpl-testnet-readiness.json',report);
   console.log(json({status:report.status,preflight:report.preflight,blockers:report.blockers,error:report.error}));
   rpc.destroy();if(prover)await(await curves.getCurveFromName('bn128')).terminate();
 }

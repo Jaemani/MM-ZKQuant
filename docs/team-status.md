@@ -1,8 +1,11 @@
 # 팀 진행 상태 · 2026-10-03
 
+> **2026-10-04 후속 결과:** 실제 TDX에서 생성한 증명 4개로 공개 Perpl A/B 진입·종료·담보 회수를 통과했다. [최신 결과와 남은 작업](2026-10-04-tee-public-validation.md). 클라이언트 서명·제출은 로컬이며 전체 Ledger·지분·보수는 미구현이다. 아래 과거 실험 범위와 구분한다.
+
+
 > **공개 Perpl 왕복 거래 통과.** 공식 faucet에서 테스트 AUSD 10,000개 수령 후 A/B에 100개씩 입금, 실제 +100/-100 lot 체결, 전량 종료, 합계 199.813289개 회수를 확인했다. 4개 실행 tx 모두 ZK 검증→Perpl 호출 순서를 실제 trace로 검증했다. [최신 결과·증거·팀원 재검증](2026-10-03-public-perpl-validation.md). `npm run verify:perpl:testnet`은 키 없이 실행된다.
 
-> 이번 공개 실행의 prover는 로컬이다. 이전 실제 TDX→로컬 Perpl 실험과 구분한다. TEE→공개 Perpl 전체 연결, Ledger·지분·보수·공유 slot·복구는 남아 있다. 전체 v1 마일스톤 완료가 아니다.
+> 이번 공개 실행의 prover는 로컬이다. 이전 실제 TDX→로컬 Perpl 실험과 구분한다. TEE 증명→공개 Perpl 연결은 10월 4일 통과했고, TEE 내부 운용·제출과 Ledger·지분·보수·공유 slot·복구는 남아 있다. 전체 v1 마일스톤 완료가 아니다.
 
 기준은 [제품 v1.4 / 개발 v0.1](specs/README.md)이다. 앞선 현물 Vault·Virtual Book·의무 자기자본/staking 중심 문서는 [이전 팀 상태](archive/team-status-before-perpl.md)로 보존했다. 개발 §0에 따라 Manager 자기자본은 선택, v1 의무 staking/slashing은 제외한다.
 
