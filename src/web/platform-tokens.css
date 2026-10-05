@@ -1,0 +1,37 @@
+/* Monad brand colors: https://monad.xyz/brand-and-media-kit.
+   Functional colors and neutral surfaces are MMQuant product extensions. */
+.q-shell {
+  --q-primary: #6e54ff;
+  --q-primary-hover: #5940df;
+  --q-primary-ink: #533acb;
+  --q-lavender: #ddd7fe;
+  --q-ink: #0e091c;
+  --q-muted: #696579;
+  --q-line: #e7e5ef;
+  --q-soft: #f0edff;
+  --q-canvas: #f7f7fb;
+  --q-surface: #ffffff;
+  --q-on-primary: #ffffff;
+  --q-focus: #6e54ff;
+  --q-sidebar: #0e091c;
+  --q-sidebar-text: #b7b0cc;
+  --q-sidebar-hover: #211936;
+  --q-sidebar-active: #342653;
+  --q-sidebar-line: #302641;
+  --q-success: #14745b;
+  --q-success-bg: #e9f6ef;
+  --q-success-line: #bce1cf;
+  --q-warning: #8a4b0d;
+  --q-warning-bg: #fff5e5;
+  --q-warning-line: #eed4a7;
+  --q-danger: #b23f4c;
+  --q-danger-bg: #fff0f2;
+  --q-danger-line: #f0ccd2;
+  --q-shadow-color: #0e091c0b;
+  --q-modal-shadow: #0e091c24;
+  --q-backdrop: #0e091c80;
+  --q-glass: #ffffffed;
+  --q-font: "Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --q-mono: "Roboto Mono", ui-monospace, SFMono-Regular, monospace;
+  --q-radius: 16px;
+}

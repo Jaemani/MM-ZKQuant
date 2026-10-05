@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -135,7 +135,7 @@ export function Empty({ title, description, action }) {
 export const Stat = ({ label, value, suffix, hint, tone = "" }) => (
   <div className="q-stat">
     <span>{label}</span>
-    <strong className={tone}>
+    <strong className={value === "—" || value === "집계 전" ? "" : tone}>
       {value}
       <small>{suffix}</small>
     </strong>
@@ -144,6 +144,7 @@ export const Stat = ({ label, value, suffix, hint, tone = "" }) => (
 );
 export function Modal({ title, children, onClose, busy = false }) {
   const ref = useRef(null);
+  const titleId = useId();
   useEffect(() => {
     ref.current?.showModal();
     return () => ref.current?.close();
@@ -152,13 +153,15 @@ export function Modal({ title, children, onClose, busy = false }) {
     <dialog
       ref={ref}
       className="q-dialog"
+      aria-labelledby={titleId}
+      aria-busy={busy}
       onCancel={(e) => {
         e.preventDefault();
         if (!busy) onClose();
       }}
     >
       <div className="q-dialog-title">
-        <h2>{title}</h2>
+        <h2 id={titleId}>{title}</h2>
         <button aria-label="닫기" disabled={busy} onClick={onClose}>
           <X size={20} />
         </button>
@@ -209,12 +212,12 @@ export function Conditions({ policy, feeBps }) {
     </dl>
   );
 }
-export function StrategyCard({ strategy, compare, onCompare }) {
+export function StrategyCard({ strategy, compare, onCompare, compareDisabled = false }) {
   const m = strategy.public_metrics;
   return (
-    <article className="q-strategy-card">
+    <article className={`q-strategy-card${compare ? " is-selected" : ""}`}>
       <div className="q-row">
-        <Badge tone={m?.status === "HALTED" ? "warning" : ""}>
+        <Badge tone={["HALTED", "RISK_EXIT"].includes(m?.status) ? "warning" : ["LIVE", "ACTIVE"].includes(m?.status || strategy.status) ? "success" : ""}>
           {statusLabel(m?.status || strategy.status)}
         </Badge>
         <span className="q-muted">위험 {riskLabel(strategy.risk)}</span>
@@ -227,7 +230,7 @@ export function StrategyCard({ strategy, compare, onCompare }) {
       <p className="q-card-description">{strategy.description}</p>
       <div className="q-card-return">
         <span>누적 수익률</span>
-        <strong className={m?.pnlBps < 0 ? "negative" : "positive"}>
+        <strong className={!Number.isFinite(m?.pnlBps) ? "q-unavailable" : m.pnlBps < 0 ? "negative" : m.pnlBps > 0 ? "positive" : ""}>
           {percent(m?.pnlBps)}
         </strong>
       </div>
@@ -252,10 +255,12 @@ export function StrategyCard({ strategy, compare, onCompare }) {
           전략 살펴보기 <ArrowRight size={15} />
         </Link>
         {onCompare && (
-          <label className="q-checkbox">
+          <label className="q-checkbox" title={compareDisabled ? "최대 3개까지 비교할 수 있습니다. 선택한 전략을 먼저 해제하세요." : undefined}>
             <input
               type="checkbox"
               checked={compare}
+              disabled={compareDisabled}
+              aria-label={`${strategy.name} 비교`}
               onChange={() => onCompare(strategy.id)}
             />{" "}
             비교
@@ -271,11 +276,11 @@ export function HistoryChart({ history, capital = false }) {
     .map((r) => ({
       date: Date.parse(r.observed_at),
       value: capital
-        ? Number(r.metrics.managerActive) / 1e6
-        : r.metrics.pnlBps / 100,
+        ? r.metrics.managerActive == null ? null : Number(r.metrics.managerActive) / 1e6
+        : Number.isFinite(r.metrics.pnlBps) ? r.metrics.pnlBps / 100 : null,
     }))
-    .filter((r) => Number.isFinite(r.value));
-  if (!rows.length)
+    .filter((r) => Number.isFinite(r.date));
+  if (!rows.some((r) => Number.isFinite(r.value)))
     return (
       <Empty
         title="아직 집계된 이력이 없습니다"
@@ -299,7 +304,7 @@ export function HistoryChart({ history, capital = false }) {
             margin={{ top: 12, right: 16, bottom: 8, left: 4 }}
             accessibilityLayer
           >
-            <CartesianGrid vertical={false} stroke="#e7ece8" />
+            <CartesianGrid vertical={false} stroke="var(--q-line)" />
             <XAxis
               dataKey="date"
               type="number"
@@ -311,14 +316,14 @@ export function HistoryChart({ history, capital = false }) {
                 })
               }
               minTickGap={45}
-              tick={{ fontSize: 11, fill: "#7e8a83" }}
+              tick={{ fontSize: 12, fill: "var(--q-muted)" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               width={58}
               tickFormatter={(v) => (capital ? v.toLocaleString() : `${v}%`)}
-              tick={{ fontSize: 11, fill: "#7e8a83" }}
+              tick={{ fontSize: 12, fill: "var(--q-muted)" }}
               axisLine={false}
               tickLine={false}
               domain={["auto", "auto"]}
@@ -333,7 +338,7 @@ export function HistoryChart({ history, capital = false }) {
             <Line
               type="linear"
               dataKey="value"
-              stroke="#17765f"
+              stroke="var(--q-primary)"
               strokeWidth={2.5}
               dot={rows.length < 3}
               isAnimationActive={false}
@@ -357,10 +362,10 @@ export function HistoryChart({ history, capital = false }) {
                 <tr key={i}>
                   <td>{new Date(r.date).toLocaleString("ko-KR")}</td>
                   <td>
-                    {r.value.toLocaleString("ko-KR", {
+                    {Number.isFinite(r.value) ? r.value.toLocaleString("ko-KR", {
                       maximumFractionDigits: 2,
-                    })}
-                    {capital ? "" : "%"}
+                    }) : "집계 전"}
+                    {capital || !Number.isFinite(r.value) ? "" : "%"}
                   </td>
                 </tr>
               ))}

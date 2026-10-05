@@ -6,7 +6,7 @@ const { chromium } = await import(
     "/tmp/mmq-browser/node_modules/playwright/index.mjs"
 );
 const base = process.env.MMQ_BROWSER_URL || "http://localhost:5173";
-const state = JSON.parse(readFileSync(".data/platform-live/e2e.json"));
+const state = JSON.parse(readFileSync(process.env.MMQ_E2E_STATE_PATH || ".data/platform-live/e2e.json"));
 const browser = await chromium.launch({
   headless: true,
   args: ["--no-sandbox"],
@@ -25,7 +25,8 @@ try {
   if (process.env.MMQ_BLOCK_DIRECT_TEE === "1")
     await page.route("**/*.phala.network/**", route => route.abort());
   await page.goto(base);
-  await page.getByRole("heading", { name: "내 투자와 전략, 한눈에" }).waitFor();
+  await page.getByRole("heading", { name: "전략의 가능성을, 나의 포트폴리오로." }).waitFor();
+  await page.locator(".q-strategy-card").first().waitFor();
   await page.screenshot({ path: dir + "/home-desktop.png", fullPage: true });
   await page
     .getByRole("link", { name: "전략 탐색", exact: true })
@@ -38,15 +39,20 @@ try {
   await page
     .getByRole("heading", { name: "조건에 맞는 전략이 없습니다" })
     .waitFor();
-  await page.getByLabel("전략 검색").fill("");
+  await page.getByRole("button", { name: "필터 초기화", exact: true }).click();
+  assert.equal(await page.getByLabel("전략 검색").inputValue(), "");
   await page.getByLabel("위험도", { exact: true }).selectOption("HIGH");
   await page.getByLabel("위험도", { exact: true }).selectOption("");
   await page.getByLabel("정렬", { exact: true }).selectOption("capital");
-  const checks = page.getByRole("checkbox", { name: "비교", exact: true });
+  const checks = page.getByRole("checkbox", { name: / 비교$/ });
   for (let i = 0; i < Math.min(3, await checks.count()); i++)
     await checks.nth(i).check();
   await page.getByRole("heading", { name: "선택한 전략 비교" }).waitFor();
+  if (await checks.count() > 3) assert.equal(await checks.nth(3).isDisabled(), true);
+  await page.getByRole("button", { name: "선택한 전략 비교", exact: true }).click();
+  assert.equal(await page.locator("#q-comparison").evaluate(el => el === document.activeElement), true);
   await page.getByRole("button", { name: "비교 초기화" }).click();
+  assert.equal(await page.locator(".q-compare-dock").count(), 0);
   await page.locator(".q-strategy-name").first().click();
   await page
     .getByRole("heading", { name: "이 전략에 투자", exact: true })
@@ -138,6 +144,19 @@ try {
         exact: true,
       })
       .waitFor({ timeout: 60000 });
+    await page.locator(".q-account-button").click();
+    await page.locator("#q-account-menu").waitFor();
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator("#q-account-menu").count(), 0);
+    assert.equal(await page.locator(".q-account-button").evaluate(el => el === document.activeElement), true);
+    await page.goto(`${base}/strategies/${state.strategy.slug}`);
+    await page.getByRole("heading", { name: "이 전략에 투자", exact: true }).waitFor();
+    await page.getByLabel("투자 금액", { exact: true }).fill("1");
+    await page.getByRole("button", { name: "투자 내용 확인", exact: true }).click();
+    await page.getByRole("dialog", { name: "투자 내용 확인", exact: true }).waitFor();
+    await page.screenshot({path: `${dir}/${role}-investment-confirm.png`, fullPage: true});
+    await page.keyboard.press("Escape");
+    assert.equal(await page.getByRole("dialog").count(), 0);
     await page
       .getByRole("link", { name: "내 자산", exact: true })
       .first()

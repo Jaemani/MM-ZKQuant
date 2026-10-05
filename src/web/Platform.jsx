@@ -41,6 +41,7 @@ import {
   X,
 } from "./PlatformUI.jsx";
 import "./platform.css";
+import "./platform-tokens.css";
 const periods = [
   ["1d", "1일"],
   ["7d", "7일"],
@@ -49,6 +50,7 @@ const periods = [
 ];
 function Dashboard() {
   const p = usePlatform();
+  if (!p.session) return <Welcome />;
   const withdrawals = (p.portfolio?.positions || []).flatMap((pos) =>
     (pos.withdrawals || [])
       .filter((w) => ["REQUESTED", "SETTLING"].includes(w.status))
@@ -178,6 +180,49 @@ function Dashboard() {
       )}
     </>
   );
+}
+function Welcome() {
+  const p = usePlatform();
+  const recent = [...p.strategies]
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+    .slice(0, 3);
+  return (
+    <>
+      <section className="q-welcome" aria-labelledby="welcome-title">
+        <div className="q-welcome-copy">
+          <span className="q-eyebrow">PRIVATE STRATEGIES. OPEN POSSIBILITIES.</span>
+          <h1 id="welcome-title">전략의 가능성을,<br /><em>나의 포트폴리오로.</em></h1>
+          <p>운용 전략은 비공개로, 성과와 조건은 투명하게.<br />나에게 맞는 전략을 찾고 Monad에서 투자를 시작하세요.</p>
+          <div className="q-actions">
+            <Link to="/strategies" className="q-button">전략 둘러보기 <ArrowRight size={17} /></Link>
+            <Link to="/manage/new" className="q-button secondary">내 전략 만들기</Link>
+          </div>
+          <span className="q-welcome-note">MONAD TESTNET · 테스트 AUSD를 사용하는 서비스입니다.</span>
+        </div>
+        <ol className="q-welcome-steps" aria-label="투자 시작 순서">
+          {[
+            ["01", "비교하고 선택", "수익률, 위험 한도, 전략가 자기자본을 함께 확인하세요."],
+            ["02", "지갑 연결 후 입금", "입금한 자금은 운용 시작 전까지 대기 자금으로 표시됩니다."],
+            ["03", "운용과 자산 확인", "전략가의 다음 목표 제출부터 운용되며, 출금은 정해진 일정에 정산됩니다."],
+          ].map(([number, title, text]) => <li key={number}><span>{number}</span><div><h2>{title}</h2><p>{text}</p></div></li>)}
+        </ol>
+      </section>
+      <div className="q-section-heading">
+        <div><span className="q-eyebrow">DISCOVER</span><h2>새롭게 등록된 전략</h2><p>성과뿐 아니라 운용 기간과 위험 조건도 함께 살펴보세요.</p></div>
+        <Link className="q-text-link" to="/strategies">모든 전략 보기 <ArrowRight size={16} /></Link>
+      </div>
+      {p.loading ? <CatalogLoading /> : recent.length ? (
+        <div className="q-strategy-grid">{recent.map(s => <StrategyCard key={s.id} strategy={s} />)}</div>
+      ) : <Empty title={p.catalogError ? "전략 정보를 연결하지 못했습니다" : "첫 전략을 기다리고 있습니다"} description={p.catalogError ? "상단의 다시 시도로 목록을 불러와 주세요." : "공개된 전략이 등록되면 이곳에서 비교할 수 있습니다."} />}
+      <div className="q-trust-note"><Layers size={18} /><p><strong>공개 성과, 비공개 투자 내역.</strong> 개인 자산은 지갑 서명 후 조회합니다. 공개 성과는 TEE 집계이며 ZK 검증 성과는 아닙니다.</p></div>
+    </>
+  );
+}
+function CatalogLoading() {
+  return <div className="q-strategy-grid q-loading" role="status" aria-label="전략을 불러오는 중입니다">
+    {[0, 1, 2].map(i => <div className="q-skeleton-card" key={i} aria-hidden="true"><span /><span /><span /><span /></div>)}
+    <span className="sr-only">전략을 불러오는 중입니다.</span>
+  </div>;
 }
 function Explore() {
   const p = usePlatform(),
@@ -316,7 +361,7 @@ function Explore() {
           최대 3개 비교 · 누적 수익률의 운용 기간은 전략마다 다릅니다.
         </span>
       </div>
-      {rows.length ? (
+      {p.loading ? <CatalogLoading /> : rows.length ? (
         <div className="q-strategy-grid">
           {rows.map((s) => (
             <StrategyCard
@@ -324,6 +369,7 @@ function Explore() {
               strategy={s}
               compare={selected.includes(s.id)}
               onCompare={toggle}
+              compareDisabled={selected.length >= 3 && !selected.includes(s.id)}
             />
           ))}
         </div>
@@ -334,11 +380,19 @@ function Explore() {
               ? "전략을 불러오는 중입니다"
               : "조건에 맞는 전략이 없습니다"
           }
-          description="검색어나 필터를 바꿔 보세요."
+          description={p.catalogError ? "상단의 다시 시도로 연결을 확인해 주세요." : "검색어나 필터를 바꾸면 다른 전략을 볼 수 있습니다."}
+          action={(search || risk || state) && <Button secondary onClick={() => { setSearch(""); setRisk(""); setState(""); }}>필터 초기화</Button>}
         />
       )}
       {selected.length > 0 && (
-        <Panel className="q-comparison">
+        <div className="q-compare-dock">
+          <span role="status"><strong>{selected.length} / 3</strong> 전략 선택{selected.length === 3 ? " · 최대 선택 완료" : " · 최대 3개 비교"}</span>
+          <Button onClick={() => { const target = document.getElementById("q-comparison"); target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: "start" }); target?.focus({ preventScroll: true }); }}>선택한 전략 비교 <ArrowRight size={16} /></Button>
+          <button className="q-compare-clear" aria-label="선택한 전략 모두 해제" onClick={() => setSelected([])}><X size={18} /></button>
+        </div>
+      )}
+      {selected.length > 0 && (
+        <Panel id="q-comparison" tabIndex={-1} className="q-comparison">
           <div className="q-row">
             <h2>
               선택한 전략 비교 <small>{selected.length}/3</small>
@@ -360,7 +414,7 @@ function Explore() {
             ))}
           </div>
           {historyError && <p className="q-error">{historyError}</p>}
-          <div className="q-table-wrap">
+          <div className="q-table-wrap" tabIndex={0} role="region" aria-label="전략 비교표, 좌우로 스크롤할 수 있습니다">
             <table>
               <thead>
                 <tr>
@@ -512,7 +566,7 @@ function StrategyDetail({ slug }) {
             <Stat
               label="누적 수익률"
               value={percent(m?.pnlBps)}
-              tone={m?.pnlBps < 0 ? "negative" : "positive"}
+              tone={!Number.isFinite(m?.pnlBps) || m.pnlBps === 0 ? "" : m.pnlBps < 0 ? "negative" : "positive"}
             />
             <Stat
               label="전략가 자기자본"
@@ -642,7 +696,17 @@ function Shell() {
     [account, setAccount] = useState(false);
   useEffect(() => {
     setAccount(false);
+    const name = path.startsWith("/strategies/") ? "전략 상세" : path === "/strategies" ? "전략 탐색" : path === "/assets" ? "내 자산" : path.startsWith("/manage") ? "내 전략" : "홈";
+    document.title = `${name} · MMQuant`;
   }, [path]);
+  useEffect(() => {
+    if (!account) return;
+    const closeOutside = (event) => { if (!event.target.closest(".q-account")) setAccount(false); };
+    const escape = (event) => { if (event.key === "Escape") { setAccount(false); document.querySelector(".q-account-button")?.focus(); } };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", escape); };
+  }, [account]);
   const section = path.startsWith("/strategies")
     ? "/strategies"
     : path.startsWith("/assets")
@@ -691,7 +755,8 @@ function Shell() {
       </aside>
       <div className="q-main-shell">
         <header className="q-header">
-          <span>{navigation.find(([to]) => to === section)?.[1]}</span>
+          <div className="q-breadcrumb"><Link to="/" className="q-mobile-brand">MM<span>Quant</span></Link><span className="q-desktop-breadcrumb">Workspace <span>/</span> <strong>{navigation.find(([to]) => to === section)?.[1]}</strong></span></div>
+          <span className="q-network-label">Monad <strong>TESTNET</strong></span>
           <div className="q-account">
             {p.session ? (
               <>
@@ -699,13 +764,14 @@ function Shell() {
                   className="q-account-button"
                   onClick={() => setAccount(!account)}
                   aria-expanded={account}
+                  aria-controls="q-account-menu"
                 >
                   {p.session.strategist?.display_name ||
                     short(p.session.wallet)}
                   <span className="q-account-dot" />
                 </button>
                 {account && (
-                  <div className="q-account-menu">
+                  <div id="q-account-menu" className="q-account-menu">
                     <strong>{short(p.session.wallet)}</strong>
                     <small>Monad Testnet</small>
                     <Link to="/manage/profile">프로필 관리</Link>
@@ -729,7 +795,7 @@ function Shell() {
             )}
           </div>
         </header>
-        <main id="q-main">
+        <main id="q-main" tabIndex={-1}>
           {p.catalogError && (
             <div role="alert" className="q-notice error">
               <AlertCircle size={18} />
