@@ -1,35 +1,64 @@
 # Testnet strategist API
 
-공개 사이트의 전략가 콘솔은 Phala TDX ingress를 사용한다. API key 원문은 발급 응답에서 한 번만 반환된다. TEE에는 SHA-256 hash만, strategy target은 TEE의 암호화된 `/state` 볼륨에만 보관한다.
+공개 API base: `https://mm-zkquant.vercel.app/api`. 전략 목표 벡터는 이 API로 보내지 않는다. 클라이언트에서 암호화해 TEE로 직접 제출한다. 주문 epoch와 고정 lot target은 현재 플랫폼에서 사용하지 않는다.
 
-## 지갑으로 key 발급
+## 등록
 
-1. `POST /platform/auth/challenge`에 `{ "address": "0x..." }`를 보낸다.
-2. 응답 `message`를 같은 지갑에서 `personal_sign`한다.
-3. `POST /platform/strategists`에 `address`, `nonce`, `signature`, `name`, `bio`를 보낸다.
+1. `POST /v1/auth/challenge`에 `{ "address": "0x..." }`를 보내고 응답 message를 지갑으로 서명한다.
+2. `POST /v1/auth/verify`에 `{address,nonce,signature}`를 보내 sessionToken을 받는다.
+3. sessionToken을 Bearer로 사용해 `POST /v1/strategists`에 `{displayName,bio}`를 등록한다.
+4. `POST /v1/api-keys` 응답의 `apiKey`를 별도로 보관한다. DB에는 해시만 저장한다.
+5. API 토큰으로 `POST /v1/strategies`를 호출한다.
 
-성공 응답의 `key.apiKey`는 `mmq_test_...` 형식이다. TEE는 5분 안에 사용된 challenge만 받아들이며, 서명 검증 뒤 challenge를 삭제한다.
-
-## 전략과 epoch target
-
-```http
-POST /platform/strategies
-Authorization: Bearer mmq_test_...
-Content-Type: application/json
-
-{"id":"btc-momentum","name":"BTC Momentum","description":"...","risk":"HIGH","feeBps":2000}
+```json
+{
+  "slug": "btc-momentum",
+  "name": "BTC Momentum",
+  "description": "전략 개요",
+  "risk": "HIGH",
+  "feeBps": 2000,
+  "policy": {
+    "maxLeverageBps": 20000,
+    "stopLossBps": 1500,
+    "maxDrawdownBps": 2000,
+    "settlementPeriodSeconds": 86400,
+    "settlementOffsetSeconds": 0,
+    "withdrawalCutoffSeconds": 3600,
+    "orderTtlSeconds": 120,
+    "slippageBps": 50
+  }
+}
 ```
 
-```http
-POST /platform/strategies/btc-momentum/targets
-Authorization: Bearer mmq_test_...
-Content-Type: application/json
+성과보수는 0–20%, 레버리지는 1–10배, 정산 주기는 1시간–30일이다. 실제 validation은 `src/platform/policy.js`가 정의한다. 새 전략은 공개 카탈로그에 등록되고 공용 Vault를 사용한다.
 
-{"epoch":"epoch-001","targetLots":25,"deadline":1791170000}
+## 암호화된 목표 제출
+
+`targets.json`:
+
+```json
+[{"market":16,"weightBps":5000},{"market":32,"weightBps":-2000}]
 ```
 
-`targetLots`는 -100부터 100까지이며, deadline은 제출 시점부터 한 시간 이내여야 한다. 응답 receipt는 target 원문을 드러내지 않는 TEE HMAC commitment다. 공개 목록은 `GET /platform/strategies`에서 조회한다.
+```sh
+# MMQ_API_TOKEN은 셸 환경에 설정하고 공유 로그에 출력하지 않는다.
+node scripts/submit-strategy.mjs STRATEGY_UUID targets.json
+# 또는 로컬 .env의 MMQ_API_TOKEN 사용:
+node --env-file=.env scripts/submit-strategy.mjs STRATEGY_UUID targets.json
+```
 
-## 현재 테스트넷 범위
+market 16/32/48/64는 BTC/ETH/SOL/MON이다. `weightBps=5000`은 전략 순자산 대비 +50%, `-2000`은 -20% 목표 노출이다. 전체 벡터를 제출하며 생략된 시장은 목표 0으로 정리한다. 빈 배열은 모든 포지션 정리다.
 
-전략가 등록, API key 발급, 전략 공개 메타데이터, 비공개 target 큐는 실제 production TDX에서 동작한다. 기존 공개 cohort contract는 두 명의 초기 투자자만 받고 운용 중 가입·부분 환매·rolling HWM을 지원하지 않는다. 따라서 새 전략은 `TESTNET_WAITING_FOR_VAULT` 상태이며, 다수 지갑의 입금과 분 단위 추정 NAV는 rolling vault 계약과 epoch mark adapter를 배포한 뒤 활성화한다.
+클라이언트는 `GET /v1/config`에서 TEE endpoint와 공개키를 읽는다. ECDH/HKDF/AES-GCM 패킷을 `/platform/encrypted-strategy`로 전송한다. 암호화 내부 payload는 `{action:'TARGET',apiKey,strategyId,requestId,sequence,targets}`다. sequence는 직전 STATUS의 sequence+1, requestId는 중복 방지 UUID다. 같은 ID로 다른 내용을 제출할 수 없다.
+
+`STATUS`는 본인 전략의 sequence, 실행 상태와 요청 결과를 암호화해 반환한다. `QUEUED`는 접수이며 체결 완료가 아니다. `EXECUTED`, `PARTIALLY_FILLED`, `EXPIRED`, `FAILED`를 확인한다. 목표 평문을 받던 `/v1/strategies/:id/targets`는 410을 반환한다.
+
+## 조회와 설정 변경
+
+- `GET /v1/strategies`: 공개 메타데이터·설정·집계 성과·자기자본
+- `GET /v1/strategies/:slug`: 공개 상세·성과·자기자본 이력
+- `GET /v1/me/strategies`: 세션의 소유 전략
+- `POST /v1/strategies/:id/policy`: API 토큰으로 `{policy,feeBps}` 변경 예고. 기존 출금 기회와 미결 정산 후 적용
+- 암호화 action `RESUME`: 위험 종료로 HALTED 상태인 전략을 명시적으로 재개
+
+투자자의 PREPARE/COMPLETE/PORTFOLIO/WITHDRAW/WITHDRAW_PENDING/CANCEL_WITHDRAWAL은 지갑 서명 후 `/platform/encrypted-investments`로 직접 암호화해 보낸다. 개인별 전략 선택, 지분, 출금 청구를 공개 플랫폼 API에 보내지 않는다.

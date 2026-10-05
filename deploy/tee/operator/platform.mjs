@@ -19,7 +19,7 @@ export class TestnetPlatform {
     this.store = new SealedStore(`${storeDir}/platform.json`, secret, 'testnet-platform-v1');
     this.commitKey = createHmac('sha256', secret).update('platform-target-commitment-v1').digest();
   }
-  state() { return this.store.read() || { version: 1, challenges: {}, strategists: {}, keys: {}, strategies: {}, submissions: {} }; }
+  state() { const state=this.store.read() || { version: 1, challenges: {}, strategists: {}, keys: {}, strategies: {}, submissions: {} }; state.privateTargets ||= {}; return state; }
   mutate(fn) { const state = this.state(); const result = fn(state); this.store.write(state); return result; }
   challenge(input) {
     const owner = address(input.address);
@@ -80,10 +80,38 @@ export class TestnetPlatform {
       return { strategyId, epoch, acceptedAt: submittedAt, receipt, execution: 'QUEUED_FOR_TESTNET_EPOCH' };
     });
   }
+  acceptEncryptedTarget(input) {
+    const strategyId = text(input.strategyId, 'STRATEGY_ID', 3, 48), epochId = text(input.epochId, 'EPOCH_ID', 36, 36), submissionId = text(input.submissionId, 'SUBMISSION_ID', 36, 36), strategistWallet = address(input.strategistWallet), targetLots = target(input.targetLots), deadline = Number(input.deadline);
+    if (!Number.isInteger(deadline) || deadline <= Math.floor(Date.now() / 1000) || deadline > Math.floor(Date.now() / 1000) + 3600) throw Error('INVALID_DEADLINE');
+    if (!/^[a-f0-9]{64}$/.test(input.commitmentSalt || '')) throw Error('INVALID_COMMITMENT');
+    return this.mutate(state => {
+      const prior = state.privateTargets[submissionId];
+      if (prior) return { receipt: prior.receipt, acceptedAt: prior.acceptedAt };
+      const acceptedAt = timestamp(), receipt = createHmac('sha256', this.commitKey).update(JSON.stringify({ submissionId, strategyId, epochId, strategistWallet, targetLots, deadline, acceptedAt })).digest('hex');
+      state.privateTargets[submissionId] = { submissionId, strategyId, epochId, strategistWallet, targetLots, deadline, commitmentSalt: input.commitmentSalt, acceptedAt, receipt };
+      return { receipt, acceptedAt };
+    });
+  }
+  nextPrivateTarget(submissionId) {
+    return this.mutate(state => {
+      const target = state.privateTargets[submissionId];
+      if (!target) throw Error('TARGET_NOT_FOUND');
+      if (target.executedAt) return { target: null, result: target.result };
+      return { target: { ...target } };
+    });
+  }
+  completePrivateTarget(submissionId, result) {
+    return this.mutate(state => {
+      const target = state.privateTargets[submissionId];
+      if (!target) throw Error('TARGET_NOT_FOUND');
+      target.executedAt = timestamp(); target.result = result;
+      return { submissionId, executedAt: target.executedAt, result };
+    });
+  }
   publicStrategy(strategy, state = this.state()) {
     const submitted = Object.values(state.submissions).filter(item => item.strategyId === strategy.id).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt)), latest = submitted[0];
     return { id: strategy.id, name: strategy.name, description: strategy.description, risk: strategy.risk, feeBps: strategy.feeBps, strategist: strategy.strategist, strategistName: strategy.strategistName, status: strategy.status, createdAt: strategy.createdAt, targetSubmissions: submitted.length, lastTargetAt: latest?.submittedAt || null, lastEpoch: latest?.epoch || null };
   }
   strategies() { const state = this.state(); return Object.values(state.strategies).map(item => this.publicStrategy(item, state)).sort((a, b) => b.createdAt.localeCompare(a.createdAt)); }
-  status() { return { mode: 'TESTNET_PLATFORM_TEE', strategies: this.strategies().length, execution: 'COHORT_EXECUTOR_NOT_YET_BOUND' }; }
+  status() { return { mode: 'TESTNET_PLATFORM_TEE', strategies: this.strategies().length, execution: 'STRATEGY_SLOT_EXECUTION_NOT_YET_BOUND' }; }
 }

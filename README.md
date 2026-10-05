@@ -1,5 +1,11 @@
 # Monad Metropolis
 
+**2026-10-05 현재 사용자 플랫폼:** [MM-ZKQuant](https://mm-zkquant.vercel.app)에서 전략가 등록·자기자본 입금·암호화 목표 비중 제출·실제 Perpl 실행, 투자자의 대기 입금·다음 제출 시 지분 편입·정산 출금을 사용할 수 있습니다. 단일 공용 Vault를 사용하며 전략 주문은 서로 합산하지 않습니다. 전략별 장부와 실행 계정 귀속은 TEE에 보관합니다.
+
+현재 제품의 기준은 [플랫폼 인수 문서](docs/e2e-platform-handoff.md)와 [전략가 API 안내](docs/testnet-platform-api.md)입니다. 아래 cohort/ZK 기록은 별도 선행 실험입니다. 현재 플랫폼의 모든 주문·장부 변경에 ZK proof 검증을 연결했다고 해석하면 안 됩니다.
+
+로컬 실행: `.env.example`을 참고해 DB와 TEE 연결을 설정한 뒤 `npm ci`, `npm run dev`를 실행합니다. Vite는 5173, 공개 플랫폼 API는 8789 포트입니다. 배포는 Vercel `mm-zkquant`, Supabase `monad`, 기존 Phala CVM을 사용합니다.
+
 **2026-10-04 최신 코어 MVP:** 투자자 2명 입금 → TEE 내부 정책 검사·ZK 생성·직접 제출 → 공개 Perpl 진입/종료 → 실제 회수액에 대한 장부 ZK → 지분 소각·투자자 지급을 통과했습니다. TEE 실제 재시작·키 교체·중복 요청 거절도 확인했습니다. **한 번의 운용 주기를 끝까지 정산하는 제한된 MVP**이며 전체 v1 Ledger·중도 가입·공유 slot을 완료한 것은 아닙니다.
 
 [최신 구현 범위·1–4 검수 결과·공개 트랜잭션](docs/2026-10-04-core-cohort-mvp.md)을 먼저 읽으세요. 팀원은 키 없이 `npm run verify:cohort:testnet`으로 재검증할 수 있습니다.

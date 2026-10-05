@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import perpl from '../../docs/evidence/perpl-tee-testnet-readiness.json';
-import sleeves from '../../docs/evidence/omnibus-rpc-verification.json';
-import omnibus from '../../docs/evidence/omnibus-testnet.json';
+import InvestorPortal from './InvestorPortal.jsx';
+import ManagerConsole from './ManagerConsole.jsx';
 
 const explorer = value => `https://testnet.monadscan.com/address/${value}`;
 const short = value => `${value.slice(0, 7)}…${value.slice(-5)}`;
@@ -13,206 +12,43 @@ const platformRequest = async (path, options = {}) => {
   return body;
 };
 
-const snapshot = omnibus.before.a;
-const evidenceStrategies = snapshot.catalog.map(item => ({ ...item, manager: short(item.provider), status: 'TESTNET VERIFIED', risk: item.id === 'cash-reserve' ? 'Low' : 'High', pnlBps: Number(item.unitPrice) / 10000 - 100, target: item.id === 'btc-trend' ? 'BTC long' : item.id === 'btc-hedge' ? 'BTC short' : 'Cash', receipts: snapshot.receipts.filter(receipt => receipt.strategyId === item.id) }));
 
 function Header({ page, setPage }) {
-  return <header className="platform-header"><a href="#/" className="platform-brand">MM<span>Quant</span></a><nav>{[['explore', '전략 탐색'], ['invest', '내 포트폴리오'], ['manage', '전략가 콘솔']].map(([id, label]) => <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}>{label}</button>)}</nav><span className="platform-network">Monad Testnet</span></header>;
+  return <header className="platform-header"><a href="#/" className="platform-brand" onClick={event=>{event.preventDefault();setPage('explore');}}>MM<span>Quant</span></a><nav>{[['explore', '전략 탐색'], ['invest', '내 포트폴리오'], ['manage', '전략가 콘솔']].map(([id, label]) => <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}>{label}</button>)}</nav><span className="platform-network">Monad Testnet</span></header>;
 }
 
 function StrategyCard({ strategy, onSelect }) {
   const hasNav = Number.isFinite(strategy.pnlBps);
-  return <article className="strategy-card"><div className="strategy-card-top"><span>{strategy.status}</span><b className={strategy.risk.toLowerCase()}>{strategy.risk} risk</b></div><h2>{strategy.name}</h2><p>{strategy.description}</p><dl><div><dt>전략가</dt><dd>{strategy.manager}</dd></div><div><dt>제출 / 정산</dt><dd>{strategy.settledRounds} epoch</dd></div><div><dt>{hasNav ? '마지막 snapshot NAV' : '최근 target 제출'}</dt><dd className={hasNav ? (strategy.pnlBps >= 0 ? 'positive' : 'negative') : ''}>{hasNav ? `${strategy.pnlBps >= 0 ? '+' : ''}${strategy.pnlBps.toFixed(2)}%` : (strategy.lastTargetAt ? new Date(strategy.lastTargetAt).toLocaleString('ko-KR') : '대기')}</dd></div></dl><button className="platform-button" onClick={() => onSelect(strategy)}>전략 상세 보기</button></article>;
+  return <article className="strategy-card"><div className="strategy-card-top"><span>{strategy.executionStatus==='HALTED'?'운용 중단':'투자 가능'}</span><b className={strategy.risk.toLowerCase()}>{strategy.risk} risk</b></div><h2>{strategy.name}</h2><p>{strategy.description}</p><dl><div><dt>전략가</dt><dd>{strategy.manager}</dd></div><div><dt>누적 손익</dt><dd className={hasNav ? (strategy.pnlBps >= 0 ? 'positive' : 'negative') : ''}>{hasNav ? `${strategy.pnlBps >= 0 ? '+' : ''}${strategy.pnlBps.toFixed(2)}%` : '집계 전'}</dd></div><div><dt>연환산 변동성</dt><dd>{Number.isFinite(strategy.volatilityBps) ? `${strategy.volatilityBps.toFixed(2)}%` : '집계 전'}</dd></div><div><dt>전략가 자기자본</dt><dd>{strategy.managerActive===undefined?'집계 전':`${(Number(strategy.managerActive)/1e6).toLocaleString('ko-KR',{maximumFractionDigits:2})} AUSD`}</dd></div></dl><button className="platform-button" onClick={() => onSelect(strategy)}>전략 상세 보기</button></article>;
+}
+
+function PublicConditions({strategy}) {
+  const p=strategy.policy;
+  const money = value => (Number(value || 0)/1e6).toLocaleString('ko-KR',{maximumFractionDigits:2});
+  const conditions = (policy,fee) => <dl><dt>최대 레버리지</dt><dd>{policy.maxLeverageBps/10000}배</dd><dt>손절 / 최대 낙폭 한도</dt><dd>{policy.stopLossBps/100}% / {policy.maxDrawdownBps/100}% · 한도 도달 시 자동 종료</dd><dt>출금 정산</dt><dd>{policy.settlementPeriodSeconds/3600}시간마다 · UTC 기준 오프셋 {policy.settlementOffsetSeconds/60}분</dd><dt>출금 신청 마감</dt><dd>정산 {policy.withdrawalCutoffSeconds/60}분 전</dd><dt>주문 유효 시간 / 허용 슬리피지</dt><dd>{policy.orderTtlSeconds}초 / {policy.slippageBps/100}%</dd><dt>성과보수</dt><dd>{fee/100}% · 투자자별 최고 평가액 초과 이익에 부과</dd></dl>;
+  return <section className="portfolio-card"><div><h2>공개 운용 조건과 자기자본</h2>{p&&conditions(p,strategy.feeBps)}<p>자기자본 운용 평가액: {strategy.managerActive===undefined?'집계 전':money(strategy.managerActive)} AUSD</p><p>자기자본 대기 입금: {money(strategy.managerPending)} AUSD · 출금 요청: {money(strategy.managerWithdrawing)} AUSD</p><p>실제 운용 성과는 거래 비용과 성과보수를 반영한 기준 투자자의 수익률입니다. 개인별 가입 시점에 따라 수익률은 다를 수 있습니다.</p>
+    {strategy.pending_policy&&<aside className="manager-note"><strong>운용 조건 변경 예고</strong><p>{new Date(strategy.pending_policy.effectiveAfter*1000).toLocaleString('ko-KR')} 이후 기존 출금 요청 정산이 완료되면 적용됩니다. 변경 전 현재 일정으로 출금할 수 있습니다.</p>{conditions(strategy.pending_policy.policy,strategy.pending_policy.feeBps)}</aside>}
+    {!!strategy.liveHistory?.length&&<details><summary>공개 성과와 자기자본 이력</summary><div style={{overflowX:'auto'}}><table><thead><tr><th>기록 시각</th><th>누적 손익</th><th>자기자본 운용</th><th>대기 입금</th><th>출금 요청</th></tr></thead><tbody>{strategy.liveHistory.map(row=><tr key={row.observed_at}><td>{new Date(row.observed_at).toLocaleString('ko-KR')}</td><td>{(row.metrics.pnlBps/100).toFixed(2)}%</td><td>{money(row.metrics.managerActive)} AUSD</td><td>{money(row.metrics.managerPending)} AUSD</td><td>{money(row.metrics.managerWithdrawing)} AUSD</td></tr>)}</tbody></table></div></details>}
+  </div></section>;
 }
 
 function Explore({ select, strategies }) {
-  return <><section className="platform-hero"><small>CONFIDENTIAL QUANT STRATEGIES · TESTNET</small><h1>전략을 선택하고,<br /><em>검증된 실행</em>에 참여하세요.</h1><p>전략 입력은 TEE에서 처리하고, 투자자 자금·지분·추정 NAV는 전략별로 분리합니다.</p><div className="platform-hero-stats"><span><strong>{strategies.length}</strong> 공개 전략</span><span><strong>4</strong> TDX hardware proofs</span><span><strong>1 min</strong> NAV mark interval</span></div></section><section className="platform-section"><div className="platform-heading"><div><small>STRATEGIES</small><h2>전략 목록</h2></div><p>TEE에 새로 등록된 전략과, Monad 테스트넷에서 예치·정산·환매를 검증한 과거 catalog snapshot을 함께 표시합니다. 새 전략은 vault 배포 전까지 입금을 받지 않습니다.</p></div><div className="strategy-grid">{strategies.map(strategy => <StrategyCard key={strategy.id} strategy={strategy} onSelect={select} />)}</div></section></>;
+  return <><section className="platform-hero"><small>CONFIDENTIAL QUANT STRATEGIES · TESTNET</small><h1>실적으로 선택하는,<br /><em>퀀트 전략 투자.</em></h1><p>전략가의 자기자본과 실제 운용 성과를 확인하세요. 내 투자 내역과 전략의 포지션은 비공개로 관리됩니다.</p><div className="platform-hero-stats"><span><strong>{strategies.length}</strong> 공개 전략</span><span><strong>1</strong> shared vault</span><span><strong>TEE</strong> private allocations</span></div></section><section className="platform-section"><div className="platform-heading"><div><small>PUBLIC STRATEGY CATALOG</small><h2>전략 목록</h2></div><p>실제 운용 성과, 전략가 자기자본, 공개된 위험 한도를 비교하세요.</p></div>{strategies.length ? <div className="strategy-grid">{strategies.map(strategy => <StrategyCard key={strategy.id} strategy={strategy} onSelect={select} />)}</div> : <div className="platform-empty-card"><strong>공개된 전략이 없습니다.</strong><span>전략가 콘솔에서 첫 전략을 등록하면 이 목록에 표시됩니다.</span></div>}</section></>;
 }
 
-function StrategyDetail({ strategy, back, invest }) {
+function StrategyDetail({ strategy, config, back, invest }) {
   const hasNav = Number.isFinite(strategy.pnlBps);
-  return <section className="platform-detail"><button className="platform-back" onClick={back}>← 전략 목록</button><div className="platform-detail-heading"><div><span>{strategy.status}</span><h1>{strategy.name}</h1><p>{strategy.description}</p></div><div className="platform-detail-target"><small>{hasNav ? 'LAST TESTNET SNAPSHOT' : 'TEE TARGET STATUS'}</small><strong className={hasNav ? (strategy.pnlBps >= 0 ? 'positive' : 'negative') : ''}>{hasNav ? `${strategy.pnlBps >= 0 ? '+' : ''}${strategy.pnlBps.toFixed(2)}%` : '대기'}</strong><span>{strategy.settledRounds} settled / submitted epoch · fee {strategy.feeBps / 100}%</span></div></div><div className="platform-detail-grid"><article><small>ONCHAIN EXECUTION</small><h2>예치 → 정산 → 환매</h2>{strategy.receipts.length ? <ol>{strategy.receipts.map(receipt => <li key={receipt.hash}><span>{receipt.type}</span><a href={`https://testnet.monadscan.com/tx/${receipt.hash}`} target="_blank" rel="noreferrer">{short(receipt.hash)} ↗</a></li>)}</ol> : <p>이 전략은 플랫폼 DB에 등록됐고 온체인 rolling vault 배포를 기다리고 있습니다.</p>}</article><article><small>TEE / PERPL</small><h2>통합 epoch 대기</h2><p>현재 전략별 Vault 회계와 TDX proof 기반 Perpl 실행은 각각 테스트넷 검증을 마쳤습니다. 다음 epoch부터 target 제출, Perpl 체결, 1분 mark NAV를 하나의 전략 이력으로 연결합니다.</p><button className="platform-button" onClick={invest}>테스트 AUSD 배정 준비</button></article></div></section>;
+  return <section className="platform-detail"><button className="platform-back" onClick={back}>← 전략 목록</button><div className="platform-detail-heading"><div><span>{strategy.status}</span><h1>{strategy.name}</h1><p>{strategy.description}</p></div><div className="platform-detail-target"><small>PUBLIC PERFORMANCE</small><strong className={hasNav ? (strategy.pnlBps >= 0 ? 'positive' : 'negative') : ''}>{hasNav ? `${strategy.pnlBps >= 0 ? '+' : ''}${strategy.pnlBps.toFixed(2)}%` : '집계 중'}</strong><span>연환산 변동성 {Number.isFinite(strategy.volatilityBps) ? `${strategy.volatilityBps.toFixed(2)}%` : '집계 중'} · fee {strategy.feeBps / 100}%</span></div></div><div className="platform-detail-grid"><article><small>SHARED CUSTODY</small><h2>모든 전략이 하나의 Vault 사용</h2><p>투자자의 AUSD는 공용 Vault에 입금됩니다. 전략 선택 정보는 입금 거래에 기록되지 않고 TEE 내부 장부에만 연결됩니다.</p>{config?.vaultAddress && <a className="platform-text-button" href={explorer(config.vaultAddress)} target="_blank" rel="noreferrer">공용 Vault {short(config.vaultAddress)} ↗</a>}</article><article><small>PRIVATE ATTRIBUTION</small><h2>{strategy.status === 'LIVE' ? '운용 중' : strategy.status === 'FUNDING' ? '투자 모집 중' : '준비 중'}</h2><p>전략 주문은 다른 전략과 합산하지 않습니다. 온체인 포지션과 체결은 보일 수 있지만, 해당 execution slot과 전략의 연결 및 투자자별 배분은 TEE 밖에 공개하지 않습니다.</p><button className="platform-button" disabled={!['FUNDING','LIVE'].includes(strategy.status)} onClick={invest}>{['FUNDING','LIVE'].includes(strategy.status) ? '이 전략에 투자하기' : '현재 모집 준비 중'}</button></article></div></section>;
 }
 
-function Investor({ setPage }) {
-  return <section className="platform-empty"><small>INVESTOR PORTFOLIO</small><h1>내 전략 지분과<br />추정 NAV</h1><p>지갑 연결과 첫 통합 testnet epoch가 시작되면 여기서 전략별 지분, 1분 mark 기준 추정 PnL, 다음 환매 가능 시점을 확인합니다.</p><div className="platform-empty-card"><strong>Epoch 참여는 마감 전 예치, epoch 종료 후 환매로 처리됩니다.</strong><span>현재 공개 실행은 proof-gated Perpl 왕복과 sleeves 회계가 별도 증거로 존재하는 단계입니다.</span></div><button className="platform-button" onClick={() => setPage('explore')}>전략 둘러보기</button></section>;
-}
-
-function Manager({ onRefresh }) {
-  const [state, setState] = useState({ address: '', sessionToken: '', apiKey: '', message: '', busy: false, strategyId: '', strategySlug: '' });
-  const [form, setForm] = useState({
-    name: '',
-    bio: '',
-    id: '',
-    strategyName: '',
-    description: '',
-    risk: 'HIGH',
-    feeBps: 2000,
-    periodStart: '2026-08-01T00:00',
-    periodEnd: '2026-09-30T00:00',
-    navStart: '1000000',
-    navEnd: '1154000',
-    returnBps: 1540,
-    source: 'Monad Testnet Backtest',
-    evidenceUri: 'https://mm-zkquant.vercel.app/#/demo'
-  });
-  const update = (key, value) => setForm(current => ({ ...current, [key]: value }));
-  const fail = error => setState(current => ({ ...current, busy: false, message: error.message || String(error) }));
-
-  async function signedAuthorization() {
-    if (!window.ethereum) throw Error('브라우저 지갑이 필요합니다.');
-    const [address] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const challenge = await platformRequest('/v1/auth/challenge', { method: 'POST', body: JSON.stringify({ address }) });
-    const signature = await window.ethereum.request({ method: 'personal_sign', params: [challenge.message, address] });
-    return { address, nonce: challenge.nonce, signature };
-  }
-
-  async function enroll() {
-    setState(current => ({ ...current, busy: true, message: '' }));
-    try {
-      const authorization = await signedAuthorization();
-      const session = await platformRequest('/v1/auth/verify', { method: 'POST', body: JSON.stringify(authorization) });
-      await platformRequest('/v1/strategists', { method: 'POST', headers: { Authorization: `Bearer ${session.sessionToken}` }, body: JSON.stringify({ displayName: form.name, bio: form.bio }) });
-      const key = await platformRequest('/v1/api-keys', { method: 'POST', headers: { Authorization: `Bearer ${session.sessionToken}` }, body: JSON.stringify({}) });
-      setState(current => ({ ...current, address: session.wallet, sessionToken: session.sessionToken, apiKey: key.apiKey, message: 'API key가 발급되었습니다. 지금 복사해 보관하세요.', busy: false, strategyId: '' }));
-    } catch (error) { fail(error); }
-  }
-
-  async function createStrategy(event) {
-    event.preventDefault();
-    setState(current => ({ ...current, busy: true, message: '' }));
-    try {
-      const result = await platformRequest('/v1/strategies', { method: 'POST', headers: { Authorization: `Bearer ${state.apiKey}` }, body: JSON.stringify({ slug: form.id, name: form.strategyName, description: form.description, risk: form.risk, feeBps: Number(form.feeBps) }) });
-      setState(current => ({ ...current, busy: false, strategyId: result.id, strategySlug: result.slug, message: `${result.name} 전략이 플랫폼 DB에 등록되었습니다. (ID: ${result.slug})` }));
-      if (onRefresh) onRefresh();
-    } catch (error) { fail(error); }
-  }
-
-  async function recordPerformance(event) {
-    event.preventDefault();
-    setState(current => ({ ...current, busy: true, message: '' }));
-    try {
-      const start = new Date(form.periodStart).toISOString();
-      const end = new Date(form.periodEnd).toISOString();
-      const result = await platformRequest(`/v1/strategies/${state.strategyId}/performance-records`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${state.apiKey}` },
-        body: JSON.stringify({
-          periodStart: start,
-          periodEnd: end,
-          navStart: String(form.navStart),
-          navEnd: String(form.navEnd),
-          returnBps: Number(form.returnBps),
-          source: form.source,
-          evidenceUri: form.evidenceUri
-        })
-      });
-      setState(current => ({ ...current, busy: false, message: `과거 성과 기록이 등록되었습니다. (수익률: ${(result.return_bps / 100).toFixed(2)}%, 출처: ${result.source})` }));
-      if (onRefresh) onRefresh();
-    } catch (error) { fail(error); }
-  }
-
-  return (
-    <section className="platform-manager">
-      <small>STRATEGIST CONSOLE · PLATFORM API</small>
-      <h1>전략을 등록하고<br />과거 성과를 공개하세요.</h1>
-      <p>지갑 서명으로 전략가 프로필을 생성하고 API key를 발급받습니다. 등록된 전략과 과거 실적 근거는 플랫폼 DB에 안전하게 보관되고 투자자에게 공개됩니다.</p>
-      <div className="manager-grid">
-        <article>
-          <span>01</span>
-          <h2>전략가 등록 · API key</h2>
-          <label>표시 이름
-            <input required value={form.name} onChange={event => update('name', event.target.value)} placeholder="예: Seongmin Quant" />
-          </label>
-          <label>공개 소개
-            <textarea required value={form.bio} onChange={event => update('bio', event.target.value)} placeholder="전략 운영 철학 및 소개" />
-          </label>
-          <button className="platform-button" disabled={state.busy || !form.name || !form.bio} onClick={enroll}>
-            지갑 서명 후 key 발급
-          </button>
-          {state.apiKey && (
-            <>
-              <small className="manager-key-label">한 번만 표시되는 API key</small>
-              <code className="manager-key">{state.apiKey}</code>
-            </>
-          )}
-        </article>
-        <article>
-          <span>02</span>
-          <h2>전략 공개 등록</h2>
-          <form onSubmit={createStrategy}>
-            <label>전략 ID (slug)
-              <input required pattern="^[a-z][a-z0-9-]{2,47}$" value={form.id} onChange={event => update('id', event.target.value)} placeholder="btc-momentum" />
-            </label>
-            <label>전략명
-              <input required value={form.strategyName} onChange={event => update('strategyName', event.target.value)} placeholder="BTC Momentum" />
-            </label>
-            <label>설명
-              <textarea required value={form.description} onChange={event => update('description', event.target.value)} placeholder="투자자에게 공개할 설명" />
-            </label>
-            <div className="manager-row">
-              <label>위험도
-                <select value={form.risk} onChange={event => update('risk', event.target.value)}>
-                  <option value="LOW">LOW</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                  <option value="HIGH">HIGH</option>
-                </select>
-              </label>
-              <label>수수료 (bps)
-                <input type="number" min="0" max="2000" value={form.feeBps} onChange={event => update('feeBps', event.target.value)} />
-              </label>
-            </div>
-            <button className="platform-button" disabled={state.busy || !state.apiKey}>
-              플랫폼에 전략 등록
-            </button>
-          </form>
-        </article>
-        <article>
-          <span>03</span>
-          <h2>과거 성과 등록</h2>
-          <form onSubmit={recordPerformance}>
-            <label>기간 시작
-              <input type="datetime-local" required value={form.periodStart} onChange={event => update('periodStart', event.target.value)} />
-            </label>
-            <label>기간 종료
-              <input type="datetime-local" required value={form.periodEnd} onChange={event => update('periodEnd', event.target.value)} />
-            </label>
-            <div className="manager-row">
-              <label>시작 NAV
-                <input required pattern="^[0-9]+$" value={form.navStart} onChange={event => update('navStart', event.target.value)} placeholder="1000000" />
-              </label>
-              <label>종료 NAV
-                <input required pattern="^[0-9]+$" value={form.navEnd} onChange={event => update('navEnd', event.target.value)} placeholder="1154000" />
-              </label>
-            </div>
-            <label>수익률 (bps, 100 = 1%)
-              <input type="number" required value={form.returnBps} onChange={event => update('returnBps', event.target.value)} placeholder="1540" />
-            </label>
-            <label>검증 출처
-              <input required value={form.source} onChange={event => update('source', event.target.value)} placeholder="Monad Testnet Backtest" />
-            </label>
-            <label>증거 URI
-              <input required value={form.evidenceUri} onChange={event => update('evidenceUri', event.target.value)} placeholder="https://mm-zkquant.vercel.app/#/demo" />
-            </label>
-            <button className="platform-button" disabled={state.busy || !state.strategyId}>
-              과거 성과 등록
-            </button>
-          </form>
-          <p>등록된 성과는 전략 상세 화면에서 투자자에게 공개 검증 근거로 표시됩니다.</p>
-        </article>
-      </div>
-      {state.message && <div className="manager-note"><strong>플랫폼 응답:</strong> {state.message}</div>}
-      <div className="manager-note">
-        <strong>현재 연동 상태:</strong> 지갑 세션 인증, 전략가 프로필, API key 발급, 전략 및 과거 성과 등록이 PostgreSQL DB API로 연동되어 작동합니다. 온체인 rolling vault 배포와 TEE target execution은 다음 단계에서 연결됩니다.
-      </div>
-    </section>
-  );
-}
 
 export default function Platform() {
   const [page, setPage] = useState('explore');
   const [selected, setSelected] = useState(null);
   const [teeStrategies, setTeeStrategies] = useState([]);
+  const [config, setConfig] = useState(null);
+  const [connectionError, setConnectionError] = useState('');
+  const [investStrategyId, setInvestStrategyId] = useState('');
 
   const refreshStrategies = () => {
     platformRequest('/v1/strategies').then(result => {
@@ -221,17 +57,37 @@ export default function Platform() {
         manager: item.strategist_name,
         settledRounds: 0,
         pnlBps: item.pnl_bps === null ? null : Number(item.pnl_bps) / 100,
-        target: 'Rolling Epoch Vault',
+        volatilityBps: item.volatility_bps === null ? null : Number(item.volatility_bps) / 100,
+        feeBps: Number(item.fee_bps),
+        ...(item.public_metrics?{managerActive:item.public_metrics.managerActive,managerPending:item.public_metrics.managerPending,managerWithdrawing:item.public_metrics.managerWithdrawing}:{}),
         receipts: []
       })));
-    }).catch(() => {});
+    }).catch(() => setConnectionError('전략 목록을 불러오지 못했습니다. 연결을 다시 시도해 주세요.'));
+  };
+
+  const refreshConnection = async () => {
+    try { setConfig(await platformRequest('/v1/config')); setConnectionError(''); }
+    catch { setConnectionError('플랫폼 연결이 일시적으로 지연되고 있습니다. 잠시 후 다시 시도해 주세요.'); }
+    refreshStrategies();
   };
 
   useEffect(() => {
-    refreshStrategies();
+    refreshConnection();
   }, []);
 
-  const strategies = [...teeStrategies, ...evidenceStrategies];
-  const body = selected ? <StrategyDetail strategy={selected} back={() => setSelected(null)} invest={() => { setSelected(null); setPage('invest'); }} /> : page === 'explore' ? <Explore select={setSelected} strategies={strategies} /> : page === 'invest' ? <Investor setPage={setPage} /> : <Manager onRefresh={refreshStrategies} />;
-  return <div className="platform-shell"><Header page={page} setPage={setPage} /><main>{body}</main><footer><span>MM-ZKQuant · Monad Testnet</span><a href="#/domains/overview">기술 검토 화면</a><a href="#/demo">검증 증거</a><span>Shared Vault verification: {sleeves.verdict}</span></footer></div>;
+  useEffect(() => { if (config) return; const timer = setInterval(refreshConnection, 10000); return () => clearInterval(timer); }, [config]);
+
+  useEffect(()=>{
+    if(!config?.teeEndpoint)return;
+    let cancelled=false;
+    const refresh=async()=>{try{const r=await fetch(`${config.teeEndpoint}/platform/metrics`);if(!r.ok)return;const j=await r.json();if(cancelled)return;setTeeStrategies(rows=>rows.map(s=>{const m=j.strategies.find(m=>m.strategyId===s.id);return m?{...s,...m,pnlBps:m.pnlBps/100,volatilityBps:m.volatilityBps===null?null:m.volatilityBps/100,status:s.status,executionStatus:m.status}:s;}));}catch{}};
+    refresh();const timer=setInterval(refresh,15000);return()=>{cancelled=true;clearInterval(timer);};
+  },[config,teeStrategies.length]);
+
+  const strategies = teeStrategies;
+  const selectStrategy = strategy => {
+    platformRequest(`/v1/strategies/${strategy.slug}`).then(detail => setSelected({ ...strategy, ...detail.strategy, manager: detail.strategy.strategist_name, feeBps: Number(detail.strategy.fee_bps), latestNav: detail.latestNav,liveHistory:detail.liveHistory })).catch(() => setSelected(strategy));
+  };
+  const body = selected ? <StrategyDetail strategy={selected} config={config} back={() => setSelected(null)} invest={() => { setInvestStrategyId(selected.id); setSelected(null); setPage('invest'); }} /> : page === 'explore' ? <Explore select={selectStrategy} strategies={strategies} /> : page === 'invest' ? <InvestorPortal apiBase={platformApi} config={config} strategies={strategies} initialStrategyId={investStrategyId} onBack={() => setPage('explore')} /> : <ManagerConsole apiBase={platformApi} config={config} onRefresh={refreshStrategies} onInvest={id=>{setInvestStrategyId(id);setPage('invest');}} />;
+  return <div className="platform-shell"><Header page={page} setPage={p=>{setSelected(null);setPage(p);}} /><main>{connectionError&&<div className="manager-note" role="alert"><span>{connectionError}</span><button className="platform-text-button" onClick={refreshConnection}>연결 다시 시도</button></div>}{body}{selected&&<PublicConditions strategy={selected}/>}</main><footer><span>MM-ZKQuant · Monad Testnet</span><span>Shared custody · strategy-specific execution</span></footer></div>;
 }

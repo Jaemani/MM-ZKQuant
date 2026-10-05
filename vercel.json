@@ -10,6 +10,10 @@
     {
       "source": "/api/:path*",
       "destination": "/api/[...route]"
+    },
+    {
+      "source": "/((?!api/|assets/).*)",
+      "destination": "/index.html"
     }
   ]
 }

@@ -4,7 +4,7 @@ import { PlatformService } from '../src/platform/service.js';
 
 let service;
 function platformService() {
-  if (!service) service = new PlatformService(new PlatformDatabase({ databaseUrl: process.env.DATABASE_URL }));
+  if (!service) service = new PlatformService(new PlatformDatabase({ databaseUrl: process.env.DATABASE_URL }), { teeEndpoint: process.env.PLATFORM_TEE_URL, teeEncryptionPublicKey: process.env.PLATFORM_TEE_ENCRYPTION_PUBLIC_KEY });
   return service;
 }
 
