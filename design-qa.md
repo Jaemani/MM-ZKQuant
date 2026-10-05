@@ -1,59 +1,47 @@
-# Monad UI design QA
+# Compact Monad workspace — design QA
 
 final result: passed
 
-Date: 2026-10-05. Scope: existing MMQuant product, updated to the official Monad palette. This is an intentional redesign of the existing code target, not a pixel clone of Monad's marketing site. Base commit: `7a3ff0d`.
+Date: 2026-10-05. Branch: `design/monad-ui`. This report supersedes the earlier light dashboard review, which the user rejected. The selected visual is `exec-62044902-d542-4ada-8c59-8131e01fbafe.png`.
 
-## Source and implementation evidence
+## Source and browser evidence
 
-Source truth: this run's `docs/design/images/before-home.png`, `before-explore.png`, `before-assets.png`, `before-manage.png`; official color/typography reference at https://monad.xyz/brand-and-media-kit, captured as `.data/design/brand-reference.png`.
+- Source visual truth: `docs/design/images/split-reference.png` (1488 × 1056 pixels).
+- Implementation: `docs/design/images/split-desktop.png`, captured with Playwright Chromium at 1488 × 1056 CSS px, device density 1, logged out, default sorting, first strategy selected.
+- Full-view comparison: `docs/design/images/split-comparison.png` (2976 × 1056), source left and rendered implementation right; neither is stretched. Both opened and visually inspected together.
+- Responsive evidence: `split-mobile-390.png`, `split-mobile-320.png`, `split-detail-mobile.png` in the same directory. Mobile viewport heights are 844 CSS px; full-page captures include content below the fold, with navigation fixed at its actual viewport position.
+- Focused regions inspected: list numeric columns, selected boundary, inspector metrics and investment form; mobile capital figures and comparison dock. Private account captures remain in ignored `.data/ux-review/`.
 
-Rendered implementation: `docs/design/images/after-home.png`, `after-explore.png`, `after-explore-320.png`, `after-comparison-mobile.png`. Additional original captures for detail, tablet, assets, manager and confirmation states are local in `.data/design/` and `.data/ux-review/`. Private test-account screenshots are not committed.
+![Selected reference and implementation](docs/design/images/split-comparison.png)
 
-Desktop source and implementation viewport: 1440 × 1000 CSS px, device scale factor 1. Each full-page image has a 1440px intrinsic width and content-dependent height. Mobile: 390 × 844 and 320 × 844 CSS px at density 1. Tablet: 768 × 844. Authenticated tests: 1280 × 900 and 390 × 844. Full-page captures display the fixed navigation at its actual viewport position; they do not represent an exceptionally tall device.
+## Findings and fixes
 
-Full-view comparison inputs: the original full-page before and after captures were inspected. The combined `comparison-home.png` and `comparison-explore.png` place the top 1000px of each 1440px source and implementation side by side on a 2880 × 1000 canvas, without rescaling. The first home loading capture was rejected as final evidence and replaced with the loaded catalog. Live prices and observation timestamps differ between captures.
+1. P1: prior light cards and welcome hero did not match the selected operational workspace. Replaced with a 64px icon rail, 58px header, dense rows, and a 500px inspector at the reference viewport. All six current strategies fit in the initial desktop screen. Evidence: final combined screenshot.
+2. P2: initial split had an overly narrow inspector and small return values caused by CSS specificity. Corrected the panel proportion and numeric typography; preserved tabular numerals. Evidence: final desktop screenshot.
+3. P2: row description and status stacked into excessive height. Grouped manager and status in a byline, clamped the secondary desktop description, retained the full description in the inspector/detail. Final rows are approximately 104px high.
+4. P2: shared detail statistic layout squeezed mobile manager capital into broken lines. Scoped horizontal layout to the summary ribbon; portfolio statistics now wrap as independent labeled values. Evidence: final 320px detail screenshot.
+5. P2: desktop minimum columns could collide with the inspector near 1180px. Reduced fixed column widths and uses a 380px inspector through 1350px. No document overflow at 1180/1280px. Below 1180px, selecting a row opens the existing detail route.
+6. P2: dark chart hover could inherit a white tooltip. Scoped tooltip foreground, background and border to dark semantic tokens.
 
-![Home comparison](docs/design/images/comparison-home.png)
+No actionable P0/P1/P2 remains in the verified scope.
 
-![Explore comparison](docs/design/images/comparison-explore.png)
+## Design surfaces and intentional differences
 
-Focused evidence: `after-comparison-mobile.png` for table and floating controls, `after-explore-320.png` for the corrected narrow header; local `manager-investment-confirm.png` for dialog typography, input labels and modal behavior, and `manager-assets-desktop.png` for corrected table colors.
-
-## Findings and iteration history
-
-1. P2, original palette and type: green navigation/actions and low-emphasis small labels did not express the requested Monad direction. Replaced literal platform colors with semantic tokens, loaded Inter/Noto Sans KR/Roboto Mono, strengthened titles and secondary text. Post-fix: the combined home/explore inputs show consistent purple/ink/light surfaces. Brand colors match the official palette; neutral and status colors are explicit product extensions.
-2. P2, logged-out home: repeated login/empty states occupied the first view. Replaced with an introduction, two clear actions, three-step explanation and real recent strategies. This layout change is intentional. Post-fix: loaded `after-home.png`; authenticated dashboard remains available.
-3. P2, comparison discoverability: selection had no persistent action or explicit fourth-item limit. Added a dock, selected-card boundary, disabled unchecked items at three, a clear-selection action and a focusable scroll region. Post-fix: mobile comparison screenshot, selection and keyboard tests.
-4. P2, first implementation's table: legacy global `td` color and `th` size leaked green and undersized labels into assets. Scoped current-product table colors and header typography. Post-fix: final authenticated asset capture shows ink-colored cells and legible headers.
-5. P2, 320px header: login label wrapped. Removed the compact network badge only below 361px and preserved the testnet disclosure elsewhere. Post-fix: `after-explore-320.png` shows one-line login with no document overflow.
-6. P2, missing data: unknown returns used positive color and null chart metrics could become 0. Neutralized unavailable statistics, retained missing chart values as gaps and kept their table entries as “집계 전”. Browser check with null history confirms that no zero-valued chart is fabricated.
-7. Accessibility: dialog now has an associated title, input a stable accessible name and invalid state, account Escape restores trigger focus, and comparison action focuses its destination. Real test-account confirmation dialogs were opened and dismissed without transaction submission.
-
-No actionable P0/P1/P2 findings remain within the verified scope.
-
-## Required surfaces
-
-- Typography: heading/body/mono roles, Korean fallback, weights, numeric alignment and line wrapping inspected. Inter is used for product headings instead of the official licensed Britti Sans; this is intentional, not a fidelity claim. Fonts use swap and system fallback.
-- Spacing: retained established app routes and navigation architecture, adjusted sidebar to 232px on desktop, consistent 16px card radii and 44px primary controls. Tested 320/390/768/1440px; no document overflow in 20 route/viewport combinations. Tables scroll within their container.
-- Colors: official Primary `#6E54FF`, Lavender `#DDD7FE`, Ink `#0E091C`; product neutrals and status colors are separate. White on primary: 4.80:1; muted on canvas: 5.26:1; purple text on soft: 6.44:1. Positive/negative values retain semantic colors and signs.
-- Assets: existing MMQuant wordmark and Lucide icons retained. No Monad logo imitation, raster placeholders or generated illustrations introduced. Public performance uses live API content, not invented metrics.
-- Copy: testnet, pending capital, next-target activation, private signed asset lookup and TEE-only public metrics remain explicit. Current metadata replaces the old paper-execution description.
+- Typography: Inter/Noto Sans KR body, Roboto Mono for figures; restrained weights and compact labels. Reference hierarchy retained, with 26px inspector title and 25px inspector metrics. Korean fallback and wrapping inspected. Generated image letterforms are interpreted with available fonts.
+- Layout: flat rows, thin dividers, 4–6px corner radii, no large introductory cards. Mobile uses labeled metrics, bottom navigation and a direct investment jump in the detail route. No separate mobile reference was provided; this is the responsive adaptation requested by the user.
+- Colors: Monad primary #6E54FF and lavender #DDD7FE, extended near-black purple product surfaces. Semantic green/red remain alongside text status and signed return values. Muted copy remains visibly distinct on dark surfaces.
+- Assets: existing MM wordmark and Lucide line icons retained; no raster illustration exists in the chosen target requiring generation. The background is a flat product surface rather than reproducing image-generation texture.
+- Copy and data: existing live API values, no invented performance. Missing statistics remain unknown. TEE-only metrics, test AUSD, pending activation and settlement timing remain explicit.
+- Product adaptations: manager identity is grouped under the strategy name; explicit compare checkboxes preserve the existing three-way comparison feature; an inspector link opens full performance/history. Real balance and settlement details remain in the investment form, unlike the simplified mockup.
 
 ## Verification
 
-- `npm run build`: passed. Existing Lucide “use client” bundler notices are non-fatal.
 - `npm test`: 28 passed.
-- `scripts/platform-ux-browser.mjs`: public search, filter reset, three-way comparison, focus, deep-link reload; manager and investor login, private portfolio, account Escape, investment confirmation/close, tabs, invalid target blocking, session restoration and account-change cleanup. Passed with no page JavaScript errors. Direct Phala browser connections were blocked to exercise the existing encrypted relay. Transaction sending was disabled.
-- Four viewport sizes, five public routes: no document overflow; no page JavaScript errors.
-- Focused comparison keyboard scroll and null-history checks passed.
+- `npm run build`: passed; existing Lucide module directive warnings are non-fatal.
+- `scripts/platform-ux-browser.mjs`: public search/reset/filter/sort, three-way comparison and focus, desktop inspector selection, full detail deep-link/reload; manager and investor login, private portfolio through encrypted relay, account Escape/focus, investment confirmation/Escape, management tabs, invalid allocation blocking, session restoration and wallet-change cleanup. Passed, zero page JavaScript errors. Transaction submission disabled.
+- Playwright visual sweep: 30 combinations across 1488, 1280, 1180, 768, 390, 320px and home/explore/detail/assets/manage; zero document overflow and zero page JavaScript errors. Mobile comparison limit and focus, reset and empty-search state passed.
+- Final mobile row navigation to actual detail route confirmed; final screenshots inspected after statistic-layout repair.
 
-## Remaining limits and follow-up
+## Follow-up polish and limits
 
-No new onchain deposits, orders or withdrawals were sent. The success-state step indicator follows the existing deposit result but a fresh payment was not performed. Full screen-reader testing, Safari/Android hardware and 400% zoom remain outside this pass. Optional P3: self-host approved font subsets to remove the external font request.
-
-Implementation checklist: palette and shared components complete; guest onboarding and comparison complete; responsive and keyboard checks complete; review and public evidence saved. Deployment is recorded separately after Vercel confirms its URL.
-
-## Deployment verification
-
-Vercel production deployment of code commit `8265bbc` is READY at https://mm-zkquant.vercel.app (immutable deployment: https://mm-zkquant-rfa8yat8g-cosmoserys-projects.vercel.app). Post-deploy browser captures `.data/design/production-home.png` and `production-detail-mobile.png` were inspected. Config/catalog API responses were 200; new welcome content and primary token, comparison interaction, detail reload and 390px overflow checks passed, with no page JavaScript errors. Source remains on `design/monad-ui`; main and its pre-existing uncommitted work remain unchanged.
+Optional P3: self-host approved font subsets. No fresh deposits, trades or withdrawals were sent. Safari, physical mobile devices and a full screen-reader audit remain outside this pass. Earlier `after-*` and `comparison-*` images are historical light-design evidence; `split-*` files represent this release.

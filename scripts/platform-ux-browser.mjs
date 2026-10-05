@@ -25,15 +25,15 @@ try {
   if (process.env.MMQ_BLOCK_DIRECT_TEE === "1")
     await page.route("**/*.phala.network/**", route => route.abort());
   await page.goto(base);
-  await page.getByRole("heading", { name: "전략의 가능성을, 나의 포트폴리오로." }).waitFor();
-  await page.locator(".q-strategy-card").first().waitFor();
+  await page.getByRole("heading", { name: "전략 탐색" }).waitFor();
+  await page.locator(".q-market-row").first().waitFor();
   await page.screenshot({ path: dir + "/home-desktop.png", fullPage: true });
   await page
     .getByRole("link", { name: "전략 탐색", exact: true })
     .first()
     .click();
-  await page.getByRole("heading", { name: "성과로 선택하는 전략" }).waitFor();
-  await page.locator(".q-strategy-card").first().waitFor();
+  await page.getByRole("heading", { name: "전략 탐색" }).waitFor();
+  await page.locator(".q-market-row").first().waitFor();
   await page.screenshot({ path: dir + "/explore-desktop.png", fullPage: true });
   await page.getByLabel("전략 검색").fill("does-not-exist");
   await page
@@ -53,7 +53,9 @@ try {
   assert.equal(await page.locator("#q-comparison").evaluate(el => el === document.activeElement), true);
   await page.getByRole("button", { name: "비교 초기화" }).click();
   assert.equal(await page.locator(".q-compare-dock").count(), 0);
-  await page.locator(".q-strategy-name").first().click();
+  await page.locator(".q-market-row-link").nth(1).click();
+  assert.equal(await page.locator(".q-market-row").nth(1).getAttribute("class").then(v => v.split(" ").includes("active")), true);
+  await page.getByRole("link", {name:"성과·조건 상세"}).click();
   await page
     .getByRole("heading", { name: "이 전략에 투자", exact: true })
     .waitFor();
