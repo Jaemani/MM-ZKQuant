@@ -1,0 +1,34 @@
+/* Monad Split Protocol: brand purple, quiet dark surfaces, readable semantic colors. */
+.q-shell {
+  color-scheme: dark;
+  --q-primary: #6e54ff;
+  --q-primary-hover: #8068ff;
+  --q-primary-ink: #b6a7ff;
+  --q-lavender: #ddd7fe;
+  --q-ink: #f3f0fb;
+  --q-muted: #aaa4bb;
+  --q-line: #302a40;
+  --q-soft: #211a36;
+  --q-canvas: #100d1b;
+  --q-surface: #151120;
+  --q-on-primary: #ffffff;
+  --q-focus: #b6a7ff;
+  --q-sidebar: #0d0a17;
+  --q-sidebar-text: #aaa4bb;
+  --q-sidebar-hover: #211a36;
+  --q-sidebar-active: #29203f;
+  --q-sidebar-line: #302a40;
+  --q-success: #77d7ad;
+  --q-success-bg: #16372d;
+  --q-success-line: #2b5948;
+  --q-warning: #f0c47c;
+  --q-warning-bg: #352916;
+  --q-warning-line: #685032;
+  --q-danger: #ff7f95;
+  --q-danger-bg: #351b29;
+  --q-danger-line: #633041;
+  --q-backdrop: #05030bbb;
+  --q-font: "Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --q-mono: "Roboto Mono", ui-monospace, SFMono-Regular, monospace;
+  --q-radius: 6px;
+}

@@ -22,6 +22,11 @@ export default function InvestmentPanel({ strategy, manager = false }) {
     <Panel id="q-investment" className="q-invest-panel">
       <h2>{manager ? "자기자본 추가" : "이 전략에 투자"}</h2>
       <p className="q-muted">입금한 자금은 다음 목표 제출부터 운용됩니다.</p>
+      <ol className="q-invest-steps" aria-label="투자 진행 순서">
+        <li className={done ? "complete" : "active"} aria-current={!done ? "step" : undefined}><span>1</span>입금</li>
+        <li className={done ? "active" : ""} aria-current={done ? "step" : undefined}><span>2</span>운용 대기</li>
+        <li><span>3</span>운용 시작</li>
+      </ol>
       {done ? (
         <div className="q-success">
           <CheckCircle2 size={28} />
@@ -46,11 +51,13 @@ export default function InvestmentPanel({ strategy, manager = false }) {
             투자 금액
             <div className="q-amount-input">
               <input
+                aria-label="투자 금액"
                 inputMode="decimal"
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 aria-describedby="investment-hint"
+                aria-invalid={!!amount && (!valid || (p.balance !== null && Number(amount) > Number(p.balance) / 1e6))}
               />
               <span>AUSD</span>
             </div>
