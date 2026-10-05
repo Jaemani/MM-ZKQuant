@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
 export default defineConfig({
-  server: { host: '127.0.0.1', port: 5173, strictPort: true, proxy: { '/api': 'http://127.0.0.1:8790', '/docs': 'http://127.0.0.1:8790' } },
-  build: { outDir: 'dist' },
+  server: { host: '127.0.0.1', port: 5173, strictPort: true, proxy: { '/api': { target: 'http://127.0.0.1:8789', rewrite: path => path.replace(/^\/api/, '') } } },
+  build: { outDir: 'dist', rollupOptions: {output: {manualChunks: {charts:['recharts'],wallet:['ethers']}}} },
 });

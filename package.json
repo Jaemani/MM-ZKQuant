@@ -8,12 +8,17 @@
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "server": "node src/server/http.js",
+    "server": "node src/platform/http.js",
+    "legacy:server": "node src/server/http.js",
     "platform:api": "node src/platform/http.js",
+    "platform:deploy-vault": "node scripts/deploy-omnibus-vault.mjs --broadcast",
     "db:migrate": "node scripts/migrate-platform.mjs",
     "build": "vite build",
-    "start": "node src/server/http.js",
-    "test": "node --test tests/*.test.js tests/protocol-v1/*.test.mjs",
+    "start": "node src/platform/http.js",
+    "test": "npm run test:platform",
+    "test:platform": "node --test tests/platform-ledger.test.js tests/platform-execution.test.js tests/private-investments.test.js tests/platform-ux.test.js tests/platform-request.test.js tests/tee-channel.test.js tests/tee-relay.test.js",
+    "test:contracts": "node --test tests/platform-omnibus-vault.test.js",
+    "test:all": "node --test tests/*.test.js tests/protocol-v1/*.test.mjs",
     "prove:mvp": "node scripts/prove-omnibus.mjs",
     "test:core": "node --test tests/engine.test.js tests/service.test.js tests/protocol.test.js",
     "chain:demo": "node scripts/chain-demo.mjs",
@@ -70,9 +75,11 @@
   "dependencies": {
     "@phala/dstack-sdk": "0.5.8",
     "ethers": "^6.15.0",
+    "lucide-react": "^1.52.0",
     "pg": "^8.23.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "recharts": "^3.10.1",
     "solc": "0.8.37"
   },
   "devDependencies": {

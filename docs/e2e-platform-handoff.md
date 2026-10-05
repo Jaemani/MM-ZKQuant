@@ -1,223 +1,84 @@
-# E2E 참여형 플랫폼 인수 문서
+# 실제 테스트넷 플랫폼 인수 문서
 
-작성일: 2026-10-05  
-목표: Monad testnet에서 퀀트 전략가가 과거 기록을 공개하고 API로 전략 target을 제출하며, 투자자가 자기 지갑의 테스트 AUSD로 전략에 입금하고 epoch 단위로 추정 NAV·PnL·환매 상태를 확인하는 E2E 데모를 만든다.
+기준: 2026-10-05. 서비스: https://mm-zkquant.vercel.app
 
-## 현재 상태
+## 합의된 제품과 구현
 
-### 이미 있는 것
+퀀트 전략가는 지갑 로그인 → 공개 프로필/API 토큰 발급 → 전략과 운용 조건 등록 → 자기자본 입금 → 원하는 시점에 암호화된 목표 비중 제출 순서로 사용한다. 투자자는 지갑 로그인 → 공개 성과·위험 조건·전략가 자기자본 비교 → 전략 선택 → AUSD 입금 → 다음 제출 시 운용 편입 → 정해진 시각에 출금 순서로 사용한다.
 
-- 공개 프론트엔드: `https://mm-zkquant.vercel.app`
-  - 기본 진입점은 `src/web/App.jsx`의 `Platform.jsx`다.
-  - 전략가 콘솔에서 브라우저 EVM 지갑의 `personal_sign`을 사용한다.
-- Phala production TDX 인스턴스
-  - API key hash와 비공개 target 큐는 TEE `/state/platform.json`에 `SealedStore`로 암호화해 보관한다.
-  - 구현: `deploy/tee/operator/platform.mjs`
-  - HTTP route: `deploy/tee/operator/server.mjs`의 `/platform/*`
-  - compose 준비: `MM_TEE_DIR=<새 디렉터리> npm run prepare:cohort:tee`
-- 전략별 sleeves 테스트넷 증거
-  - `docs/evidence/omnibus-testnet.json`
-  - 화면의 기본 BTC 상승, BTC 하락, 현금 유지 전략은 이 과거 snapshot에서 읽는다.
-- terminal cohort TEE/Perpl/ZK 테스트넷 증거
-  - `docs/2026-10-04-core-cohort-mvp.md`
-  - TEE가 target proof를 만들고 Perpl 주문을 제출하며, 종료 시 장부 proof와 2명 투자자 지급까지 검증했다.
-- Pilot의 암호화된 전략 제출·epoch aggregation
-  - `src/pilot/`
-  - `src/pilot/coordinator.js`는 Ed25519 서명, 암호문 보관, epoch seal을 구현한다.
+공용 `PlatformOmnibusVault`는 **하나**다. 주문을 전략 간 합산하거나 상쇄하지 않는다. TEE 내부 장부가 전략별 투자금, 투자자 지분, 최고 수익 기준, 실행 계정 귀속을 분리한다. 실행 시 해당 전략에만 배정된 시장별 Perpl 계정으로 주문한다. 전략마다 Vault를 배포하지 않는다.
 
-### 현재 코드가 제품 요구를 충족하지 못하는 부분
+전략가는 순자산 대비 목표 노출을 basis point 정수로 제출한다. 음수는 숏, 누락된 시장은 목표 0이다. 전체 절댓값 합은 공개 레버리지 한도를 넘을 수 없다. 예: BTC 50%, ETH -20%는 `[{"market":16,"weightBps":5000},{"market":32,"weightBps":-2000}]`. 주문 epoch는 없다. 출금과 성과보수에만 정산 일정이 있다.
 
-- 별도 DB가 없다. TEE의 암호화 JSON 파일은 복구·검색·다중 인스턴스·공개 조회용 DB가 아니다.
-- `PerplCohortVault.sol`은 **고정된 두 투자자, 운용 중 가입 불가, 전체 종료 정산** 전용이다.
-- `OmnibusVault`는 여러 전략의 테스트 회계를 다루지만 operator가 신뢰되는 구조이고 TEE execution과 투자자 공개 API에 연결되지 않았다.
-- 프론트엔드 `내 포트폴리오`는 지갑 연결과 입금이 아직 없다.
-- API key 발급과 target 큐는 TEE에서 동작하지만, target이 rolling vault 실행으로 이어지지 않는다.
-- 현재 표시하는 기본 전략 성과는 과거 테스트 evidence이며 새 전략가의 검증된 과거 실적이 아니다.
+새 입금은 대기 현금으로 보관하고 기존 운용의 손익에 참여시키지 않는다. 다음 목표 제출에서 기존 순자산을 평가한 뒤 그 가격으로 지분을 발행한다. 출금은 신청 마감과 정산 시각을 적용하며, 마감 전 취소할 수 있다. 대기 현금도 정산 출금 신청이 가능하다. 활성 자금은 현금을 먼저 사용하고 부족하면 해당 전략의 포지션을 줄인다. 청산 비용은 출금자에게 귀속한다. 성과보수는 투자자별 가입 시점의 최고 평가액을 기준으로 계산한다.
 
-따라서 현재 상태를 투자 가능한 플랫폼이라고 표시하면 안 된다. E2E 데모의 완료 기준은 아래 흐름이 실제로 이어지는 것이다.
+위험 한도를 넘으면 해당 전략의 포지션을 종료하고 중단한다. 전략가가 명시적으로 재개해야 다음 목표를 받는다. 운용 조건 변경은 공개 예고하고 기존 일정의 출금 기회를 지난 뒤 적용한다. 미지급 기존 출금이 있으면 변경을 기다린다.
 
-## 목표 사용자 흐름
+## 공개와 비공개
 
-### 1. 퀀트 전략가
+| 위치 | 데이터 |
+| --- | --- |
+| Supabase 공개 카탈로그 | 이름·설명·프로필·수수료·위험 설정·정산 일정·변경 예고 |
+| Supabase 공개 집계 | 수익률·변동성·최대 낙폭·전략가 자기자본 운용/대기/출금 요청 이력 |
+| Supabase 인증 | 로그인 challenge/session, API 토큰 해시 |
+| TEE 봉인 장부 | 목표 벡터, 실행 대기 상태, 전략과 실행 계정 연결, 투자자별 전략 선택·지분·금액·출금 청구 |
+| 공개 체인 | 공용 Vault 입출금과 Perpl 주문·포지션. 전략 ID와 개인별 전략 지분은 기록하지 않음 |
 
-1. 지갑 연결 후 서명으로 strategist profile을 만든다.
-2. API key를 한 번 발급하고 안전하게 보관한다.
-3. 전략 이름, 설명, 리스크, 수수료, 공개 가능한 과거 성과를 등록한다.
-4. 등록한 전략의 epoch target을 API key로 제출한다.
-5. TEE는 target·권한·deadline·리스크 한도를 검증하고 실제 실행 요청을 만든다.
-6. 전략가는 제출 receipt, epoch 상태, 실행 결과, 공개 성과를 본다.
+브라우저와 외부 전략 클라이언트가 직접 ECDH/HKDF/AES-GCM으로 암호화한 뒤 TEE에 전송한다. Vercel은 평문 목표 벡터를 중계하지 않는다. 기존 평문 target endpoint는 HTTP 410으로 종료했다. 공개 API에 queued execution 조회 기능은 없다.
 
-### 2. 투자자
+공개 체인의 타이밍·금액 상관관계까지 암호학적으로 숨기는 시스템은 아니다. DB에 연결표가 없다는 사실과 완전한 거래 익명성을 구별해야 한다.
 
-1. 전략 목록에서 과거 성과, 위험, 수수료, 운용 상태, 최근 NAV mark를 비교한다.
-2. 지갑 연결 후 테스트 AUSD를 approve하고 하나 이상의 전략 vault에 deposit한다.
-3. 체인 이벤트를 인덱싱해 투자자 지분과 deposit 상태를 DB에 반영한다.
-4. 각 전략의 분 단위 추정 NAV와 PnL, 보유 지분, 환매 가능 epoch를 본다.
-5. epoch 규칙에 맞춰 환매를 요청하고, 실제 token transfer와 DB 상태를 대조한다.
+## 배포
 
-### 3. 운영 epoch
+- Vercel 프로젝트: `mm-zkquant`, https://mm-zkquant.vercel.app
+- Supabase 프로젝트: `monad`, migration 001–007 적용
+- Phala CVM: `633b691dbe00185be471da9f57b145aba58cbd77`
+- Vault: `0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6`
+- AUSD: `0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC`
+- TEE operator: `0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7`
+- Monad Testnet chain ID: 10143
 
-1. 입금 창을 닫고 해당 epoch의 share/NAV 기준점을 확정한다.
-2. TEE가 strategy target을 받아 정책·서명·deadline을 검증하고 주문을 제출한다.
-3. Perpl 포지션, 잔고, 가격을 1분마다 mark한다.
-4. mark와 체인 상태로 추정 NAV를 계산해 공개 DB에 기록한다.
-5. epoch 종료 시 성과, 수수료, 환매 가능 금액을 확정하고 다음 epoch를 연다.
+기존 Vault를 다시 배포하면 기존 자금과 장부가 분리된다. 일상 업데이트는 Vault 재배포 없이 `node scripts/deploy-platform-worker.mjs`와 `npx vercel deploy --prod --yes`로 수행한다. Worker 갱신은 기존 CVM과 키 정체성, 봉인 상태를 재사용한다. 신규 migration은 `npm run db:migrate`로 적용한다.
 
-## 권장 아키텍처
+`.env.example`에 credential 필드가 있다. Vercel/Supabase CLI 로그인과 Phala API 토큰을 사용할 수 있다. 배포 지갑 개인키는 로컬 `.env`에만 둔다. `.data/platform-live`의 테스트 지갑/API 토큰/개인별 검증 기록도 공개하거나 커밋하지 않는다.
 
-```mermaid
-flowchart LR
-  Web[Vercel React 웹] --> API[플랫폼 API]
-  API --> DB[(Postgres)]
-  Web --> Wallet[사용자 EVM 지갑]
-  Wallet --> Vault[전략별 rolling vault]
-  Vault --> Indexer[체인 이벤트 인덱서]
-  Indexer --> DB
-  API --> TEE[Phala TDX executor]
-  TEE --> Perpl[Perpl testnet]
-  Perpl --> Marks[가격·포지션 mark worker]
-  Marks --> DB
-  DB --> API
+## 실제 검증
+
+실제 test AUSD로 2개 지갑의 가입, 전략 등록, 자기자본 입금, 암호화된 BTC 주문, 후속 투자자의 대기 입금과 다음 제출 편입, 예약 출금, 실제 ERC20 지급 영수증 대조를 완료했다. 최초 시나리오에서 전략가 199.981534 AUSD, 투자자 100.034216 AUSD가 지급됐으며 지분이 소각되고 해당 실행 계정이 청산됐다. 이 숫자는 테스트 당시 결과이며 수익 약속이 아니다.
+
+브라우저에서 두 역할의 로그인·비공개 화면, 390px 모바일 메뉴와 가로 넘침 여부를 검사했다. 추가 시나리오의 결과는 로컬 증거 파일에 기록한다. 자동 테스트는 장부, 신규 자금의 NAV 편입, HWM 보수, 현금 우선 부분 출금, 청산 비용 귀속, 출금 재시도, 위험 종료 독립성, 확정 거래의 재시작 복구를 검증한다.
+
+추가 검증 결과:
+
+- 실제 Vercel 브라우저에서 신규 지갑 가입 → 프로필 → API 토큰 발급 → 전략 등록 → 공개 설정 조회 완료.
+- 브라우저의 투자자 입금 승인·입금·TEE 확인, 대기 자금 출금 신청·취소, 활성 지분 출금 신청 완료.
+- BTC/ETH 다중 시장 체결, 별도 전략의 BTC 숏 동시 체결 확인. BTC 롱 1계정과 숏 1계정이 동시에 존재해 전략 주문이 상쇄되지 않음을 확인.
+- 부분 출금 시 투자자에게 50.003593 AUSD 지급, 나머지 지분 유지. 전략가에게는 199.959079 AUSD 지급.
+- 다른 전략의 전략가 199.577996 AUSD, 투자자 99.831935 AUSD 지급을 ERC20 영수증으로 독립 대조. 해당 시점 모든 실행 계정의 포지션 0 확인.
+- 사전 공지한 보수 변경이 기존 정산 후 policy version 2로 적용되고 공개 DB에 반영되는 것 확인.
+- 전체 자동 테스트 448개 통과. 추가 대상 테스트에는 청산 비용이 잔존 투자자의 손절을 잘못 유발하지 않는지, 만료된 대기 요청이 새 입금을 편입하지 않는지 포함.
+
+2026-10-05 11:42 UTC 확인 시 모든 실행 포지션은 0이다. 부분 출금 검증에서 남겨 둔 투자자 잔여 지분은 전액 출금을 신청했으며, 기존 약정에 따라 **2026-10-05 12:18:13 UTC** 자동 정산 대상이다. 이 잔여 지급을 앞당기기 위해 정산 규칙을 우회하지 않았다. 최초·별도 전략의 전액 지급과 부분 지급은 이미 온체인에서 확인했다.
+
+Vercel의 `VITE_PLATFORM_API_BASE`는 `/api`여야 한다. Phala 주소를 넣으면 공개 설정·카탈로그를 잘못된 서버에 요청한다. TEE 주소는 서버의 `PLATFORM_TEE_URL`을 통해 `/api/v1/config`에서 별도로 제공한다.
+
+```sh
+npm test
+npm run build
+node scripts/platform-smoke.mjs
+node scripts/platform-audit-e2e.mjs
+# Playwright를 설치한 환경에서:
+MMQ_PLAYWRIGHT_MODULE=playwright node scripts/platform-browser-check.mjs
 ```
 
-- **Vercel**: React 정적 UI만 담당한다.
-- **플랫폼 API**: Vercel과 분리된 Node 서비스다. 지갑 로그인, API key lifecycle, 공개 strategy/NAV API, indexer webhook, DB transaction을 담당한다.
-- **Postgres**: 공개 메타데이터, 사용자 관계, share/NAV history, event cursor, 공개 performance record를 저장한다.
-- **TEE**: API key 원문이 아니라 target 원문, execution key, proof witness, durable signed transaction journal을 보관한다.
-- **온체인 vault**: 사용자 자금과 share를 권위 있게 보관한다. DB는 체인 상태의 캐시·조회 모델이다.
+실제 자금 이동을 수행하는 `platform-e2e.mjs`와 `platform-browser-transact.mjs`는 생성된 테스트 지갑 전용이다. 시나리오 파일 없이 반복 실행하거나 운영 사용자 지갑으로 바꾸지 않는다. 감사 결과에는 비공개 전략 귀속이 포함되므로 로컬에 보관한다.
 
-TEE가 DB를 대체하면 안 된다. DB의 비공개 target column도 평문 저장하지 말고 TEE public key로 암호화한 ciphertext와 hash만 저장한다.
+## 실행 조건과 남은 제품 경계
 
-## Postgres 최소 스키마
-
-| 테이블 | 핵심 컬럼 | 용도 |
-|---|---|---|
-| `users` | `id`, `created_at` | 앱 사용자 기본 레코드 |
-| `wallets` | `address`, `user_id`, `verified_at` | 서명으로 검증된 지갑 |
-| `strategists` | `wallet_address`, `display_name`, `bio`, `status` | 전략가 공개 profile |
-| `api_keys` | `id`, `strategist_id`, `key_hash`, `prefix`, `created_at`, `revoked_at`, `last_used_at` | key 원문 없이 lifecycle 관리 |
-| `strategies` | `id`, `strategist_id`, `slug`, `name`, `description`, `risk`, `fee_bps`, `status`, `vault_address` | 투자자가 보는 전략 |
-| `strategy_versions` | `strategy_id`, `version`, `code_hash`, `config_hash`, `published_at` | 전략 변경 이력·재현성 |
-| `performance_records` | `strategy_id`, `period_start`, `period_end`, `nav_start`, `nav_end`, `return_bps`, `source`, `evidence_uri` | 과거 성과와 근거 |
-| `epochs` | `id`, `strategy_id`, `sequence`, `deposit_cutoff_at`, `start_at`, `end_at`, `status`, `opening_nav` | epoch lifecycle |
-| `target_submissions` | `epoch_id`, `strategy_id`, `ciphertext`, `payload_hash`, `tee_receipt`, `accepted_at` | TEE로 보낸 비공개 target의 공개 commitment |
-| `subscriptions` | `tx_hash`, `log_index`, `investor_wallet`, `strategy_id`, `amount`, `shares`, `status` | 입금과 share 발행 |
-| `redemptions` | `tx_hash`, `log_index`, `investor_wallet`, `strategy_id`, `shares`, `amount`, `status` | 환매 요청·지급 |
-| `nav_marks` | `strategy_id`, `marked_at`, `estimated_nav`, `unit_nav`, `pnl_bps`, `source_block` | 분 단위 추정 NAV |
-| `executions` | `strategy_id`, `epoch_id`, `intent_hash`, `tx_hash`, `status`, `position_after`, `proof_hash` | TEE 주문·proof 결과 |
-| `chain_cursors` | `chain_id`, `contract_address`, `last_block`, `last_log_index` | 재시작 가능한 indexer |
-| `audit_events` | `actor`, `action`, `entity`, `entity_id`, `payload_hash`, `created_at` | 사용자·운영 액션 audit |
-
-필수 unique key:
-
-- `wallets.address`
-- `strategies.slug`
-- `subscriptions(tx_hash, log_index)`
-- `redemptions(tx_hash, log_index)`
-- `nav_marks(strategy_id, marked_at)`
-- `target_submissions(strategy_id, epoch_id)`
-
-금액은 DB에서 floating point를 쓰지 않고 token 최소 단위 정수 문자열 또는 `NUMERIC(78,0)`으로 저장한다.
-
-## API 최소 계약
-
-### 공개
-
-- `GET /v1/strategies`
-- `GET /v1/strategies/:slug`
-- `GET /v1/strategies/:slug/performance`
-- `GET /v1/strategies/:slug/nav?from=&to=`
-- `GET /v1/epochs/:id`
-
-### 지갑 세션
-
-- `POST /v1/auth/challenge`
-- `POST /v1/auth/verify`
-- `POST /v1/auth/logout`
-
-challenge는 단회 nonce, domain, chain ID, 만료 시각을 포함한다. 서명 확인 뒤 세션 cookie 또는 짧은 access token을 발급한다.
-
-### 전략가
-
-- `POST /v1/strategists`
-- `POST /v1/api-keys`
-- `DELETE /v1/api-keys/:id`
-- `POST /v1/strategies`
-- `PATCH /v1/strategies/:id`
-- `POST /v1/strategies/:id/performance-records`
-- `POST /v1/strategies/:id/targets`
-
-`targets`는 API key를 요구하고, API는 target을 TEE attestation public key로 암호화해 TEE에 전달한다. DB에는 ciphertext, payload hash, TEE receipt만 남긴다.
-
-### 투자자
-
-- `GET /v1/me/portfolio`
-- `GET /v1/me/subscriptions`
-- `GET /v1/me/redemptions`
-- `POST /v1/investment-intents`
-
-입금 자체는 API가 대신 보내지 않는다. API는 approve/deposit calldata를 만들고, 투자자의 지갑이 직접 전송한다. indexer가 확정 이벤트를 읽은 뒤 portfolio API를 갱신한다.
-
-## 온체인 작업
-
-새 **rolling strategy vault**가 필요하다. `PerplCohortVault.sol`을 그대로 확장하지 말고 별도 계약과 상태 전이로 만든다.
-
-최소 요구사항:
-
-- 전략별 vault 하나, 다수 투자자 wallet 지원
-- test AUSD `deposit`과 share mint
-- epoch 경계에서만 subscribe/redemption 처리
-- unit NAV 기준 share 발행과 burn
-- `requestRedeem`과 claim 가능한 상태 분리
-- fee policy와 HWM 상태를 전략별로 기록
-- `Deposit`, `RedeemRequested`, `Redeemed`, `EpochOpened`, `EpochClosed`, `NavCommitted`, `ExecutionRecorded` 이벤트
-- vault/epoch/target nonce domain separation
-- TEE operator만 Perpl 실행 가능, 전략가의 wallet signature 또는 TEE 검증된 API request가 target 권한을 가져야 함
-- 테스트넷 전용 chain ID 10143과 test AUSD만 허용
-
-초기 데모에서는 중도 환매를 다음 epoch로 이월해도 된다. 분 단위 NAV는 **추정치**이며, 확정 share 가격과 분리해 UI에 명확히 표기한다.
-
-## 구현 순서
-
-1. Postgres와 migration을 추가하고 platform API를 Vercel 밖에 배포한다.
-2. 현재 TEE의 `platform.mjs` JSON registry를 API/DB 기반 registry로 옮긴다.
-3. 공개 strategy list를 evidence import가 아니라 `strategies + performance_records + nav_marks` DB query로 전환한다.
-4. 지갑 세션과 API key lifecycle을 구현한다.
-5. rolling vault 계약과 deploy script를 작성하고 Monad testnet에 배포한다.
-6. faucet 또는 test AUSD 확보 경로를 UI에 연결한다.
-7. 체인 indexer를 만들고 deposit/redemption/share event를 idempotent하게 DB에 반영한다.
-8. TEE target ingress를 epoch·strategy·vault에 묶고 actual execution receipt를 `executions`에 기록한다.
-9. 1분 mark worker를 만들고 Perpl position, venue balance, 가격, block number을 `nav_marks`에 기록한다.
-10. 투자자 포트폴리오, 전략 상세, 전략가 콘솔을 DB API로 전환한다.
-11. 실제 서로 다른 strategist 1명과 investor 2명 이상으로 testnet E2E를 실행한다.
-
-## 데모 완료 기준
-
-- 전략가가 지갑으로 로그인하고 API key를 발급한다.
-- 전략가가 과거 성과 근거를 등록하고 공개 strategy list에 보인다.
-- 전략가가 API key로 epoch target을 제출하고 TEE receipt를 받는다.
-- 서로 다른 투자자 지갑 둘 이상이 test AUSD를 직접 approve/deposit한다.
-- indexer가 deposit과 shares를 DB에 반영한다.
-- TEE가 target을 실행하고 tx hash/proof hash를 남긴다.
-- 최소 세 개의 1분 NAV mark가 저장되고 UI 차트와 포트폴리오 PnL에 보인다.
-- 한 투자자가 redemption을 요청하고 다음 epoch 규칙에 따라 실제 token을 받는다.
-- DB를 재시작해도 chain cursor로 상태를 재구성하고 TEE durable journal이 중복 주문을 만들지 않는다.
-
-## 현재 파일 안내
-
-| 파일 | 역할 |
-|---|---|
-| `src/web/Platform.jsx` | 현재 Vercel 플랫폼 UI. API base는 `VITE_PLATFORM_API_BASE` |
-| `deploy/tee/operator/platform.mjs` | 임시 TEE API key·strategy·target JSON registry. DB로 대체 대상 |
-| `deploy/tee/operator/server.mjs` | TEE HTTP, attestation, encrypted cohort endpoint, `/platform/*` route |
-| `scripts/prepare-cohort-tee.mjs` | TEE source/compose measurement 생성. `MM_TEE_DIR`로 새 실험 디렉터리 지정 |
-| `contracts/perpl/PerplCohortVault.sol` | 종료형 2인 cohort. rolling vault로 사용 불가 |
-| `contracts/sleeves/OmnibusVault.sol` | 다전략 test asset vault reference. TEE integration 전 |
-| `src/pilot/coordinator.js` | encrypted strategy submission/epoch aggregation reference |
-| `docs/2026-10-04-core-cohort-mvp.md` | 검증된 cohort/TEE/Perpl/ZK 범위와 한계 |
-
-## 운영 정보
-
-- Phala API token, `.data/`, wallet private key, `client.json` token은 git·문서·프론트엔드에 절대 넣지 않는다.
-- Vercel에는 `VITE_PLATFORM_API_BASE`만 공개 환경 변수로 설정돼 있다. API key나 TEE access token은 넣지 않는다.
-- 현재 TDX는 `tdx.small`이며 계속 실행하면 compute와 disk 비용이 발생한다. 플랫폼 API를 외부 API 서버로 이전한 뒤 TEE는 epoch execution 시에만 켜는 방식으로 비용을 줄일 수 있다.
+- 이 배포는 Monad/Perpl **테스트넷**이다. 실제 법정가치 자금 운용 서비스로 검증한 것은 아니다.
+- 새로운 실행 계정은 Perpl 규칙상 시장당 최소 100 AUSD가 필요하다. 추가 담보 입금은 최소 10 AUSD 단위가 적용된다. 목표를 실행할 자금이 부족하면 실패 상태를 반환한다.
+- 거래소의 최소 담보 출금은 0.01 AUSD다. 이보다 작은 잔액의 회수에는 거래소 제약이 적용된다. 기준은 [Perpl 공개 context API](https://testnet.perpl.xyz/api/v1/pub/context)에서 확인했다.
+- 현재 플랫폼 실행 컨트랙트는 TEE operator 권한으로 실행한다. 저장소의 별도 cohort/ZK 증명 실험과 달리, 이 새 플랫폼 경로의 모든 주문·장부 변경을 ZK proof로 검증하도록 연결하지는 않았다.
+- Worker 거래 journal의 누적 가스 예산은 3 MON이다. 운영 규모에 맞춘 가스 공급·예산 갱신과 다중 운영자 복구 체계는 별도 운영 작업이다.
+- 주문·출금은 실제 거래소 유동성에 의존한다. 부분 체결/실패/정산 대기를 숨기지 않으며 재시도 상태를 유지한다.
+- 변동성은 시간별 관측치가 쌓인 뒤 표시된다. 데이터가 없을 때 0%나 가짜 성과를 표시하지 않는다.

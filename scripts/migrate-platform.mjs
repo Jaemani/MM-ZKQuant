@@ -2,11 +2,12 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PlatformDatabase } from '../src/platform/database.js';
+import { databaseUrl } from '../src/platform/environment.js';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const values = { ...process.env };
 try { for (const line of readFileSync(resolve(root, '.env'), 'utf8').split(/\r?\n/)) { const match = line.match(/^([A-Z][A-Z0-9_]*)=(.*)$/); if (match && !values[match[1]]) values[match[1]] = match[2].trim(); } } catch {}
-const database = new PlatformDatabase({ databaseUrl: values.DATABASE_URL });
+const database = new PlatformDatabase({ databaseUrl: databaseUrl(values) });
 try {
   await database.query('CREATE TABLE IF NOT EXISTS schema_migrations (id TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())');
   const existing = await database.query("SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='users') AS exists");

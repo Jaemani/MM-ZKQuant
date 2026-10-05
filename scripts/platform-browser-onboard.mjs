@@ -1,0 +1,43 @@
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { Wallet, getBytes } from 'ethers';
+const {chromium}=await import(process.env.MMQ_PLAYWRIGHT_MODULE||'playwright');
+const file='.data/platform-live/onboarding.json';
+const state=existsSync(file)?JSON.parse(readFileSync(file)):{key:Wallet.createRandom().privateKey,slug:`ui-${Date.now().toString(36)}`};
+writeFileSync(file,JSON.stringify(state,null,2),{mode:0o600});
+const wallet=new Wallet(state.key),browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+try {
+ const page=await browser.newPage({viewport:{width:1280,height:900}});
+ await page.exposeBinding('walletBridge',async(_,{method,params=[]})=>{
+  if(['eth_requestAccounts','eth_accounts'].includes(method))return [wallet.address];
+  if(method==='eth_chainId')return '0x279f';
+  if(method==='personal_sign')return wallet.signMessage(getBytes(params[0]));
+  throw Error('UNEXPECTED_ONBOARDING_WALLET_METHOD');
+ });
+ await page.addInitScript(()=>{window.ethereum={request:r=>window.walletBridge(r),on:()=>{},removeListener:()=>{}};});
+ await page.goto(process.env.MMQ_BROWSER_URL||'https://mm-zkquant.vercel.app');
+ await page.getByRole('button',{name:'전략가 콘솔',exact:true}).click();
+ await page.getByRole('button',{name:'지갑으로 로그인',exact:true}).click();
+ await page.getByText('로그인했습니다.',{exact:false}).waitFor();
+ await page.getByLabel('공개 이름',{exact:true}).fill('UI 가입 검증 전략가');
+ await page.getByLabel('소개',{exact:true}).fill('브라우저에서 전략가 가입과 공개 설정 등록을 검증하는 테스트 계정입니다.');
+ await page.getByRole('button',{name:'프로필 저장 · 토큰 발급',exact:true}).click();
+ await page.getByText('API 토큰은 지금 복사해 보관하세요.',{exact:true}).waitFor();
+ state.apiKey=await page.getByLabel('API 토큰',{exact:true}).inputValue();
+ writeFileSync(file,JSON.stringify(state,null,2),{mode:0o600});
+ await page.getByLabel('전략 주소 이름 (영문 소문자·숫자·하이픈)',{exact:true}).fill(state.slug);
+ await page.getByLabel('전략명',{exact:true}).fill('UI 등록 검증 · 미운용');
+ await page.getByLabel('전략 설명',{exact:true}).fill('실제 브라우저 등록 검증용입니다. 투자금과 운용 성과는 없습니다.');
+ await page.getByLabel('성과보수 (%)',{exact:true}).fill('10');
+ await page.getByLabel('최대 레버리지 (배)',{exact:true}).fill('1.5');
+ await page.getByRole('button',{name:'전략 등록',exact:true}).click();
+ await page.getByText('전략을 등록했습니다.',{exact:false}).waitFor();
+ state.strategyId=await page.getByLabel(/내 전략/).inputValue();
+ writeFileSync(file,JSON.stringify(state,null,2),{mode:0o600});
+ await page.getByRole('button',{name:'전략 탐색',exact:true}).click();
+ const card=page.locator('.strategy-card').filter({hasText:'UI 등록 검증 · 미운용'});
+ await card.getByRole('button',{name:'전략 상세 보기'}).click();
+ await page.getByRole('heading',{name:'공개 운용 조건과 자기자본'}).waitFor();
+ await page.getByText('1.5배',{exact:true}).waitFor();
+ await page.screenshot({path:'.data/platform-live/screenshots/onboarding-public-settings.png',fullPage:true});
+ console.log({walletSignup:true,profile:true,tokenIssued:true,strategyRegistered:true,publicPolicyVisible:true});
+}finally {await browser.close();}

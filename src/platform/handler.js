@@ -1,4 +1,5 @@
 import { PlatformError } from './service.js';
+import { relayTeePacket } from './tee-relay.js';
 
 const reply = (response, status, value) => { response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); response.end(JSON.stringify(value)); };
 async function readBody(request) {
@@ -21,21 +22,39 @@ export async function handlePlatformRequest(request, response, service, { origin
   try {
     const original = new URL(request.url, 'http://platform.local');
     const pathname = prefix && original.pathname.startsWith(prefix) ? original.pathname.slice(prefix.length) || '/' : original.pathname;
+    if (request.method === 'POST' && pathname.startsWith('/tee/')) {
+      const result = await relayTeePacket(service.teeEndpoint, pathname.slice(4), await readBody(request));
+      return reply(response, result.status, result.body);
+    }
     if (request.method === 'GET' && pathname === '/v1/health') return reply(response, 200, { ok: true, mode: 'MONAD_TESTNET_PLATFORM_API' });
+    if (request.method === 'GET' && pathname === '/v1/config') return reply(response, 200, await service.publicConfig());
     if (request.method === 'GET' && pathname === '/v1/strategies') return reply(response, 200, await service.publicStrategies());
-    if (request.method === 'GET' && pathname === '/v1/me/portfolio') return reply(response, 200, await service.portfolio(request.headers.authorization));
+    const detail = pathname.match(/^\/v1\/strategies\/([a-z][a-z0-9-]{2,47})$/i);
+    if (request.method === 'GET' && detail) return reply(response, 200, await service.strategyDetail(detail[1],Object.fromEntries(original.searchParams)));
+    if (request.method === 'GET' && pathname === '/v1/me') return reply(response, 200, await service.me(request.headers.authorization));
+    if (request.method === 'GET' && pathname === '/v1/me/strategies') return reply(response, 200, await service.myStrategies(request.headers.authorization));
+    if (request.method === 'GET' && pathname === '/v1/api-keys') return reply(response,200,await service.listApiKeys(request.headers.authorization));
     if (request.method !== 'POST') throw new PlatformError('METHOD_NOT_ALLOWED', 405);
     const input = await readBody(request);
+    if (pathname === '/v1/tee-metrics') return reply(response,200,await service.publishMetrics(input));
     if (pathname === '/v1/auth/challenge') return reply(response, 200, await service.challenge(input));
     if (pathname === '/v1/auth/verify') return reply(response, 200, await service.verify(input));
     if (pathname === '/v1/strategists') return reply(response, 201, await service.upsertStrategist(request.headers.authorization, input));
+    const revoke = pathname.match(/^\/v1\/api-keys\/([0-9a-f-]{36})\/revoke$/i);
+    if (revoke) return reply(response,200,await service.revokeApiKey(request.headers.authorization,revoke[1]));
     if (pathname === '/v1/api-keys') return reply(response, 201, await service.issueApiKey(request.headers.authorization));
     if (pathname === '/v1/strategies') return reply(response, 201, await service.createStrategy(request.headers.authorization, input));
+    if (pathname === '/v1/strategy-authorization') return reply(response,200,await service.authorizeStrategy(request.headers.authorization,input.strategyId));
     const performance = pathname.match(/^\/v1\/strategies\/([0-9a-f-]{36})\/performance-records$/i);
     if (performance) return reply(response, 201, await service.recordPerformance(request.headers.authorization, performance[1], input));
+    const target = pathname.match(/^\/v1\/strategies\/([0-9a-f-]{36})\/targets$/i);
+    const policy = pathname.match(/^\/v1\/strategies\/([0-9a-f-]{36})\/policy$/i);
+    if(policy)return reply(response,202,await service.proposePolicy(request.headers.authorization,policy[1],input));
+    if (target) return reply(response, 202, await service.submitTarget(request.headers.authorization, target[1], input));
     throw new PlatformError('NOT_FOUND', 404);
   } catch (error) {
     const status = error instanceof PlatformError ? error.status : 500;
+    if (status === 500) console.error('PLATFORM_REQUEST_FAILED', error.code || error.name || 'UNKNOWN');
     reply(response, status, { error: status === 500 ? 'INTERNAL_ERROR' : error.message });
   }
 }

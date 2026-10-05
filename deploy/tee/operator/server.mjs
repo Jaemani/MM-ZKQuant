@@ -5,7 +5,8 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {JsonRpcProvider} from 'ethers';
 import {encryptionIdentity} from '../../../src/integration/sealed.js';
 import {operatorKeys,createOperator} from './engine.mjs';
-import {TestnetPlatform} from './platform.mjs';
+import {PrivateInvestments} from './investments.mjs';
+import {PlatformExecution} from './execution.mjs';
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const manifest=JSON.parse(readFileSync('/app/manifest.json'));
 if(process.env.DSTACK_SIMULATOR_ENDPOINT)throw Error('SIMULATOR_FORBIDDEN');
@@ -21,7 +22,12 @@ const secret=Buffer.from(derived.key,'hex'),channel=encryptionIdentity(secret,{m
 const identity={mode:'COHORT_TESTNET_OPERATOR',chainId:10143,encryptionPublicKey:channel.publicKey,operator:keys.wallet.address,managerKeys:[keys.publicKey(0),keys.publicKey(1)],...manifest};
 const rpc=new JsonRpcProvider('https://testnet-rpc.monad.xyz',undefined,{batchMaxCount:1,cacheTimeout:-1});
 let engine,busy=false;const seen=new Set();
-const platform=new TestnetPlatform({secret,storeDir:'/state'});
+const investments=new PrivateInvestments({secret,storeDir:'/state',provider:rpc,operator:keys.wallet.address,accessHash:manifest.accessHash,catalogUrl:'https://mm-zkquant.vercel.app/api/v1/strategies'});
+if(manifest.omnibusVault&&manifest.cashToken)await investments.pin({vaultAddress:manifest.omnibusVault,cashTokenAddress:manifest.cashToken});
+const execution=new PlatformExecution({investments,provider:rpc,wallet:keys.wallet.connect(rpc),secret,storeDir:'/state',apiUrl:'https://mm-zkquant.vercel.app/api'});
+await execution.initialize();
+let ticking=false;
+setInterval(async()=>{if(ticking)return;ticking=true;try{await execution.tick();await execution.publish();}catch{console.error('Platform worker awaiting reconciliation');}finally{ticking=false;}},5000);
 const platformOrigins=new Set(['https://mm-zkquant.vercel.app','http://localhost:5173']);
 const server=createServer(async(req,res)=>{
  const reply=(code,value)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
@@ -35,16 +41,23 @@ const server=createServer(async(req,res)=>{
     const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>64_000)throw Error('SIZE');chunks.push(chunk);}
     try{body=JSON.parse(Buffer.concat(chunks));}catch{throw Error('JSON');}
    }
-   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,platform.status());
-   if(req.method==='GET'&&url.pathname==='/platform/strategies')return platformReply(200,{strategies:platform.strategies()});
-   const detail=url.pathname.match(/^\/platform\/strategies\/([a-z][a-z0-9-]{2,47})$/);
-   if(req.method==='GET'&&detail){const strategy=platform.strategies().find(item=>item.id===detail[1]);return platformReply(strategy?200:404,strategy||{error:'STRATEGY_NOT_FOUND'});}
-   if(req.method==='POST'&&url.pathname==='/platform/auth/challenge')return platformReply(200,platform.challenge(body));
-   if(req.method==='POST'&&url.pathname==='/platform/strategists')return platformReply(201,platform.enroll(body));
-   if(req.method==='POST'&&url.pathname==='/platform/api-keys')return platformReply(201,platform.issueKey(body));
-   if(req.method==='POST'&&url.pathname==='/platform/strategies')return platformReply(201,platform.createStrategy(req.headers.authorization,body));
-   const submit=url.pathname.match(/^\/platform\/strategies\/([a-z][a-z0-9-]{2,47})\/targets$/);
-   if(req.method==='POST'&&submit)return platformReply(202,platform.submitTarget(req.headers.authorization,submit[1],body));
+   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,{mode:'TESTNET_PLATFORM_TEE',execution:execution.submitter?'STRATEGY_EXECUTION_AVAILABLE':'INITIALIZING',investments:investments.status()});
+   if(req.method==='GET'&&url.pathname==='/platform/metrics')return platformReply(200,execution.metrics());
+   if(req.method==='POST'&&url.pathname==='/platform/encrypted-strategy'){
+    try{const opened=channel.open(body);let result;try{result=await execution.accept(opened.message);}catch(e){result={error:e.message};}return platformReply(200,{reply:opened.reply(result)});}catch{return platformReply(400,{error:'INVALID_ENCRYPTED_REQUEST'});}
+   }
+   if(req.method==='POST'&&url.pathname==='/platform/encrypted-investments'){
+    try{
+     const opened=channel.open(body),input=opened.message;
+     let result;
+     try {
+      result=input.action==='PREPARE'?await investments.prepare(input):input.action==='COMPLETE'?await investments.complete(input):input.action==='PORTFOLIO'?await investments.portfolio(input):input.action==='CONFIGURE'?await investments.configure(input):['WITHDRAW','WITHDRAW_PENDING','CANCEL_WITHDRAWAL'].includes(input.action)?await investments.withdrawal(input):null;
+      if(!result)throw Error('UNKNOWN_ACTION');
+     } catch(error) { result={error:error.message}; }
+     return platformReply(200,{reply:opened.reply(result)});
+    }catch{return platformReply(400,{error:'PRIVATE_INVESTMENT_REJECTED'});}
+   }
+   if(/^\/platform\/(strategies|strategists|api-keys|auth|encrypted-targets)(\/|$)/.test(url.pathname))return platformReply(410,{error:'LEGACY_PLATFORM_RETIRED_USE_PUBLIC_API_AND_ENCRYPTED_STRATEGY'});
    return platformReply(404,{error:'NOT_FOUND'});
   }
   if(req.method==='GET'&&url.pathname==='/health')return reply(200,{mode:identity.mode,initialized:Boolean(engine)});
