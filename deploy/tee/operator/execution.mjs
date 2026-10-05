@@ -1,16 +1,17 @@
 import { SharedAccounts } from './shared-accounts.mjs';
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../../../src/platform/vault-retirement.js';
 import { executionError } from '../../../src/platform/execution-errors.js';
-import { Contract, keccak256, toUtf8Bytes } from 'ethers';
+import { Contract, Interface, keccak256, toUtf8Bytes } from 'ethers';
 import { readFileSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import { SealedStore } from '../../../src/integration/sealed.js';
 import { durableSubmitter } from '../../../protocol/cohort/durable-submitter.mjs';
 import { targetLots, validateTargets, validatePolicy } from '../../../src/platform/policy.js';
-import { newBook, markBook, markVenueEquity, activatePending, publicMetrics, crystallizeFees, burnWithdrawal, SCALE } from './ledger.mjs';
+import { newBook, markBook, markVenueEquity, activatePending, publicMetrics, crystallizeFees, burnWithdrawal, managerFeeTotals, SCALE } from './ledger.mjs';
 
 const vaultAbi=['function accountCount() view returns(uint256)','function accounts(uint256) view returns(address)','function createSlots(uint256,uint256)','function executionAccountVersion() view returns(uint256)','function createSharedAccounts(uint256)','function fundSlot(address,uint256,bytes32)','function recoverSlot(address,uint256,bytes32)','function withdraw(address,uint256,bytes32)','function setPaused(bool)'];
 const slotAbi=['function market() view returns(uint256)','function accountId() view returns(uint256)','function execute(bytes32,int256,uint256,uint256,uint256)'];
+const vaultInterface=new Interface(vaultAbi);
 const n=x=>BigInt(x||0);
 const opaque=s=>keccak256(toUtf8Bytes(s));
 const json=x=>JSON.parse(JSON.stringify(x,(_,v)=>typeof v==='bigint'?String(v):v));
@@ -62,7 +63,7 @@ export class PlatformExecution {
     return this.investments.serial(()=>{
       const state=this.investments.state(),book=state.books[strategy.id] ||=newBook(strategy);
       book.policyVersion??=strategy.policy_version||1;
-      if(input.action==='STATUS')return {sequence:book.sequence,status:book.status,policy:book.policy,policyVersion:book.policyVersion,valuationError:book.valuationError||null,reconciliationError:this.reconciliationError||null,requests:Object.values(book.requests).map(({id,status,error,sequence,createdAt})=>({id,status,error,sequence,createdAt}))};
+      if(input.action==='STATUS')return {sequence:book.sequence,status:book.status,policy:book.policy,policyVersion:book.policyVersion,valuationError:book.valuationError||null,reconciliationError:this.reconciliationError||null,performanceFees:this.performanceFees(book),requests:Object.values(book.requests).map(({id,status,error,sequence,createdAt})=>({id,status,error,sequence,createdAt}))};
       if(input.action==='RESUME') {if(book.status!=='HALTED')throw Error('NOT_HALTED');book.status='ACTIVE';book.baselineNav=book.nav;book.peakNav=book.nav;this.save(state);return {status:book.status};}
       if(input.action!=='TARGET')throw Error('INVALID_ACTION');
       if(!['FUNDING','LIVE'].includes(strategy.status))throw Error('STRATEGY_NOT_ACTIVE');
@@ -80,13 +81,39 @@ export class PlatformExecution {
       book.sequence=input.sequence;this.save(state);return {id:input.requestId,status:'QUEUED'};
     });
   }
+  performanceFees(book) {
+    const totals=managerFeeTotals(book),payments=new Map((book.feePayouts||[]).map(payment=>[payment.txHash,{...payment,status:'PAID'}]));
+    // Older books did not retain a payout list, but the sealed transaction
+    // journal still identifies each fee payment independently of user exits.
+    for(let sequence=1;sequence<=(book.feePaymentSequence||0);sequence++) {
+      const jobId=opaque(`fee:${book.id}:${sequence}`),stepId=opaque(`${jobId}:pay`),record=this.submitter?.lookup(stepId);
+      if(record?.status!==1||payments.has(record.hash))continue;
+      try {
+        const transaction=vaultInterface.parseTransaction(JSON.parse(record.fingerprint));
+        if(transaction?.name!=='withdraw'||transaction.args[0].toLowerCase()!==book.manager.toLowerCase()||transaction.args[2]!==opaque(jobId))continue;
+        const awaitingEffect=book.feePayment?.id===jobId&&!book.feePayment.steps?.pay?.applied;
+        payments.set(record.hash,{txHash:record.hash,amount:String(transaction.args[1]),blockNumber:record.block||null,paidAt:null,status:awaitingEffect?'CONFIRMING':'PAID'});
+      } catch { /* Incomplete legacy metadata cannot be presented as a payout. */ }
+    }
+    const history=[...payments.values()].sort((a,b)=>(b.blockNumber||0)-(a.blockNumber||0)||(b.paidAt||0)-(a.paidAt||0));
+    const confirmed=history.filter(payment=>payment.status==='PAID').reduce((sum,payment)=>sum+n(payment.amount),0n);
+    const feeStep=book.feePayment?.steps?.pay;
+    const record=feeStep&&!feeStep.applied?this.submitter?.lookup(feeStep.id):null;
+    const paymentState=n(totals.outstanding)===0n?'NONE':record?.status===0?'FAILED':record?'CONFIRMING':book.settlement?'SETTLING':book.valuationError||this.reconciliationError?'WAITING_PLATFORM':n(book.cash)<n(totals.outstanding)?'WAITING_CASH':'READY';
+    return {...totals,paymentState,historyComplete:totals.paid!==null&&confirmed===n(totals.paid),historyCount:history.length,payments:history.slice(0,20)};
+  }
   async applyEffect(state,effect,result) {
     if(!effect)return;
     if(effect.kind.startsWith('SHARED_')){if(!this.shared)throw Error('SHARED_ACCOUNT_UNAVAILABLE');return this.shared.applyEffect(state,effect,result);}
     const book=state.books[effect.bookId];
     if(effect.kind==='CASH')book.cash=String(n(book.cash)+n(effect.delta));
     if(effect.kind==='WITHDRAW'){const w=book.withdrawals[effect.withdrawalId];burnWithdrawal(book,w,n(effect.amount));w.txHash=result.hash;delete w.error;}
-    if(effect.kind==='FEE'){book.cash=String(n(book.cash)-n(effect.amount));book.feesDue=String(n(book.feesDue)-n(effect.amount));}
+    if(effect.kind==='FEE'){
+      book.feePayouts||=[];
+      if(book.feePayouts.some(payment=>payment.txHash===result.hash))return;
+      book.cash=String(n(book.cash)-n(effect.amount));book.feesDue=String(n(book.feesDue)-n(effect.amount));
+      book.feePayouts.push({txHash:result.hash,amount:String(effect.amount),blockNumber:result.block||null,paidAt:Math.floor(Date.now()/1000)});
+    }
     if(effect.kind==='PENDING_WITHDRAW'){const w=book.withdrawals[effect.withdrawalId],p=book.investors[w.wallet.toLowerCase()];p.pending=String(n(p.pending)-n(effect.amount));p.paid=String(n(p.paid)+n(effect.amount));w.status='PAID';w.txHash=result.hash;delete w.error;}
   }
   async step(state,job,label,request,effect=null) {

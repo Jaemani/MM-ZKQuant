@@ -18,6 +18,7 @@ export function depositPending(book, wallet, amount) {
 export function markBook(book, equity, now = Date.now(), {assessRisk=true} = {}) {
   const n = integer(equity); if (n < 0n) throw Error('NEGATIVE_EQUITY');
   book.equity = String(n);
+  book.valuedAt = Math.floor(now / 1000);
   if (integer(book.totalUnits)) book.nav = String(n * SCALE / integer(book.totalUnits));
   if (assessRisk && integer(book.nav) > integer(book.peakNav)) book.peakNav = book.nav;
   const nav = integer(book.nav), peak = integer(book.peakNav), baseline = integer(book.baselineNav);
@@ -113,6 +114,20 @@ export function portfolio(book, wallet) {
   const p = investor(book, wallet), nav = integer(book.nav);
   const accruedFee=p.lots.reduce((a,l)=>a+(nav>integer(l.hwm)?integer(l.units)*(nav-integer(l.hwm))*BigInt(book.feeBps)/(SCALE*10000n):0n),0n);
   return { strategyId: book.id, units: p.units, pending: p.pending, deposited:p.deposited, value: String(integer(p.units) * nav / SCALE-accruedFee), accruedFee:String(accruedFee), paid: p.paid, fees: p.fees, status: book.status, withdrawals: Object.values(book.withdrawals).filter(w => w.wallet.toLowerCase() === wallet.toLowerCase()) };
+}
+// Owner-only aggregates. Never include these in publicMetrics or the catalog.
+export function managerFeeTotals(book, nowSeconds = Math.floor(Date.now() / 1000)) {
+  const nav=integer(book.nav),due=integer(book.feesDue);
+  const crystallized=Object.values(book.investors).reduce((sum,p)=>sum+integer(p.fees),0n);
+  const paid=crystallized-due;
+  const estimateReason=book.valuationError?'VALUATION_UNAVAILABLE':book.settlement?'SETTLEMENT_IN_PROGRESS':null;
+  const estimated=Object.values(book.investors).reduce((sum,p)=>sum+p.lots.reduce((amount,lot)=>{
+    const gain=nav>integer(lot.hwm)?nav-integer(lot.hwm):0n;
+    return amount+integer(lot.units)*gain*BigInt(book.feeBps)/(SCALE*10000n);
+  },0n),0n);
+  return {feeBps:book.feeBps,estimated:estimateReason?null:String(estimated),estimateReason,
+    outstanding:String(due),paid:paid>=0n?String(paid):null,crystallized:String(crystallized),
+    nextSettlementAt:nextSettlement(book.policy,nowSeconds),valuedAt:book.valuedAt||null};
 }
 export function publicMetrics(book) {
   const p = book.investors[book.manager.toLowerCase()], nav = integer(book.nav);

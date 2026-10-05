@@ -24,6 +24,7 @@ import {
   navigate,
 } from "./PlatformUI.jsx";
 import InvestmentPanel from "./InvestmentPanel.jsx";
+import ManagerFees from "./ManagerFees.jsx";
 import { platformError } from "./platformErrors.js";
 const markets = [
   { id: 16, name: "BTC" },
@@ -824,7 +825,7 @@ function StrategyWorkspace({ strategy }) {
       </div>
       {statusError && (
         <div role="alert" className="q-notice error">
-          <span>실행 내역 조회 지연 · {statusError}</span>
+          <span>운용 상태·성과보수 조회 지연 · {statusError}</span>
           <button onClick={() => p.run(readStatus)}>다시 조회</button>
         </div>
       )}
@@ -873,6 +874,13 @@ function StrategyWorkspace({ strategy }) {
                 </button>
               </div>
             </Panel>
+            <ManagerFees
+              fees={status?.performanceFees}
+              loaded={Boolean(status)}
+              stale={Boolean(statusError)}
+              busy={p.busy}
+              onRefresh={() => p.run(readStatus)}
+            />
             <Panel>
               <h2>공개 운용 조건</h2>
               <Conditions policy={strategy.policy} feeBps={strategy.fee_bps} />

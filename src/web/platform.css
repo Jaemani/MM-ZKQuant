@@ -18,6 +18,12 @@
 .q-space { margin: 14px 0; }
 .q-full { width: 100%; }
 .q-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.q-fee-heading, .q-fee-title, .q-fee-timing { flex-wrap: wrap; }
+.q-fee-title { display: flex; align-items: center; gap: 12px; }
+.q-fee-payments { list-style: none; padding: 0; margin: 0; }
+.q-fee-payments li { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 0; border-top: 1px solid var(--q-line); }
+.q-fee-payments li > div { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.q-fee-payments li > div:last-child { align-items: flex-end; }
 .q-wrap,.q-actions { flex-wrap: wrap; }
 .q-actions { display: flex; gap: 8px; }
 .q-skip { position: fixed; top: -100px; left: 80px; background: var(--q-surface); padding: 12px; z-index: 200; }

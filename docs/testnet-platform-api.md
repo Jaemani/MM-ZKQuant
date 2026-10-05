@@ -53,6 +53,12 @@ market 16/32/48/64는 BTC/ETH/SOL/MON이다. `weightBps=5000`은 전략 순자�
 
 `STATUS`는 본인 전략의 sequence, 실행 상태와 요청 결과를 암호화해 반환한다. `QUEUED`는 접수이며 체결 완료가 아니다. `EXECUTED`, `PARTIALLY_FILLED`, `EXPIRED`, `FAILED`를 확인한다. 목표 평문을 받던 `/v1/strategies/:id/targets`는 410을 반환한다.
 
+운용 페이지의 **내 성과보수**는 소유자가 인증된 암호화 `STATUS.performanceFees`로만 조회한다. 공개 API·성과 지표에는 추가하지 않는다. `estimated`는 투자 건별 최고 평가액 초과 이익의 미정산 예상 보수이며 대기 자금은 제외한다. 정산 중이거나 최신 평가 확인에 실패하면 `null`이다. `outstanding`은 확정 후 미지급액, `paid`는 누적 확정 보수에서 미지급액을 뺀 실제 지급액이다. 기존 자기자본 보수 규칙도 그대로 적용한다. 금액은 AUSD 최소 단위(6자리 소수), 시각은 Unix 초다.
+
+`payments`에는 최근 20건의 지급액·거래 해시·블록·상태만 포함한다. 신규 지급은 확인 시각도 기록하고, 과거 지급은 암호화 거래 저널에서 복원한다. 과거 상세 기록이 부족하면 `historyComplete=false`이며 누적액은 장부 기준으로 유지한다. `paymentState`는 자동 지급 대기, 거래 확인, 정산, 현금 부족, 플랫폼 확인 또는 실패를 구분한다. 투자자별 지분·포지션·주문 정보는 이 응답에 포함하지 않는다. 지급을 위한 별도 청구 버튼은 없으며 기존 정산 시점과 현금 확보 규칙을 유지한다.
+
+핵심 회귀 검증: `node --test tests/platform-fees.test.js tests/platform-ledger.test.js tests/platform-execution.test.js`. 기존 로컬 테스트 전략가 계정으로 읽기 전용 웹 확인: `node scripts/platform-fees-browser.mjs` (`MMQ_E2E_STATE_PATH`, `MMQ_BROWSER_URL`, `MMQ_PLAYWRIGHT_MODULE`로 환경 지정). 화면 조회·새로고침·모바일 배치만 확인하며 주문·입금·장부 변경은 하지 않는다.
+
 ## 조회와 설정 변경
 
 - `GET /v1/strategies`: 공개 메타데이터·설정·집계 성과·자기자본
