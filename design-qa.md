@@ -45,3 +45,9 @@ No actionable P0/P1/P2 remains in the verified scope.
 ## Follow-up polish and limits
 
 Optional P3: self-host approved font subsets. No fresh deposits, trades or withdrawals were sent. Safari, physical mobile devices and a full screen-reader audit remain outside this pass. Earlier `after-*` and `comparison-*` images are historical light-design evidence; `split-*` files represent this release.
+
+## Production verification
+
+Code commit `2e89658` deployed successfully to https://mm-zkquant.vercel.app. Immutable deployment: https://mm-zkquant-4zcwzqprc-cosmoserys-projects.vercel.app (Vercel READY).
+
+Post-deployment Playwright verified desktop row selection/inspector update, comparison focus, 390px row-to-detail navigation and deep-link reload. No document overflow or page JavaScript errors. Production screenshots in `.data/design/production-split-desktop.png` and `production-split-mobile.png` were inspected. Original main workspace uncommitted work remains excluded and unchanged.
