@@ -5,6 +5,7 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {JsonRpcProvider} from 'ethers';
 import {encryptionIdentity} from '../../../src/integration/sealed.js';
 import {operatorKeys,createOperator} from './engine.mjs';
+import {TestnetPlatform} from './platform.mjs';
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const manifest=JSON.parse(readFileSync('/app/manifest.json'));
 if(process.env.DSTACK_SIMULATOR_ENDPOINT)throw Error('SIMULATOR_FORBIDDEN');
@@ -20,10 +21,32 @@ const secret=Buffer.from(derived.key,'hex'),channel=encryptionIdentity(secret,{m
 const identity={mode:'COHORT_TESTNET_OPERATOR',chainId:10143,encryptionPublicKey:channel.publicKey,operator:keys.wallet.address,managerKeys:[keys.publicKey(0),keys.publicKey(1)],...manifest};
 const rpc=new JsonRpcProvider('https://testnet-rpc.monad.xyz',undefined,{batchMaxCount:1,cacheTimeout:-1});
 let engine,busy=false;const seen=new Set();
+const platform=new TestnetPlatform({secret,storeDir:'/state'});
+const platformOrigins=new Set(['https://mm-zkquant.vercel.app','http://localhost:5173']);
 const server=createServer(async(req,res)=>{
  const reply=(code,value)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
  try{
   const url=new URL(req.url,'http://localhost');
+  const platformReply=(code,value)=>{const origin=req.headers.origin;if(origin&&platformOrigins.has(origin))res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Headers','Content-Type, Authorization');res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS');res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
+  if(url.pathname.startsWith('/platform/')){
+   if(req.method==='OPTIONS'){platformReply(204,{});return;}
+   let size=0,body={};
+   if(req.method==='POST'){
+    const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>64_000)throw Error('SIZE');chunks.push(chunk);}
+    try{body=JSON.parse(Buffer.concat(chunks));}catch{throw Error('JSON');}
+   }
+   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,platform.status());
+   if(req.method==='GET'&&url.pathname==='/platform/strategies')return platformReply(200,{strategies:platform.strategies()});
+   const detail=url.pathname.match(/^\/platform\/strategies\/([a-z][a-z0-9-]{2,47})$/);
+   if(req.method==='GET'&&detail){const strategy=platform.strategies().find(item=>item.id===detail[1]);return platformReply(strategy?200:404,strategy||{error:'STRATEGY_NOT_FOUND'});}
+   if(req.method==='POST'&&url.pathname==='/platform/auth/challenge')return platformReply(200,platform.challenge(body));
+   if(req.method==='POST'&&url.pathname==='/platform/strategists')return platformReply(201,platform.enroll(body));
+   if(req.method==='POST'&&url.pathname==='/platform/api-keys')return platformReply(201,platform.issueKey(body));
+   if(req.method==='POST'&&url.pathname==='/platform/strategies')return platformReply(201,platform.createStrategy(req.headers.authorization,body));
+   const submit=url.pathname.match(/^\/platform\/strategies\/([a-z][a-z0-9-]{2,47})\/targets$/);
+   if(req.method==='POST'&&submit)return platformReply(202,platform.submitTarget(req.headers.authorization,submit[1],body));
+   return platformReply(404,{error:'NOT_FOUND'});
+  }
   if(req.method==='GET'&&url.pathname==='/health')return reply(200,{mode:identity.mode,initialized:Boolean(engine)});
   if(req.method==='GET'&&url.pathname==='/attestation'){
    const challenge=url.searchParams.get('challenge');if(!/^[a-f0-9]{64}$/.test(challenge||''))return reply(400,{error:'CHALLENGE'});
@@ -61,4 +84,3 @@ const server=createServer(async(req,res)=>{
 });
 server.requestTimeout=180000;server.headersTimeout=15000;
 server.listen(8080,'0.0.0.0',()=>console.log('Testnet cohort operator ready; client attestation required'));
-setTimeout(()=>server.close(()=>process.exit(0)),25*60*1000).unref();

@@ -1,0 +1,9 @@
+.gitnexus/
+.data/
+artifacts/
+perpl-zk-artifacts.tgz
+research/
+target/
+*.log
+*.sqlite
+*.db

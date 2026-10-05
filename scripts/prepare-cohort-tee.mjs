@@ -1,9 +1,9 @@
 import {gzipSync} from 'node:zlib';
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';import{createHash,randomBytes}from'node:crypto';
-const dir='.data/cohort-tee';mkdirSync(dir,{recursive:true,mode:0o700});
+const dir=process.env.MM_TEE_DIR||'.data/cohort-tee';mkdirSync(dir,{recursive:true,mode:0o700});
 if(existsSync(dir+'/client.json'))throw Error('Existing experiment: do not overwrite keys/manifest; inspect or resume it');
 const sha=x=>createHash('sha256').update(x).digest('hex'),token=randomBytes(32).toString('hex');
-const runtime=['deploy/tee/operator/server.mjs','deploy/tee/operator/engine.mjs','protocol/cohort/durable-submitter.mjs','protocol/perpl/target-prover.mjs','src/integration/sealed.js'];
+const runtime=['deploy/tee/operator/server.mjs','deploy/tee/operator/engine.mjs','deploy/tee/operator/platform.mjs','protocol/cohort/durable-submitter.mjs','protocol/perpl/target-prover.mjs','src/integration/sealed.js'];
 const files=Object.fromEntries(runtime.map(p=>[p,readFileSync(p)]));
 files['package.json']=readFileSync('deploy/tee/operator/package.json');files['package-lock.json']=readFileSync('deploy/tee/operator/package-lock.json');
 for(const p of ['circuits/perpl-target-mvp.circom','artifacts/perpl-zk/TargetVerifier.sol','artifacts/perpl-zk/verification-key.json'])files[p]=readFileSync(p);

@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "server": "node src/server/http.js",
+    "platform:api": "node src/platform/http.js",
+    "db:migrate": "node scripts/migrate-platform.mjs",
     "build": "vite build",
     "start": "node src/server/http.js",
     "test": "node --test tests/*.test.js tests/protocol-v1/*.test.mjs",
@@ -68,6 +70,7 @@
   "dependencies": {
     "@phala/dstack-sdk": "0.5.8",
     "ethers": "^6.15.0",
+    "pg": "^8.23.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "solc": "0.8.37"
