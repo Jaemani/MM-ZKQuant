@@ -53,3 +53,7 @@ No actionable P0/P1/P2 findings remain within the verified scope.
 No new onchain deposits, orders or withdrawals were sent. The success-state step indicator follows the existing deposit result but a fresh payment was not performed. Full screen-reader testing, Safari/Android hardware and 400% zoom remain outside this pass. Optional P3: self-host approved font subsets to remove the external font request.
 
 Implementation checklist: palette and shared components complete; guest onboarding and comparison complete; responsive and keyboard checks complete; review and public evidence saved. Deployment is recorded separately after Vercel confirms its URL.
+
+## Deployment verification
+
+Vercel production deployment of code commit `8265bbc` is READY at https://mm-zkquant.vercel.app (immutable deployment: https://mm-zkquant-rfa8yat8g-cosmoserys-projects.vercel.app). Post-deploy browser captures `.data/design/production-home.png` and `production-detail-mobile.png` were inspected. Config/catalog API responses were 200; new welcome content and primary token, comparison interaction, detail reload and 390px overflow checks passed, with no page JavaScript errors. Source remains on `design/monad-ui`; main and its pre-existing uncommitted work remain unchanged.

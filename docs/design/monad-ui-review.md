@@ -86,3 +86,13 @@
 ![개선된 홈](images/after-home.png)
 
 ![개선된 전략 탐색](images/after-explore.png)
+
+## Vercel 배포 확인
+
+2026-10-05, 코드 커밋 `8265bbc`를 기존 프로젝트 `mm-zkquant`의 Production으로 배포했다.
+
+- 운영 주소: https://mm-zkquant.vercel.app
+- 해당 배포 주소: https://mm-zkquant-rfa8yat8g-cosmoserys-projects.vercel.app
+- 브랜치: `design/monad-ui` (원격 push 완료, main 병합은 수행하지 않음)
+- 공개 설정·전략 목록 API 200, 실제 브라우저의 새 홈·보라 토큰·전략 비교·상세 직접 링크/새로고침·390px 모바일 가로 넘침 없음·JavaScript 오류 없음 확인.
+- 배포 후 캡처: `.data/design/production-home.png`, `production-detail-mobile.png`; 검사 결과: `production-check.json`.
