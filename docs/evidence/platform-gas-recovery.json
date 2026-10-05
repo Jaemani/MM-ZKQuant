@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-05T23:25:40.594Z",
+  "chainId": 10143,
+  "gasDeployment": {
+    "verified": true,
+    "gasFundingPolicy": "OPERATOR_WALLET_BALANCE",
+    "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
+    "operatorBalanceMON": "20.279700574",
+    "operatorFunded": true,
+    "vaultAddress": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
+    "runtimeHashesMatch": true,
+    "teeIdentityPreserved": true
+  },
+  "vercel": {
+    "project": "mm-zkquant",
+    "productionUrl": "https://mm-zkquant.vercel.app",
+    "deploymentUrl": "https://mm-zkquant-i3xidjvcg-cosmoserys-projects.vercel.app",
+    "deploymentId": "dpl_8b1yZiYkqMfnPSVpbvjpXaN2aDDS",
+    "readyState": "READY",
+    "updatedGasMessageVerified": true
+  },
+  "liveTest": {
+    "test": "LIVE_GAS_RECOVERY",
+    "testnetOnly": true,
+    "depositAUSD": "120",
+    "depositConfirmed": true,
+    "orderExecuted": true,
+    "closeExecuted": true,
+    "scheduledPayoutConfirmed": true,
+    "payoutTransferIndependentlyVerified": true,
+    "paidAUSD": "119.993759",
+    "unitsAndPendingZero": true
+  },
+  "regression": {
+    "targetedTestsPassed": 43,
+    "legacyAndSharedPatchCompatibilityVerified": true
+  },
+  "limits": [
+    "This live check used one labelled test strategy; multi-strategy and multi-market sharing is covered by local regression tests.",
+    "Deployment manifest source hashes were compared; this check does not independently verify the hardware quote."
+  ]
+}

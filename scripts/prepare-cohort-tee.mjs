@@ -1,4 +1,5 @@
 import {gzipSync} from 'node:zlib';
+import { compilePlatformSharedAccount } from './deploy-omnibus-vault.mjs';
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';import{createHash,randomBytes}from'node:crypto';
 const dir=process.env.MM_TEE_DIR||'.data/cohort-tee';mkdirSync(dir,{recursive:true,mode:0o700});
 if(existsSync(dir+'/client.json'))throw Error('Existing experiment: do not overwrite keys/manifest; inspect or resume it');
@@ -14,8 +15,10 @@ if(reuseEndpoint){
 const token=reused?null:randomBytes(32).toString('hex');
 const runtime=['deploy/tee/operator/server.mjs','deploy/tee/operator/engine.mjs','deploy/tee/operator/platform.mjs','deploy/tee/operator/investments.mjs','protocol/cohort/durable-submitter.mjs','protocol/perpl/target-prover.mjs','src/platform/investment-message.js','src/integration/sealed.js'];
 const files=Object.fromEntries(runtime.map(p=>[p,readFileSync(p)]));
-for(const p of ['deploy/tee/operator/execution.mjs','deploy/tee/operator/ledger.mjs','src/platform/policy.js','src/platform/execution-errors.js','protocol/perpl/exchange-abi.json']) {runtime.push(p);files[p]=readFileSync(p);}
+for(const p of ['deploy/tee/operator/execution.mjs','deploy/tee/operator/shared-accounts.mjs','deploy/tee/operator/ledger.mjs','src/platform/policy.js','src/platform/execution-errors.js','src/platform/vault-retirement.js','protocol/perpl/exchange-abi.json']) {runtime.push(p);files[p]=readFileSync(p);}
 files['package.json']=readFileSync('deploy/tee/operator/package.json');files['package-lock.json']=readFileSync('deploy/tee/operator/package-lock.json');
+const sharedArtifact='artifacts/platform/shared-account.json';
+files[sharedArtifact]=Buffer.from(JSON.stringify(await compilePlatformSharedAccount()));runtime.push(sharedArtifact);
 for(const p of ['circuits/perpl-target-mvp.circom','artifacts/perpl-zk/TargetVerifier.sol','artifacts/perpl-zk/verification-key.json'])files[p]=readFileSync(p);
 // R1CS is a build input, not needed by the enclave. Pin the proving runtime files only.
 const hashes=Object.fromEntries(['circuits/perpl-target-mvp.circom','artifacts/perpl-zk/perpl-target-mvp_js/perpl-target-mvp.wasm','artifacts/perpl-zk/perpl-target-mvp.zkey','artifacts/perpl-zk/TargetVerifier.sol'].map(p=>[p,sha(readFileSync(p))]));

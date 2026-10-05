@@ -1,7 +1,8 @@
-import { randomBytes } from 'node:crypto';
+import { randomBytes,createHash,timingSafeEqual } from 'node:crypto';
 import { Contract, Interface, getAddress, isAddress, verifyMessage } from 'ethers';
 import { SealedStore } from '../../../src/integration/sealed.js';
 import { investmentMessage } from '../../../src/platform/investment-message.js';
+import { assertInvestmentStateEmpty,assertVaultRetirable } from '../../../src/platform/vault-retirement.js';
 import { newBook, depositPending, portfolio, requestWithdrawal, requestPendingWithdrawal, cancelWithdrawal } from './ledger.mjs';
 
 const depositEvents = new Interface(['event Deposit(bytes32 indexed id,address indexed investor,uint256 amount)']);
@@ -10,9 +11,10 @@ const decimalAmount = value => typeof value === 'string' && /^[1-9][0-9]{0,77}$/
 const hex32 = value => typeof value === 'string' && /^0x[0-9a-fA-F]{64}$/.test(value);
 
 export class PrivateInvestments {
-  constructor({ secret, storeDir, provider, operator, accessHash, catalogUrl }) {
+  constructor({ secret, storeDir, provider, operator, accessHash, catalogUrl, contract }) {
     this.store = new SealedStore(`${storeDir}/investments.json`, secret, 'private-investments-v1');
     this.provider = provider;
+    this.contract=contract||((address,abi)=>new Contract(address,abi,this.provider));
     this.operator = getAddress(operator);
     this.accessHash = accessHash;
     this.catalogUrl = catalogUrl;
@@ -23,23 +25,45 @@ export class PrivateInvestments {
   mutate(fn) { const state = this.state(), result = fn(state); this.store.write(state); return result; }
   serial(fn) { const next = this.queue.then(fn); this.queue = next.catch(() => {}); return next; }
 
-  async configure({ vaultAddress, cashTokenAddress, accessToken }) {
-    const { createHash, timingSafeEqual } = await import('node:crypto');
+  authorizeConfiguration(accessToken) {
     const supplied = createHash('sha256').update(String(accessToken || '')).digest('hex');
     if (!this.accessHash || !timingSafeEqual(Buffer.from(supplied, 'hex'), Buffer.from(this.accessHash, 'hex'))) throw Error('CONFIGURATION_FORBIDDEN');
+  }
+
+  async configure({ vaultAddress, cashTokenAddress, accessToken }) {
+    this.authorizeConfiguration(accessToken);
     return this.pin({ vaultAddress, cashTokenAddress });
+  }
+
+  async retirementCheck({accessToken}) {
+    this.authorizeConfiguration(accessToken);
+    return this.serial(async()=>{
+      const state=this.state();
+      try {assertInvestmentStateEmpty(state);return await assertVaultRetirable({provider:this.provider,...state.config,requirePaused:false,contract:this.contract,executionAccountAddresses:Object.keys(state.sharedAccounts||{})});}
+      catch(error){return {ready:false,error:error.message};}
+    });
   }
 
   async pin({ vaultAddress, cashTokenAddress }) {
     if (!isAddress(vaultAddress) || !isAddress(cashTokenAddress)) throw Error('INVALID_ADDRESS');
-    const vault = new Contract(vaultAddress, vaultAbi, this.provider);
+    const vault = this.contract(vaultAddress,vaultAbi);
     if (getAddress(await vault.operator()) !== this.operator || getAddress(await vault.cash()) !== getAddress(cashTokenAddress)) throw Error('VAULT_CONFIGURATION_MISMATCH');
-    return this.serial(() => this.mutate(state => {
+    return this.serial(async () => {
+      const state=this.state();
       const config = { vaultAddress: getAddress(vaultAddress), cashTokenAddress: getAddress(cashTokenAddress) };
-      if (state.config && JSON.stringify(state.config) !== JSON.stringify(config)) throw Error('VAULT_ALREADY_PINNED');
+      if (state.config && JSON.stringify(state.config) !== JSON.stringify(config)) {
+        if(state.config.cashTokenAddress!==config.cashTokenAddress)throw Error('VAULT_CASH_TOKEN_CHANGE_FORBIDDEN');
+        assertInvestmentStateEmpty(state);
+        await assertVaultRetirable({provider:this.provider,...state.config,contract:this.contract,executionAccountAddresses:Object.keys(state.sharedAccounts||{})});
+        for(const b of Object.values(state.books)) {b.slots={};delete b.executionMode;}
+        state.sharedAccounts={};
+        for(const intent of Object.values(state.intents))if(intent.status==='PREPARED')intent.status='RETIRED';
+        state.retiredVaults||=[];state.retiredVaults.push({...state.config,retiredAt:new Date().toISOString()});
+      }
       state.config = config;
+      this.store.write(state);
       return { configured: true, vaultAddress: config.vaultAddress };
-    }));
+    });
   }
 
   authenticated(state, input, expectedAction) {
@@ -78,6 +102,7 @@ export class PrivateInvestments {
     return this.serial(async () => {
       const state = this.state(), intent = state.intents[input.depositId];
       if (!intent) throw Error('DEPOSIT_NOT_FOUND');
+      if(intent.status==='RETIRED')throw Error('DEPOSIT_RETIRED');
       const wallet = this.authenticated(state, input, 'COMPLETE');
       if (wallet !== intent.wallet) throw Error('INVESTOR_MISMATCH');
       if (intent.status === 'CONFIRMED') return { ...intent };

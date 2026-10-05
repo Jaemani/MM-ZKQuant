@@ -59,3 +59,21 @@ test('strategy selection and units remain in the sealed TEE investment store', a
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('vault transition preserves history and refuses to redirect investors with existing funds',async()=>{
+  const directory=await mkdtemp(join(tmpdir(),'mmq-vault-transition-'));
+  const next='0x4444444444444444444444444444444444444444';let paused=false;
+  const contract=address=>address===tokenAddress?{balanceOf:async()=>0n}:{operator:async()=>operator,cash:async()=>tokenAddress,paused:async()=>paused,accountCount:async()=>0n};
+  const investments=new PrivateInvestments({secret:randomBytes(32),storeDir:directory,provider:{getBlockNumber:async()=>42},operator,accessHash:null,catalogUrl:'https://catalog.invalid',contract});
+  const state={version:2,config:{vaultAddress,cashTokenAddress:tokenAddress},books:{s:{cash:'0',equity:'0',feesDue:'0',totalUnits:'1',slots:{16:'old'},investors:{alice:{pending:'0',units:'1',paid:'100'}},withdrawals:{},requests:{},marks:[{time:0,nav:'100'}]}},intents:{old:{status:'PREPARED'}},usedNonces:{},units:{}};
+  try {
+    investments.store.write(state);await assert.rejects(()=>investments.pin({vaultAddress:next,cashTokenAddress:tokenAddress}),/ACTIVE_INVESTMENTS/);
+    assert.equal(investments.state().config.vaultAddress,vaultAddress);
+    state.books.s.totalUnits='0';state.books.s.investors.alice.units='0';investments.store.write(state);
+    await assert.rejects(()=>investments.pin({vaultAddress:next,cashTokenAddress:tokenAddress}),/MUST_BE_PAUSED/);
+    paused=true;await investments.pin({vaultAddress:next,cashTokenAddress:tokenAddress});
+    const migrated=investments.state();assert.equal(migrated.config.vaultAddress,next);assert.deepEqual(migrated.books.s.slots,{});
+    assert.equal(migrated.books.s.investors.alice.paid,'100');assert.deepEqual(migrated.books.s.marks,state.books.s.marks);assert.equal(migrated.intents.old.status,'RETIRED');
+    assert.equal(migrated.retiredVaults[0].vaultAddress,vaultAddress);
+  }finally{await rm(directory,{recursive:true,force:true});}
+});

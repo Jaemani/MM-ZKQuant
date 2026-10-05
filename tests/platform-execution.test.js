@@ -84,3 +84,46 @@ test('redemption cost reservation survives a failed recovery without halting con
  await e.settle(state,book,86401);await e.observeBook(book);
  assert.equal(book.status,'ACTIVE');assert.equal(book.equity,'50000000');
 });
+function gasFixture() {
+ const {e,book,state}=fixture(),records={};state.config={vaultAddress:'vault'};
+ e.step=PlatformExecution.prototype.step;
+ let gasAvailable=false,broadcasts=0;
+ e.investments={state:()=>state,serial:fn=>fn()};e.catalogAt=Date.now();
+ e.observeBook=async()=>[];e.settle=async()=>{};e.payFees=async()=>{};
+ e.submitter={sync:async()=>{},lookup:id=>records[id],publicState:()=>({records}),submit:async(id)=>{
+   if(broadcasts>0&&!gasAvailable)throw Error('OPERATOR_GAS_INSUFFICIENT');
+   broadcasts++;return records[id]={status:1,hash:`confirmed-${broadcasts}`};
+ }};
+ e.execute=async(state,book,job)=>{
+   job.status='EXECUTING';
+   await e.step(state,job,'first',{to:'slot',data:'0x01'},{bookId:book.id,kind:'CASH',delta:'-10000000'});
+   await e.step(state,job,'second',{to:'slot',data:'0x02'},{bookId:book.id,kind:'CASH',delta:'-1000000'});
+   job.status='EXECUTED';delete job.error;
+ };
+ const job=book.requests.gas={id:'gas',status:'QUEUED',deadline:Math.floor(Date.now()/1000)+300,steps:{}};
+ return {e,book,state,job,records,topUp:()=>{gasAvailable=true;},broadcasts:()=>broadcasts};
+}
+test('gas shortage retains the active request and top-up resumes without replaying confirmed effects',async()=>{
+ const f=gasFixture();await f.e.tick();
+ assert.equal(f.job.status,'EXECUTING');assert.equal(f.job.error,'OPERATOR_GAS_INSUFFICIENT');
+ assert.equal(f.book.cash,'90000000');assert.equal(f.broadcasts(),1);
+ const first=f.job.steps.first.hash,secondId=f.job.steps.second.id;
+ await f.e.tick();assert.equal(f.broadcasts(),1);assert.equal(f.book.cash,'90000000');
+ f.topUp();await f.e.tick();await f.e.tick();
+ assert.equal(f.job.status,'EXECUTED');assert.equal(f.job.error,undefined);assert.equal(f.book.cash,'89000000');
+ assert.equal(f.broadcasts(),2);assert.equal(f.job.steps.first.hash,first);assert.equal(f.job.steps.second.id,secondId);
+});
+test('an expired gas wait cannot broadcast an unsigned saved step, but confirmed effects still reconcile',async()=>{
+ const f=gasFixture();await f.e.tick();f.job.deadline=1;f.topUp();
+ await f.e.tick();assert.equal(f.job.status,'EXPIRED');assert.equal(f.job.error,'ORDER_EXPIRED');assert.equal(f.broadcasts(),1);assert.equal(f.book.cash,'90000000');
+ const {e,book,state}=fixture(),job={id:'expired-confirmed',deadline:1,steps:{}};
+ e.step=PlatformExecution.prototype.step;
+ e.submitter={lookup:()=>({status:1,hash:'confirmed'}),submit:()=>{throw Error('must not broadcast');}};
+ await e.step(state,job,'recover',{to:'vault',data:'0x'},{bookId:book.id,kind:'CASH',delta:'1000000'});
+ await e.step(state,job,'recover',{to:'vault',data:'0x'},{bookId:book.id,kind:'CASH',delta:'1000000'});
+ assert.equal(book.cash,'101000000');
+});
+test('old failed gas-budget requests are historical and are not silently resubmitted',async()=>{
+ const f=gasFixture();f.job.status='FAILED';f.job.error='TEE_GAS_BUDGET';f.topUp();
+ await f.e.tick();assert.equal(f.job.status,'FAILED');assert.equal(f.job.error,'TEE_GAS_BUDGET');assert.equal(f.broadcasts(),0);
+});

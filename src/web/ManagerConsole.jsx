@@ -925,8 +925,9 @@ function StrategyWorkspace({ strategy }) {
                 </p>
               )}
               <p className="q-muted q-space">
-                대기 자금은 이번 제출 과정에서 운용에 편입됩니다. Perpl 최초
-                계정에는 시장마다 최소 100 AUSD의 전략 현금이 필요합니다.
+                대기 자금은 이번 제출 과정에서 운용에 편입됩니다. Perpl 계정
+                최초 생성에는 최소 100 AUSD가 필요합니다. 기존 계정 사용 시에도
+                주문에 필요한 담보가 있어야 합니다.
               </p>
               <Button
                 disabled={

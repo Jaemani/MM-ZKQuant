@@ -53,6 +53,7 @@ test("RPC diagnostics preserve gas reason and do not publish sensitive RPC input
     },
   };
   assert.equal(executionError(error), "OPERATOR_GAS_INSUFFICIENT");
+  assert.equal(executionError(Error("OPERATOR_GAS_INSUFFICIENT")), "OPERATOR_GAS_INSUFFICIENT");
   assert.equal(
     executionError({ message: "could not coalesce error" }),
     "RPC_RESPONSE_UNCONFIRMED",

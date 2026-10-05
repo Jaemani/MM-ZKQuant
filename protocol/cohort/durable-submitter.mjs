@@ -39,7 +39,14 @@ export function durableSubmitter({provider,wallet,store,chainId,gasBudget,initia
   assert.equal(await provider.getTransactionCount(wallet.address,'pending'),state.nextNonce,'UNKNOWN_PENDING_TRANSACTION');
   const estimate=await wallet.estimateGas(request),fees=await provider.getFeeData();
   const gasLimit=estimate*13n/10n,maxFeePerGas=fees.maxFeePerGas??fees.gasPrice;
-  assert.ok(BigInt(state.spent)+gasLimit*maxFeePerGas<=gasBudget,'TEE_GAS_BUDGET');
+  // A lifetime cap is useful for bounded experiments, but not for a running
+  // platform: refilling its wallet must allow continued execution. Retain
+  // historical spent and enforce a cap only when a caller explicitly supplies it.
+  const maximumFee=gasLimit*maxFeePerGas;
+  if(gasBudget!==undefined&&gasBudget!==null)assert.ok(BigInt(state.spent)+maximumFee<=BigInt(gasBudget),'TEE_GAS_BUDGET');
+  // Include value and the full signed fee ceiling before creating a journal
+  // entry. An unfunded request can then resume after a top-up at the same nonce.
+  assert.ok(await provider.getBalance(wallet.address,'pending')>=maximumFee+BigInt(request.value||0),'OPERATOR_GAS_INSUFFICIENT');
   const raw=await wallet.signTransaction({...request,chainId,nonce:state.nextNonce,gasLimit,maxFeePerGas,maxPriorityFeePerGas:fees.maxPriorityFeePerGas??0n,type:2});
   const decoded=Transaction.from(raw);assert.equal(decoded.from,wallet.address);
   const record={hash:keccak256(raw),raw,nonce:state.nextNonce,fingerprint};state.records[id]=record;save();await crash('signed');

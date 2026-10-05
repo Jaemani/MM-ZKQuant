@@ -16,7 +16,7 @@
     "build": "vite build",
     "start": "node src/platform/http.js",
     "test": "npm run test:platform",
-    "test:platform": "node --test tests/platform-ledger.test.js tests/platform-execution.test.js tests/private-investments.test.js tests/platform-ux.test.js tests/platform-request.test.js tests/tee-channel.test.js tests/tee-relay.test.js",
+    "test:platform": "node --test tests/platform-ledger.test.js tests/platform-execution.test.js tests/platform-shared-accounts.test.js tests/private-investments.test.js tests/platform-ux.test.js tests/platform-request.test.js tests/tee-channel.test.js tests/tee-relay.test.js",
     "test:contracts": "node --test tests/platform-omnibus-vault.test.js",
     "test:all": "node --test tests/*.test.js tests/protocol-v1/*.test.mjs",
     "prove:mvp": "node scripts/prove-omnibus.mjs",

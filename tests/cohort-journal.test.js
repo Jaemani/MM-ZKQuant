@@ -1,9 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {Wallet,Transaction} from 'ethers';import {durableSubmitter} from '../protocol/cohort/durable-submitter.mjs';
 function fixture(){
- const signer=Wallet.createRandom();let nonce=0,snapshot=null,broadcasts=0;const receipts=new Map();
+ const signer=Wallet.createRandom();let nonce=0,snapshot=null,broadcasts=0,balance=1000000n;const receipts=new Map();
  const wallet={address:signer.address,estimateGas:async()=>21000n,signTransaction:tx=>signer.signTransaction(tx)};
- const provider={getNetwork:async()=>({chainId:31337n}),getTransactionCount:async()=>nonce,
+ const provider={getNetwork:async()=>({chainId:31337n}),getTransactionCount:async()=>nonce,getBalance:async()=>balance,
   getTransactionReceipt:async hash=>receipts.get(hash),getTransaction:async hash=>receipts.get(hash),
   getFeeData:async()=>({maxFeePerGas:1n,maxPriorityFeePerGas:0n}),broadcastTransaction:async raw=>{
    const tx=Transaction.from(raw);if(receipts.has(tx.hash))return {hash:tx.hash};assert.equal(tx.nonce,nonce);nonce++;broadcasts++;
@@ -11,7 +11,7 @@ function fixture(){
   }};
  const store={read:()=>structuredClone(snapshot),write:s=>{snapshot=structuredClone(s);}};
  return{wallet,provider,store,chainId:31337,gasBudget:1000000n,pollMs:0,maxPolls:1,
-  get saved(){return structuredClone(snapshot)},set saved(s){snapshot=s},get broadcasts(){return broadcasts},get nonce(){return nonce}};
+  get saved(){return structuredClone(snapshot)},set saved(s){snapshot=s},get balance(){return balance},set balance(v){balance=v},get broadcasts(){return broadcasts},get nonce(){return nonce}};
 }
 for(const point of ['signed','broadcast','receipt'])test('durable journal resumes crash after '+point+' without duplicate tx',async()=>{
  const f=fixture(),request={to:Wallet.createRandom().address,value:1n};
@@ -31,4 +31,29 @@ test('lost broadcast response reconciles the same tx',async()=>{
  const f=fixture(),broadcast=f.provider.broadcastTransaction;
  f.provider.broadcastTransaction=async raw=>{await broadcast(raw);throw Error('TIMEOUT');};
  const s=durableSubmitter(f);await s.submit('one',{to:Wallet.createRandom().address,value:1n});assert.equal(f.broadcasts,1);
+});
+test('a funded platform can continue beyond the old lifetime budget without resetting its journal',async()=>{
+ const f=fixture(),request={to:Wallet.createRandom().address,value:1n};
+ await durableSubmitter(f).submit('old',request);
+ const old=f.saved;old.records.old.fee='4000000000000000000';old.spent=old.records.old.fee;f.saved=old;
+ const s=durableSubmitter({...f,gasBudget:undefined});
+ await s.submit('new',request);await s.submit('new',request);
+ assert.equal(f.broadcasts,2);assert.equal(f.nonce,2);
+ assert.equal(s.publicState().spent,'4000000000000021000');
+ assert.equal(s.lookup('old').hash,old.records.old.hash);
+});
+test('explicit experiment gas budgets still stop new transactions at their lifetime cap',async()=>{
+ const f=fixture(),s=durableSubmitter({...f,gasBudget:30000n}),request={to:Wallet.createRandom().address};
+ await s.submit('one',request);
+ await assert.rejects(s.submit('two',request),/TEE_GAS_BUDGET/);
+ assert.equal(f.broadcasts,1);assert.equal(f.nonce,1);assert.equal(s.lookup('two'),undefined);
+});
+test('wallet balance must cover the full fee ceiling plus value, and top-up resumes the same request',async()=>{
+ const f=fixture(),s=durableSubmitter({...f,gasBudget:undefined}),request={to:Wallet.createRandom().address,value:1n};
+ f.balance=27300n;
+ await assert.rejects(s.submit('one',request),/OPERATOR_GAS_INSUFFICIENT/);
+ assert.equal(f.broadcasts,0);assert.equal(f.nonce,0);assert.equal(s.lookup('one'),undefined);assert.equal(f.saved,null);
+ f.balance=27301n;await s.submit('one',request);
+ f.balance=0n;await s.submit('one',request);
+ assert.equal(f.broadcasts,1);assert.equal(f.nonce,1);assert.equal(s.publicState().spent,'21000');
 });

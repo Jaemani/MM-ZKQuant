@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 import './PlatformExecutionAccount.sol';
+import './PlatformSharedExecutionAccount.sol';
 
 interface IERC20Platform {
     function approve(address spender, uint256 amount) external returns (bool);
@@ -59,6 +60,15 @@ contract PlatformOmnibusVault {
         }
     }
     function accountCount() external view returns(uint256) {return accounts.length;}
+    function executionAccountVersion() external pure returns(uint256) {return 2;}
+    /// Shared accounts have no strategy or fixed-market identifier on-chain.
+    function createSharedAccounts(uint256 count) external onlyOperator locked {
+        require(count>0&&count<=8,'COUNT');
+        for(uint256 i;i<count;i++) {
+            address account=address(new PlatformSharedExecutionAccount(0x1964C32f0bE608E7D29302AFF5E61268E72080cc,address(cash),address(this),operator));
+            slots[account]=true;accounts.push(account);
+        }
+    }
     function fundSlot(address slot,uint256 amount,bytes32 id) external onlyOperator locked {
         require(!paused&&slots[slot]&&!used[id]&&id!=bytes32(0),'SLOT');used[id]=true;
         require(cash.approve(slot,amount),'APPROVE');PlatformExecutionAccount(slot).fund(amount);

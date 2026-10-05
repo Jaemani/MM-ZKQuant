@@ -41,7 +41,7 @@ const server=createServer(async(req,res)=>{
     const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>64_000)throw Error('SIZE');chunks.push(chunk);}
     try{body=JSON.parse(Buffer.concat(chunks));}catch{throw Error('JSON');}
    }
-   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,{mode:'TESTNET_PLATFORM_TEE',execution:execution.submitter?'STRATEGY_EXECUTION_AVAILABLE':'INITIALIZING',investments:investments.status()});
+   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,{mode:'TESTNET_PLATFORM_TEE',execution:execution.submitter?'STRATEGY_EXECUTION_AVAILABLE':'INITIALIZING',accountSharing:execution.shared?'COMPATIBLE_MARKET_DIRECTIONS':'LEGACY_EXCLUSIVE_ACCOUNTS',investments:investments.status()});
    if(req.method==='GET'&&url.pathname==='/platform/metrics')return platformReply(200,execution.metrics());
    if(req.method==='POST'&&url.pathname==='/platform/encrypted-strategy'){
     try{const opened=channel.open(body);let result;try{result=await execution.accept(opened.message);}catch(e){result={error:e.message};}return platformReply(200,{reply:opened.reply(result)});}catch{return platformReply(400,{error:'INVALID_ENCRYPTED_REQUEST'});}
@@ -51,7 +51,7 @@ const server=createServer(async(req,res)=>{
      const opened=channel.open(body),input=opened.message;
      let result;
      try {
-      result=input.action==='PREPARE'?await investments.prepare(input):input.action==='COMPLETE'?await investments.complete(input):input.action==='PORTFOLIO'?await investments.portfolio(input):input.action==='CONFIGURE'?await investments.configure(input):['WITHDRAW','WITHDRAW_PENDING','CANCEL_WITHDRAWAL'].includes(input.action)?await investments.withdrawal(input):null;
+      result=input.action==='PREPARE'?await investments.prepare(input):input.action==='COMPLETE'?await investments.complete(input):input.action==='PORTFOLIO'?await investments.portfolio(input):input.action==='CONFIGURE'?await investments.configure(input):input.action==='RETIREMENT_CHECK'?await investments.retirementCheck(input):input.action==='PAUSE_FOR_RETIREMENT'?await execution.pauseForRetirement(input):['WITHDRAW','WITHDRAW_PENDING','CANCEL_WITHDRAWAL'].includes(input.action)?await investments.withdrawal(input):null;
       if(!result)throw Error('UNKNOWN_ACTION');
      } catch(error) { result={error:error.message}; }
      return platformReply(200,{reply:opened.reply(result)});
