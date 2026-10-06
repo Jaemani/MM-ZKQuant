@@ -101,3 +101,11 @@ Post-fix evidence: first strategy appears about 99px higher at 320px, the search
 Validation: `npm run build` passed. Playwright at 320/390/768/1488px checked default visibility, `aria-expanded`, reveal, selection, collapse, applied-count display, persistence, desktop visibility, no horizontal overflow and no JavaScript errors. Existing public/manager/investor browser flows, including mobile filters, comparison and private-portfolio relay, passed without submitting transactions.
 
 Production verification: code `272a496` is Vercel READY at https://mm-zkquant-rhmc829t0-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright repeated default collapsed state, expansion, risk/sort selection, retained applied count and zero overflow at 320/390/768/1488px. No page JavaScript errors.
+
+## 2026-10-06 — mobile search/filter control alignment
+
+final result: passed
+
+User finding (P2): the mobile search control and adjacent filter button had unequal heights. Before browser evidence at 390 × 844 CSS px, density 1: `docs/design/images/filters-closed-390.png`; computed search height 46.8px vs button 42px. The selected strategy-workspace visual remains the broader style source. After screenshot: `filters-aligned-390.png` at the same viewport/state, density 1, plus `filters-aligned-320.png` at 320 × 844. `filter-height-comparison.png` combines the first 844px of before/after 390px captures at native size, 780 × 844. The combined image was opened and inspected.
+
+Fix: both outer controls now use 44px height below 850px, with the input filling the 42px inner content box without vertical padding. This retains a 16px input font at phone widths for readable entry and avoids mobile zoom. Computed rectangles have identical y and 44px heights at 320, 390 and 768px. Search and filter interactions, 320/390/768/1488px overflow checks and build passed with no page JavaScript errors. No outstanding P0/P1/P2.

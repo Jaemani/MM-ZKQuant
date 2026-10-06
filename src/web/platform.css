@@ -317,8 +317,9 @@
 }
 @media (max-width: 850px) {
   .q-filters { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
-  .q-filters .q-search { min-width: 0; }
-  .q-filter-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; padding: 0 11px; color: var(--q-lavender); background: var(--q-soft); border: 1px solid var(--q-line-strong); border-radius: 4px; font: 500 12px var(--q-mono); white-space: nowrap; }
+  .q-filters .q-search { min-width: 0; height: 44px; }
+  .q-filters .q-search input { height: 100%; padding-block: 0; }
+  .q-filter-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 11px; color: var(--q-lavender); background: var(--q-soft); border: 1px solid var(--q-line-strong); border-radius: 4px; font: 500 12px var(--q-mono); white-space: nowrap; }
   .q-filter-toggle[aria-expanded="true"] { border-color: var(--q-primary); }
   .q-filter-options { display: none; grid-column: 1/-1; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
   .q-filter-options.expanded { display: grid; }
