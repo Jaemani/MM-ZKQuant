@@ -38,7 +38,7 @@ npm run test:ledger-zk
 npm run verify:ledger-zk
 ```
 
-독립 검증 도구는 공개 증명만 사용한다. 저장소의 배포 주소와 검증키를 기준으로 실제 bytecode, 도메인, 서명, genesis부터의 증명/root 연속성, Groth16 증명, 각 온체인 거래 calldata와 성공 receipt·이벤트를 확인한다. 공개 TEE identity에 포함된 genesis와도 대조한다. 이 도구 자체가 하드웨어 quote의 인증서 체인을 검증하는 것은 아니다. 결과는 `docs/evidence/platform-ledger-zk.json`에 기록한다.
+독립 검증 도구는 공개 증명과 TEE quote만 사용한다. 저장소의 배포 주소와 검증키를 기준으로 실제 bytecode, 도메인, 서명, genesis부터의 증명/root 연속성, Groth16 증명, 각 온체인 거래 calldata와 성공 receipt·이벤트를 확인한다. 새 challenge로 받은 TDX quote를 Phala DCAP 검증 서비스에 보내 서명·측정값·배포 정책을 검사하고 공개 TEE genesis와도 대조한다. Intel 인증서 체인을 자체 구현으로 검증하는 것은 아니다. 결과는 `docs/evidence/platform-ledger-zk.json`에 기록한다.
 
 2026-10-06 실제 배포에서 두 체크포인트 사이 간격은 302초였고, genesis부터 9개 증명을 독립 검증했다. 자체 테스트 지갑의 실제 0.01 AUSD 입금 이후에도 체크포인트가 이어졌으며, TEE 재시작 전후 genesis·root·순서가 유지됐다. 마지막 확인 거래는 `0xbfded43782cd6b0a1b6a86d1711575b8a2fdc9e8c237d07549b5a09b36d914ce`다. 전략가·투자자 화면과 모바일에서 검증 상태와 거래 링크가 표시되고 최신 dark workspace 디자인이 유지됨을 확인했다. 추가 결과는 `docs/evidence/platform-ledger-validation.json`에 있다.
 

@@ -1,11 +1,13 @@
 // Public inputs only. No API token, investor login, plaintext ledger or witness.
 import assert from 'node:assert/strict';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
-import {createHash,randomBytes} from 'node:crypto';
+import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {JsonRpcProvider,Contract,Interface,keccak256,verifyMessage} from 'ethers';
 import {groth16} from 'snarkjs';
 import {checkpointAbi,proofMessage} from '../deploy/tee/operator/ledger-proofs.mjs';
+import {verifyPlatformTee} from '../src/platform/tee-attestation.js';
+import {teeAttestationPolicy} from '../src/platform/tee-attestation-policy.js';
 
 const base=(process.env.MMQ_API_URL||'https://mm-zkquant.vercel.app/api').replace(/\/$/,'');
 const web=base.replace(/\/api$/,'');
@@ -46,10 +48,12 @@ try {
  }
  assert.equal(root,status.checkpoint.root);const [head,headRoot]=await Promise.all([registry.sequence(),registry.root()]);assert.ok(head>=BigInt(sequence));if(head===BigInt(sequence))assert.equal(String(headRoot),root);
  const config=await (await get(base+'/v1/config')).json();
- const challenge=randomBytes(32).toString('hex'),quote=await (await get(`${config.teeEndpoint}/attestation?challenge=${challenge}`)).json();
- assert.equal(quote.challenge,challenge);assert.equal(quote.identity.ledgerGenesis.genesisRoot,status.genesisRoot);assert.equal(quote.identity.ledgerGenesis.verificationKeyHash,deployment.verificationKeyHash);
+ const tee=await verifyPlatformTee({endpoint:config.teeEndpoint,publicKey:config.teeEncryptionPublicKey,vault:config.vaultAddress});
+ assert.equal(tee.operator.toLowerCase(),operator.toLowerCase());
+ assert.equal(status.genesisRoot,teeAttestationPolicy.ledgerGenesis.genesisRoot);
+ assert.equal(deployment.verificationKeyHash,teeAttestationPolicy.ledgerGenesis.verificationKeyHash);
  const checkpoints=[...new Set(records.map(record=>record.checkpointAt))];
- const report={verified:true,chainId:10143,vault,operator,checkpoint:deployment.checkpoint,verifier:deployment.verifier,verificationKeyHash:deployment.verificationKeyHash,genesisRoot:status.genesisRoot,verifiedRoot:root,verifiedSequence:sequence,onchainHead:Number(head),intervalSeconds:status.intervalSeconds,checkpointTimes:checkpoints,records,limitations:['Attested TEE genesis; earlier history is not proven','Prices, fills, exit costs and investor authorization are supplied by the TEE','Single-party testnet Groth16 phase 2; production needs a multiparty ceremony']};
+ const report={verified:true,chainId:10143,vault,operator,checkpoint:deployment.checkpoint,verifier:deployment.verifier,verificationKeyHash:deployment.verificationKeyHash,genesisRoot:status.genesisRoot,verifiedRoot:root,verifiedSequence:sequence,onchainHead:Number(head),teeQuoteHash:tee.quoteHash,intervalSeconds:status.intervalSeconds,checkpointTimes:checkpoints,records,limitations:['Attested TEE genesis; earlier history is not proven','Phala HTTPS DCAP verifier and initial compose enrollment remain trusted','Prices, fills, exit costs and investor authorization are supplied by the TEE','Single-party testnet Groth16 phase 2; production needs a multiparty ceremony']};
  mkdirSync('docs/evidence',{recursive:true});writeFileSync('docs/evidence/platform-ledger-zk.json',JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({verified:true,proofs:sequence,checkpoints:checkpoints.length,latestTransaction:records.at(-1).txHash,checkpoint:deployment.checkpoint}));
 }finally{provider.destroy();await globalThis.curve_bn128.terminate();}

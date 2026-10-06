@@ -3,6 +3,8 @@ const messages = {
   PLATFORM_RESPONSE_TIMEOUT: '플랫폼 정보 조회가 지연됩니다. 잠시 후 다시 조회해 주세요.',
   PLATFORM_RESPONSE_INVALID: '플랫폼 서버의 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.',
   TEE_UNAVAILABLE: '비공개 운용 연결이 준비되지 않았습니다. 플랫폼 연결 설정을 확인해 주세요.',
+  TEE_ATTESTATION_UNAVAILABLE: 'TEE 검증에 필요한 연결 정보가 없습니다. 잠시 후 다시 시도해 주세요.',
+  TEE_ATTESTATION_FAILED: 'TEE 실행 환경을 확인하지 못해 비공개 요청을 보내지 않았습니다. 잠시 후 다시 시도해 주세요.',
   TEE_CONNECTION_FAILED: '비공개 운용 서버에 연결하지 못했습니다. 조회를 다시 시도해 주세요. 주문을 제출했다면 실행 내역에서 접수 여부를 먼저 확인하세요.',
   TEE_RESPONSE_TIMEOUT: '비공개 운용 서버의 응답 확인이 지연됩니다. 주문은 접수되었을 수 있으니 실행 내역을 먼저 조회하고 같은 주문을 다시 제출하지 마세요.',
   OPERATOR_GAS_INSUFFICIENT: '플랫폼 실행 지갑의 MON이 부족해 대기 중입니다. 충전되면 주문 유효 시간 안에서 자동으로 재개합니다. 같은 목표를 다시 제출하지 마세요.',

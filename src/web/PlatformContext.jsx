@@ -13,7 +13,7 @@ import {
   randomBytes,
 } from "ethers";
 import { investmentMessage } from "../platform/investment-message.js";
-import { encryptedTeeRequest } from "./teeChannel.js";
+import { createAttestedTeeChannel } from "./attestedTee.js";
 import { platformError } from "./platformErrors.js";
 import { fetchPlatformJson } from "./platformRequest.js";
 
@@ -46,7 +46,13 @@ export function PlatformProvider({ children }) {
     [balance, setBalance] = useState(null);
   const generation = useRef(0),
     lock = useRef(false),
-    sessionRef = useRef(null);
+    sessionRef = useRef(null),
+    teeChannelRef = useRef(null);
+  if (!teeChannelRef.current) teeChannelRef.current = createAttestedTeeChannel({
+    loadAttestation: () => fetchPlatformJson(`${apiBase}/v1/tee-attestation`, {
+      headers: { Authorization: `Bearer ${sessionRef.current?.sessionToken || ""}` }
+    }, { timeoutMs: 26000 })
+  });
   const request = async (path, { body, token, ...options } = {}) => {
     try {
       return await fetchPlatformJson(`${apiBase}${path}`, {
@@ -67,6 +73,7 @@ export function PlatformProvider({ children }) {
   function logout() {
     generation.current++;
     sessionRef.current = null;
+    teeChannelRef.current.clear();
     setSession(null);
     setOwned([]);
     setPortfolio(null);
@@ -148,8 +155,6 @@ export function PlatformProvider({ children }) {
     return s;
   }
   async function privateRequest(s, action, values = {}) {
-    if (!config?.teeEndpoint)
-      throw Error("TEE 연결 정보를 불러오는 중입니다. 다시 시도해 주세요.");
     const wallet = await s.getAddress();
     if (wallet.toLowerCase() !== sessionRef.current?.wallet.toLowerCase())
       throw Error("지갑이 변경되었습니다. 다시 로그인해 주세요.");
@@ -166,9 +171,8 @@ export function PlatformProvider({ children }) {
     const signature = await s.signMessage(investmentMessage(payload));
     if (wallet.toLowerCase() !== sessionRef.current?.wallet.toLowerCase())
       throw Error("지갑이 변경되었습니다. 다시 로그인해 주세요.");
-    return encryptedTeeRequest(
-      config.teeEndpoint,
-      config.teeEncryptionPublicKey,
+    return teeChannelRef.current.send(
+      config,
       "/platform/encrypted-investments",
       { ...payload, signature },
       { relayBase: `${apiBase}/tee` },
@@ -347,9 +351,8 @@ export function PlatformProvider({ children }) {
   }
   async function managerRequest(strategyId, action, values = {}) {
     if (!sessionRef.current) throw Error("로그인해 주세요.");
-    return encryptedTeeRequest(
-      config?.teeEndpoint,
-      config?.teeEncryptionPublicKey,
+    return teeChannelRef.current.send(
+      config,
       "/platform/encrypted-strategy",
       {
         sessionToken: sessionRef.current.sessionToken,

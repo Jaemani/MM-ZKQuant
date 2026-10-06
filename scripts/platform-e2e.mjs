@@ -2,6 +2,7 @@
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {Wallet,Contract,JsonRpcProvider,parseEther,hexlify,randomBytes} from 'ethers';
 import {encryptRequest} from '../src/integration/sealed.js';
+import {verifyPlatformTee} from '../src/platform/tee-attestation.js';
 import {investmentMessage} from '../src/platform/investment-message.js';
 import {DEFAULT_POLICY} from '../src/platform/policy.js';
 const dir='.data/platform-live';mkdirSync(dir,{recursive:true,mode:0o700});
@@ -14,7 +15,8 @@ const provider=new JsonRpcProvider('https://testnet-rpc.monad.xyz',undefined,{ba
 const api='https://mm-zkquant.vercel.app/api';
 async function request(path,body,token){const r=await fetch(`${api}${path}`,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},...(body?{body:JSON.stringify(body)}:{})});const j=await r.json();if(!r.ok)throw Error(`${path}: ${j.error}`);return j;}
 const config=await request('/v1/config');
-async function tee(path,message){const encrypted=encryptRequest(config.teeEncryptionPublicKey,message);const r=await fetch(`${config.teeEndpoint}${path}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(encrypted.packet)});const j=await r.json();if(!r.ok)throw Error(j.error);const result=encrypted.openReply(j.reply);if(result.error)throw Error(result.error);return result;}
+const attested=await verifyPlatformTee({endpoint:config.teeEndpoint,publicKey:config.teeEncryptionPublicKey,vault:config.vaultAddress});
+async function tee(path,message){const encrypted=encryptRequest(attested.encryptionPublicKey,message);const r=await fetch(`${attested.teeEndpoint}${path}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(encrypted.packet)});const j=await r.json();if(!r.ok)throw Error(j.error);const result=encrypted.openReply(j.reply);if(result.error)throw Error(result.error);return result;}
 async function investment(wallet,action,values={}){const input={action,wallet:wallet.address,nonce:hexlify(randomBytes(32)),...values};input.signature=await wallet.signMessage(investmentMessage(input));return tee('/platform/encrypted-investments',input);}
 async function login(wallet){const c=await request('/v1/auth/challenge',{address:wallet.address});return request('/v1/auth/verify',{address:wallet.address,nonce:c.nonce,signature:await wallet.signMessage(c.message)});}
 const tokenAbi=['function balanceOf(address) view returns(uint256)','function transfer(address,uint256) returns(bool)','function approve(address,uint256) returns(bool)'];

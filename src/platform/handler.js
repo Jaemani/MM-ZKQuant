@@ -28,6 +28,7 @@ export async function handlePlatformRequest(request, response, service, { origin
     }
     if (request.method === 'GET' && pathname === '/v1/health') return reply(response, 200, { ok: true, mode: 'MONAD_TESTNET_PLATFORM_API' });
     if (request.method === 'GET' && pathname === '/v1/config') return reply(response, 200, await service.publicConfig());
+    if (request.method === 'GET' && pathname === '/v1/tee-attestation') return reply(response, 200, await service.teeAttestation(request.headers.authorization));
     if (request.method === 'GET' && pathname === '/v1/ledger-proof-status') return reply(response,200,await service.ledgerProofs({statusOnly:true}));
     if (request.method === 'GET' && pathname === '/v1/ledger-proofs') return reply(response,200,await service.ledgerProofs({after:Number(original.searchParams.get('after')||0),limit:Number(original.searchParams.get('limit')||20)}));
     if (request.method === 'GET' && pathname === '/v1/strategies') return reply(response, 200, await service.publicStrategies());

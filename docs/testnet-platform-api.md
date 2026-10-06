@@ -49,7 +49,9 @@ node --env-file=.env scripts/submit-strategy.mjs STRATEGY_UUID targets.json
 
 market 16/32/48/64는 BTC/ETH/SOL/MON이다. `weightBps=5000`은 전략 순자산 대비 +50%, `-2000`은 -20% 목표 노출이다. 전체 벡터를 제출하며 생략된 시장은 목표 0으로 정리한다. 빈 배열은 모든 포지션 정리다.
 
-클라이언트는 `GET /v1/config`에서 TEE endpoint와 공개키를 읽는다. ECDH/HKDF/AES-GCM 패킷을 `/platform/encrypted-strategy`로 전송한다. 암호화 내부 payload는 `{action:'TARGET',apiKey,strategyId,requestId,sequence,targets}`다. sequence는 직전 STATUS의 sequence+1, requestId는 중복 방지 UUID다. 같은 ID로 다른 내용을 제출할 수 없다.
+클라이언트는 `GET /v1/config`에서 TEE endpoint와 공개키를 읽은 뒤, 새 challenge에 대한 TDX quote를 검증해야 한다. 저장소의 `scripts/submit-strategy.mjs`는 [고정된 배포 정책](../src/platform/tee-attestation-policy.js)과 Phala DCAP 결과를 직접 대조하고 검증된 공개키로만 암호화한다. 웹은 로그인 세션으로 `GET /v1/tee-attestation`을 호출해 서버 검증 결과를 확인한 뒤 요청한다. 검증 실패 시 비공개 요청을 보내지 않는다. [검증 범위와 신뢰 경계](platform-tee-attestation.md)를 참고한다.
+
+검증 후 ECDH/HKDF/AES-GCM 패킷을 `/platform/encrypted-strategy`로 전송한다. 암호화 내부 payload는 `{action:'TARGET',apiKey,strategyId,requestId,sequence,targets}`다. sequence는 직전 STATUS의 sequence+1, requestId는 중복 방지 UUID다. 같은 ID로 다른 내용을 제출할 수 없다.
 
 `STATUS`는 본인 전략의 sequence, 실행 상태와 요청 결과를 암호화해 반환한다. `QUEUED`는 접수이며 체결 완료가 아니다. `EXECUTED`, `PARTIALLY_FILLED`, `EXPIRED`, `FAILED`를 확인한다. 목표 평문을 받던 `/v1/strategies/:id/targets`는 410을 반환한다.
 

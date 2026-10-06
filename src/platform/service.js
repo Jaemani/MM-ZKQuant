@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { getAddress, isAddress, verifyMessage } from 'ethers';
 import { validatePolicy, nextSettlement } from './policy.js';
+import { verifyPlatformTee } from './tee-attestation.js';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const sessionHash = token => hash(`MMQ_SESSION_V1:${token}`);
@@ -29,10 +30,11 @@ function compareHash(left, right) {
 }
 
 export class PlatformService {
-  constructor(database, { teeEndpoint, teeEncryptionPublicKey } = {}) {
+  constructor(database, { teeEndpoint, teeEncryptionPublicKey, verifyTee = verifyPlatformTee } = {}) {
     this.database = database;
     this.teeEndpoint = teeEndpoint?.replace(/\/$/, '');
     this.teeEncryptionPublicKey = teeEncryptionPublicKey;
+    this.verifyTee = verifyTee;
   }
 
   async challenge(input) {
@@ -260,5 +262,16 @@ export class PlatformService {
       teeEndpoint: this.teeEndpoint || null,
       teeEncryptionPublicKey: this.teeEncryptionPublicKey || null
     };
+  }
+
+  async teeAttestation(authorization) {
+    await this.session(authorization);
+    const config = await this.publicConfig();
+    if (!config.teeEndpoint || !config.teeEncryptionPublicKey || !config.vaultAddress) throw new PlatformError('TEE_ATTESTATION_UNAVAILABLE', 503);
+    try {
+      return await this.verifyTee({ endpoint: config.teeEndpoint, publicKey: config.teeEncryptionPublicKey, vault: config.vaultAddress });
+    } catch {
+      throw new PlatformError('TEE_ATTESTATION_FAILED', 503);
+    }
   }
 }
