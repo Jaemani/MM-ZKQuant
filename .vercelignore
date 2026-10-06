@@ -1,4 +1,8 @@
 .gitnexus/
+.codegraph/
+.serena/
+.env
+.env.*
 .data/
 dist/
 artifacts/
