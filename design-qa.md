@@ -99,3 +99,5 @@ Fix: at 850px and below, search and an outlined filter action share one row. Ris
 Post-fix evidence: first strategy appears about 99px higher at 320px, the search action stays within 320px, and the expanded state retains readable 42px controls. No actionable P0/P1/P2 remains. Brand typography, colors, icons and live content are unchanged. No new raster asset is needed.
 
 Validation: `npm run build` passed. Playwright at 320/390/768/1488px checked default visibility, `aria-expanded`, reveal, selection, collapse, applied-count display, persistence, desktop visibility, no horizontal overflow and no JavaScript errors. Existing public/manager/investor browser flows, including mobile filters, comparison and private-portfolio relay, passed without submitting transactions.
+
+Production verification: code `272a496` is Vercel READY at https://mm-zkquant-rhmc829t0-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright repeated default collapsed state, expansion, risk/sort selection, retained applied count and zero overflow at 320/390/768/1488px. No page JavaScript errors.
