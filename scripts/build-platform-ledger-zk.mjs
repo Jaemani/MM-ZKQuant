@@ -42,7 +42,7 @@ const artifacts={wasm:dir+'/platform-ledger-transition_js/platform-ledger-transi
 const names={wasm:'circuit.wasm',zkey:'proving.zkey',verificationKey:'verification-key.json',verifier:'LedgerVerifier.sol'};
 const sha=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
 for(const [kind,path]of Object.entries(artifacts))copyFileSync(path,`${published}/${names[kind]}`);
-const manifest={version:1,circuit:'platform-ledger-transition',protocol:'groth16',curve:'bn128',intervalSeconds:300,setup:'PUBLIC_PHASE1_SINGLE_PARTY_TESTNET_PHASE2',phase1Url,phase1Sha256:sha(ptau),capacity:{strategies:4096,investorsPerStrategy:16,activeLotsPerInvestor:64,eventsPerProof:1},
+const manifest={version:1,circuit:'platform-ledger-transition',protocol:'groth16',curve:'bn128',intervalSeconds:3600,setup:'PUBLIC_PHASE1_SINGLE_PARTY_TESTNET_PHASE2',phase1Url,phase1Sha256:sha(ptau),capacity:{strategies:4096,investorsPerStrategy:16,activeLotsPerInvestor:64,eventsPerProof:1},
  sourceHashes:Object.fromEntries(sources.map(path=>[path,sha(path)])),artifacts:Object.fromEntries(Object.entries(artifacts).map(([kind,path])=>[kind,{path:`/zk/platform-ledger-v1/${names[kind]}`,sha256:sha(path),bytes:readFileSync(path).length}]))};
 writeFileSync(dir+'/build.json',JSON.stringify(manifest,null,2)+'\n');writeFileSync(published+'/manifest.json',JSON.stringify(manifest,null,2)+'\n');
 console.log(JSON.stringify({built:true,setup:manifest.setup,artifacts:manifest.artifacts}));
