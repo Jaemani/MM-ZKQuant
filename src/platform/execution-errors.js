@@ -1,5 +1,15 @@
 // Return actionable codes without leaking RPC requests, signed bytes or positions.
+// Perpl TakerOrderSettlementFailed has eight uint256 arguments. Only its final
+// failure enum is exported; account, prices and quantities remain in the TEE.
+export function perplFailure(error) {
+  const data=[error?.data,error?.info?.error?.data,error?.error?.data].find(value=>typeof value==='string'&&/^0x[0-9a-f]+$/i.test(value));
+  if(!data||data.slice(0,10).toLowerCase()!=='0xb29d1949'||data.length!==522)return null;
+  const value=BigInt('0x'+data.slice(10+7*64)),resultCode=value<=9n?Number(value):null;
+  const codes={1:'VENUE_BALANCE_INSUFFICIENT',2:'VENUE_COLLATERAL_INSUFFICIENT',3:'VENUE_COLLATERAL_INSUFFICIENT',4:'VENUE_POSITION_MISSING',5:'VENUE_SOLVENCY_REJECTED',6:'VENUE_POSITION_VALUE_NEGATIVE',7:'STALE_VENUE_PRICE',8:'VENUE_NEGATIVE_PNL_LIMIT'};
+  return {selector:'0xb29d1949',reason:'TakerOrderSettlementFailed',resultCode,code:codes[resultCode]||'VENUE_SETTLEMENT_REJECTED'};
+}
 export function executionError(error) {
+  const venue=perplFailure(error);if(venue)return venue.code;
   const codes = new Set([
     "ORDER_EXPIRED",
     "PARTIAL_FILL_RETRY",

@@ -18,3 +18,23 @@ test('browser channel encrypts directly to the TEE public key', async () => {
     assert.deepEqual(await encryptedTeeRequest('https://tee.invalid', identity.publicKey, '/platform/encrypted-investments', { strategyId: 'private-strategy', amount: '1000000' }), { accepted: true });
   } finally { globalThis.fetch = priorFetch; }
 });
+
+test('historical execution errors are data only for a matching diagnostic response', async () => {
+  const identity = encryptionIdentity(randomBytes(32)), priorFetch = globalThis.fetch;
+  let reply = {id:'failed',status:'FAILED',error:'EXECUTION_CONFIRMATION_REQUIRED',historicalReplay:true,probes:[{code:'VENUE_COLLATERAL_INSUFFICIENT'}]};
+  globalThis.fetch = async (_url, options) => {
+    const opened = identity.open(JSON.parse(options.body));
+    return {ok:true,json:async()=>({reply:opened.reply(reply)})};
+  };
+  const send = message => encryptedTeeRequest('https://tee.invalid',identity.publicKey,'/platform/encrypted-strategy',message);
+  try {
+    const result = await send({action:'DIAGNOSE',requestId:'failed'});
+    assert.equal(result.executionError,'EXECUTION_CONFIRMATION_REQUIRED');
+    assert.equal(Object.hasOwn(result,'error'),false);
+    assert.equal(result.probes[0].code,'VENUE_COLLATERAL_INSUFFICIENT');
+    await assert.rejects(()=>send({action:'STATUS',requestId:'failed'}),/EXECUTION_CONFIRMATION_REQUIRED/);
+    await assert.rejects(()=>send({action:'DIAGNOSE',requestId:'other'}),/EXECUTION_CONFIRMATION_REQUIRED/);
+    reply = {error:'STRATEGY_NOT_AUTHORIZED'};
+    await assert.rejects(()=>send({action:'DIAGNOSE',requestId:'failed'}),/STRATEGY_NOT_AUTHORIZED/);
+  } finally {globalThis.fetch=priorFetch;}
+});

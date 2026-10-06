@@ -1,4 +1,5 @@
 import { SigningKey, getBytes, hexlify, randomBytes } from 'ethers';
+import { normalizeExecutionResponse } from '../platform/execution-response.js';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -32,7 +33,7 @@ export async function encryptedTeeRequest(endpoint, publicKey, path, message, { 
   const sealed = body.reply;
   const cipher = new Uint8Array([...hexToBytes(sealed.data), ...hexToBytes(sealed.tag)]);
   const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: hexToBytes(sealed.iv), additionalData: encoder.encode('response'), tagLength: 128 }, key, cipher);
-  const result=JSON.parse(decoder.decode(plaintext));
+  const result=normalizeExecutionResponse(message,JSON.parse(decoder.decode(plaintext)));
   if(result.error){const error=Error(result.error);error.teeRejected=true;throw error;}
   return result;
 }

@@ -135,3 +135,12 @@ test('background execution releases the financial mutex between strategies and r
  f.e.observeBook=async book=>{events.push(book.id);if(book===f.book)mutation=f.e.investments.serial(()=>{events.push('account');f.state.books.other.cash='123';});else assert.equal(book.cash,'123');return [];};
  await f.e.tick();await mutation;assert.deepEqual(events,[f.book.id,'account','other']);
 });
+
+test('failed execution diagnostics replay historical calls without broadcasting or exposing calldata',async()=>{
+ const e=Object.create(PlatformExecution.prototype),state={books:{s:{requests:{failed:{id:'failed',status:'FAILED',error:'EXECUTION_CONFIRMATION_REQUIRED',createdAt:210,deadline:330,steps:{'target-16-0':{request:{to:'private-account',data:'private-calldata'},applied:false}}}}}}},before=JSON.stringify(state),calls=[];
+ e.authorize=async()=>({id:'s'});e.investments={state:()=>structuredClone(state),serial:()=>{throw Error('Diagnostics must not acquire the mutation queue');}};
+ e.wallet={address:'operator',sendTransaction:()=>{throw Error('must not broadcast');}};
+ e.provider={getBlock:async tag=>({number:tag==='latest'?100:tag,timestamp:200+(tag==='latest'?100:tag)}),call:async request=>{calls.push(request);const error=Error('RPC message contains private request');error.code='CALL_EXCEPTION';error.reason='ORDER_TOO_SMALL';throw error;}};
+ const result=await e.accept({action:'DIAGNOSE',requestId:'failed'});assert.equal(calls.length,3);assert.equal(result.stage,'TRADE');assert.equal(result.error,'EXECUTION_CONFIRMATION_REQUIRED');assert.ok(result.probes.every(p=>p.result==='REVERTED'&&p.reason==='ORDER_TOO_SMALL'));assert.equal(JSON.stringify(state),before);assert.ok(!JSON.stringify(result).includes('private-'));
+ await assert.rejects(()=>e.accept({action:'DIAGNOSE',requestId:'missing'}),/REQUEST_NOT_FOUND/);
+});

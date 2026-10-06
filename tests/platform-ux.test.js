@@ -96,3 +96,11 @@ test("metric query rejects unsupported periods before querying storage", async (
     /INVALID_HISTORY_PERIOD/,
   );
 });
+
+test('Perpl settlement errors expose only the failure category and never price or position arguments',async()=>{
+ const {perplFailure}=await import('../src/platform/execution-errors.js');
+ const data='0xb29d1949'+[16n,123456n,999999n,888888n,777777n,666666n,555555n,2n].map(n=>n.toString(16).padStart(64,'0')).join('');
+ const error={code:'CALL_EXCEPTION',data,message:'private RPC request'};
+ assert.equal(executionError(error),'VENUE_COLLATERAL_INSUFFICIENT');assert.deepEqual(perplFailure(error),{selector:'0xb29d1949',reason:'TakerOrderSettlementFailed',resultCode:2,code:'VENUE_COLLATERAL_INSUFFICIENT'});
+ assert.ok(!JSON.stringify(perplFailure(error)).includes('999999'));assert.equal(perplFailure({data:'0xb29d1949'}),null);
+});

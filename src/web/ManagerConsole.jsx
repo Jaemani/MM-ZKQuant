@@ -735,7 +735,8 @@ function StrategyWorkspace({ strategy }) {
     [policy, setPolicy] = useState(strategy.policy),
     [fee, setFee] = useState(strategy.fee_bps),
     [policyConfirm, setPolicyConfirm] = useState(false),
-    [capital, setCapital] = useState(false);
+    [capital, setCapital] = useState(false),
+    [diagnoses, setDiagnoses] = useState({});
   const publicStrategy = p.strategies.find((s) => s.id === strategy.id),
     m = publicStrategy?.public_metrics;
   const readStatus = async () => {
@@ -1040,8 +1041,18 @@ function StrategyWorkspace({ strategy }) {
                       </div>
                       <p className="q-muted">{time(r.createdAt)}</p>
                       {r.error && (
-                        <p className="q-callout">{platformError(r.error)}</p>
+                        <p className="q-callout">{r.error === 'EXECUTION_CONFIRMATION_REQUIRED' && ['FAILED','PARTIALLY_FILLED'].includes(r.status) ? 'Execution stopped. Check the failure reason below.' : platformError(r.error)}</p>
                       )}
+                      {['FAILED','PARTIALLY_FILLED'].includes(r.status) && r.error && (
+                        <Button secondary disabled={p.busy} onClick={() => p.run(async () => {
+                          const result = await p.managerRequest(strategy.id, 'DIAGNOSE', {requestId:r.id});
+                          setDiagnoses(previous => ({...previous,[r.id]:result}));
+                        })}>Check failure reason</Button>
+                      )}
+                      {diagnoses[r.id] && <p className="q-callout">
+                        {[...new Set((diagnoses[r.id].probes || []).map(probe => probe.code).filter(Boolean))].map(platformError).join(' ') || 'The original cause could not be classified from historical contract checks.'}
+                        <small className="q-muted"> Historical contract checks. This does not retry the order.</small>
+                      </p>}
                       {["QUEUED", "EXECUTING"].includes(r.status) && (
                         <p className="q-muted">
 

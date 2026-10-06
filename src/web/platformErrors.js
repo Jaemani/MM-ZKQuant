@@ -1,4 +1,11 @@
 const messages = {
+  VENUE_BALANCE_INSUFFICIENT: 'Perpl has insufficient available balance for this order’s collateral and fees.',
+  VENUE_COLLATERAL_INSUFFICIENT: 'Perpl has insufficient available collateral for the requested position change.',
+  VENUE_POSITION_MISSING: 'Perpl could not find the position requested for closing.',
+  VENUE_SOLVENCY_REJECTED: 'Perpl rejected settlement to protect market solvency.',
+  VENUE_POSITION_VALUE_NEGATIVE: 'Perpl rejected a reduction that would realize a negative position value.',
+  VENUE_NEGATIVE_PNL_LIMIT: 'Perpl rejected this fill because it exceeds the negative PnL collateral limit.',
+  VENUE_SETTLEMENT_REJECTED: 'Perpl rejected this order during settlement. Check execution details.',
   INVALID_REDEMPTION_PERCENTAGE: 'Enter a redemption percentage from 1 to 100.',
   INSUFFICIENT_UNITS: 'Your invested balance changed. Refresh your assets and request redemption again.',
   INSUFFICIENT_PENDING_CASH: 'Your pending allocation changed. Refresh your assets to check whether trading has started.',

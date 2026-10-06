@@ -1,6 +1,7 @@
 import {existsSync,readFileSync,writeFileSync,mkdirSync,renameSync} from 'node:fs';
 import {dirname} from 'node:path';
 import {encryptRequest} from '../src/integration/sealed.js';
+import {normalizeExecutionResponse} from '../src/platform/execution-response.js';
 export const environment={...(existsSync('.env')?Object.fromEntries(readFileSync('.env','utf8').split(/\r?\n/).map(l=>l.match(/^([A-Z_0-9]+)=(.*)$/)).filter(Boolean).map(m=>[m[1],m[2].trim().replace(/^['"]|['"]$/g,'')])):{}),...process.env};
 const configuredRpc=environment.MONAD_TESTNET_RPC_URL||'https://testnet-rpc.monad.xyz';
 export const rpcUrl=configuredRpc.includes('://')?configuredRpc:`https://${configuredRpc}`;
@@ -13,5 +14,5 @@ export async function api(path,{body,token}={}){
 export async function tee(config,path,message){
  const channel=encryptRequest(config.teeEncryptionPublicKey,message),response=await fetch(config.teeEndpoint+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(channel.packet),signal:AbortSignal.timeout(45000)}),result=await response.json();
  if(!response.ok||!result.reply)throw Error(result.error||`TEE_HTTP_${response.status}`);
- const opened=channel.openReply(result.reply);if(opened.error)throw Error(opened.error);return opened;
+ const opened=normalizeExecutionResponse(message,channel.openReply(result.reply));if(opened.error)throw Error(opened.error);return opened;
 }

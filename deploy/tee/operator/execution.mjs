@@ -2,7 +2,7 @@ import {redeemToCash,debitPending} from './cash-ledger.mjs';
 import { SharedAccounts } from './shared-accounts.mjs';
 import { ledgerEvent,ledgerValue } from './ledger-journal.mjs';
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../../../src/platform/vault-retirement.js';
-import { executionError } from '../../../src/platform/execution-errors.js';
+import { executionError,perplFailure } from '../../../src/platform/execution-errors.js';
 import { Contract, Interface, keccak256, toUtf8Bytes } from 'ethers';
 import { readFileSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
@@ -62,6 +62,7 @@ export class PlatformExecution {
   }
   async accept(input) {
     const strategy=await this.authorize(input);
+    if(input.action==='DIAGNOSE')return this.diagnose(strategy.id,input.requestId);
     if(input.action==='STATUS'){
       const state=this.investments.state(),book=state.books[strategy.id]||newBook(strategy);
       return {sequence:book.sequence,status:strategy.strategist_wallet?book.status:'DRAFT',policy:book.policy,policyVersion:book.policyVersion,valuationError:book.valuationError||null,reconciliationError:this.reconciliationError||null,performanceFees:this.performanceFees(book),requests:Object.values(book.requests).map(({id,status,error,sequence,createdAt,diagnostic})=>({id,status,error,sequence,createdAt,diagnostic}))};
@@ -87,6 +88,37 @@ export class PlatformExecution {
       book.requests[input.requestId]={id:input.requestId,fingerprint,targets,sequence:input.sequence,status:'QUEUED',createdAt:now,deadline:now+book.policy.orderTtlSeconds,steps:{}};
       book.sequence=input.sequence;this.save(state);return {id:input.requestId,status:'QUEUED'};
     });
+  }
+  async diagnose(strategyId,requestId) {
+    const book=this.investments.state().books[strategyId],job=book?.requests[requestId];
+    if(!job)throw Error('REQUEST_NOT_FOUND');
+    if(!['FAILED','PARTIALLY_FILLED','EXPIRED'].includes(job.status))throw Error('REQUEST_NOT_FINISHED');
+    const entry=Object.entries(job.steps||{}).find(([,step])=>!step.applied&&step.request);
+    if(!entry)return {id:job.id,status:job.status,error:job.error,diagnostic:job.diagnostic,reason:'NO_SAVED_CONTRACT_CALL'};
+    const [label,step]=entry,stage=label.startsWith('target-')||label.startsWith('flatten-')?'TRADE':label.startsWith('fund-')?'FUND':label.startsWith('admit-')?'ADMIT_CASH':label.startsWith('shared-pool-')||label.startsWith('pool-')?'CREATE_ACCOUNT':'RECOVER';
+    const latest=await this.provider.getBlock('latest');
+    const atTime=async timestamp=>{
+      let low=Math.max(0,latest.number-50000),high=latest.number;
+      if((await this.provider.getBlock(low)).timestamp>timestamp)low=0;
+      while(low<high){const mid=Math.ceil((low+high)/2),block=await this.provider.getBlock(mid);if(block.timestamp<=timestamp)low=mid;else high=mid-1;}
+      return this.provider.getBlock(low);
+    };
+    const probes=[];
+    for(const offset of [5,30,90]){
+      const timestamp=Math.min(latest.timestamp,job.deadline-1,job.createdAt+offset),block=await atTime(timestamp);
+      if(probes.some(p=>p.blockNumber===block.number))continue;
+      try{await this.provider.call({...step.request,from:this.wallet.address,blockTag:block.number});probes.push({blockNumber:block.number,timestamp:block.timestamp,result:'CALL_SUCCEEDED'});}
+      catch(error){
+        const data=[error.data,error.info?.error?.data,error.error?.data].find(v=>typeof v==='string'&&/^0x[0-9a-f]+$/i.test(v));
+        let reason=error.reason;
+        try{const parsed=data&&vaultInterface.parseError(data);if(parsed?.name==='Error')reason=parsed.args[0];}catch{}
+        // Expose error identifiers only; calldata and strategy quantities stay inside the enclave.
+        reason=typeof reason==='string'&&/^[a-zA-Z_ ]{1,80}$/.test(reason)&&reason!=='missing revert data'?reason:null;
+        const venue=perplFailure(error);
+        probes.push({blockNumber:block.number,timestamp:block.timestamp,result:error.code==='CALL_EXCEPTION'?'REVERTED':'RPC_UNAVAILABLE',reason:venue?.reason||reason,selector:data?.slice(0,10)||null,...(venue?{resultCode:venue.resultCode,code:venue.code}:{})});
+      }
+    }
+    return {id:job.id,status:job.status,error:job.error,stage,probes,historicalReplay:true};
   }
   performanceFees(book) {
     const totals=managerFeeTotals(book),payments=new Map((book.feePayouts||[]).map(payment=>[payment.txHash,{...payment,status:'PAID'}]));
@@ -380,6 +412,7 @@ export class PlatformExecution {
             // Private owner diagnostics contain only exception type and code location.
             // Never include RPC messages, calldata, target weights or signed bytes.
             job.diagnostic={name:/^[A-Za-z]+Error$/.test(e.name||'')?e.name:'Error',code:/^[A-Z_]+$/.test(e.code||'')?e.code:null,location:e.stack?.match(/(?:execution|shared-accounts|ledger|ledger-journal)\.mjs:\d+:\d+/)?.[0]||null};
+            const venue=perplFailure(e);if(venue)job.diagnostic.venue=venue;
             const pending=Object.values(this.submitter.publicState().records).some(r=>r.status===undefined)||Object.values(job.steps).some(step=>!step.applied&&this.submitter.lookup(step.id)?.status===1);
             if(pending)job.status='EXECUTING';
             else if(job.error==='OPERATOR_GAS_INSUFFICIENT'){
