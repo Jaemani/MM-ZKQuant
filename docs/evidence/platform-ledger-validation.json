@@ -1,0 +1,38 @@
+{
+  "verified": true,
+  "checkpointCadenceSeconds": 302,
+  "configuredIntervalSeconds": 300,
+  "observedCheckpoints": 2,
+  "verifiedProofs": 9,
+  "actualFinancialTransition": {
+    "testFixtureOnly": true,
+    "depositAUSD": "0.01",
+    "confirmed": true,
+    "checkpointContinuedAfterDeposit": true,
+    "privateAttributionPublished": false
+  },
+  "restart": {
+    "verified": true,
+    "genesisPreserved": true,
+    "rootPreserved": true,
+    "sequencePreserved": true
+  },
+  "browser": {
+    "verified": true,
+    "strategistProofPanel": true,
+    "investorProofPanel": true,
+    "onchainLink": true,
+    "latestDarkDesign": true,
+    "mobileOverflow": false,
+    "pageErrors": 0
+  },
+  "focusedChecks": [
+    "actual financial journal and all operation witnesses",
+    "tampered mint and Merkle path rejected",
+    "real Groth16 proof accepted by actual verifier bytecode",
+    "domain, replay, invalid proof and unauthorized caller rejected",
+    "archived proof recovery without reproving",
+    "missing financial mutation stops publishing",
+    "existing investment, fee, execution and sharing checks passed"
+  ]
+}

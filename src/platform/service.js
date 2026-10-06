@@ -145,6 +145,17 @@ export class PlatformService {
     return this.ownedStrategy(wallet,strategyId);
   }
 
+  async ledgerProofs({statusOnly=false,after=0,limit=20}={}) {
+    if(!this.teeEndpoint)throw new PlatformError('TEE_UNAVAILABLE',503);
+    if(!Number.isSafeInteger(after)||after<0||!Number.isInteger(limit)||limit<1||limit>50)throw new PlatformError('INVALID_PROOF_PAGE');
+    try {
+      const path=statusOnly?'/platform/ledger-proof-status':`/platform/ledger-proofs?after=${after}&limit=${limit}`;
+      const response=await fetch(this.teeEndpoint+path,{signal:AbortSignal.timeout(15000),redirect:'error'});
+      if(response.status===404&&statusOnly)return {enabled:false,status:'NOT_CONFIGURED'};
+      if(!response.ok)throw Error('LEDGER_PROOFS_UNAVAILABLE');return response.json();
+    }catch{throw new PlatformError('LEDGER_PROOFS_UNAVAILABLE',503);}
+  }
+
   async myStrategies(authorization) {
     const wallet=await this.session(authorization);
     const {rows}=await this.database.query('SELECT * FROM strategies WHERE strategist_wallet=$1 ORDER BY created_at DESC',[wallet]);

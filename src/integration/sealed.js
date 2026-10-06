@@ -23,9 +23,9 @@ export function unseal(key,box,context,maxHexLength=2_000_000) {
   return JSON.parse(Buffer.concat([decipher.update(Buffer.from(box.data,'hex')),decipher.final()]).toString());
 }
 export class SealedStore {
-  constructor(path,secret,context){this.path=path;this.context=context;this.key=keyFor(secret,'MM_STORE:'+context);}
-  read(){return existsSync(this.path)?unseal(this.key,JSON.parse(readFileSync(this.path)),this.context):null;}
-  write(value){atomicJson(this.path,seal(this.key,value,this.context));}
+  constructor(path,secret,context,{maxHexLength=2_000_000}={}){this.path=path;this.context=context;this.maxHexLength=maxHexLength;this.key=keyFor(secret,'MM_STORE:'+context);}
+  read(){return existsSync(this.path)?unseal(this.key,JSON.parse(readFileSync(this.path)),this.context,this.maxHexLength):null;}
+  write(value){const box=seal(this.key,value,this.context);if(box.data.length>this.maxHexLength)throw Error('SEALED_STORE_CAPACITY');atomicJson(this.path,box);}
 }
 export function encryptionIdentity(secret,{maxHexLength=2_000_000}={}) {
   const ecdh=createECDH('secp256k1');ecdh.setPrivateKey(secret);

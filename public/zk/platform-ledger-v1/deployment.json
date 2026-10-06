@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "chainId": 10143,
+  "vault": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
+  "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
+  "verifier": "0x3fa3A887833A3abE59D97b97AAD92f0c9A7a3dC4",
+  "checkpoint": "0xDFd9188E5CC1A72a9f9D68ad65e698e51950D822",
+  "verificationKeyHash": "2bb14f8061688eb5cdc49c866f74c75c9f68b131aa9d1089378c716f2bf7221d",
+  "verifierCodeHash": "0xc7705de2b5a8db50a21f93c9a29c28963e19d1394d3ad768c40febebdab45dbd",
+  "checkpointCodeHash": "0x1e2af927c0be9453c9a3b5623bd64cd4cdeecfc6cae868a7ea0498b955c4bd2c",
+  "transactions": [
+    {
+      "tag": "ledger-verifier-v1",
+      "intent": "0x93fe9e6a6a806f231b5158169167e37a8fd35c33e9c108128aa2b4970bb29ec1",
+      "transactionHash": "0x30601029233ad7c052ee18523070ddd5a16d4884222a3ec93216d60300066ac4",
+      "contractAddress": "0x3fa3A887833A3abE59D97b97AAD92f0c9A7a3dC4",
+      "sender": "0xF4b14dE963433e7709DfF3559abb1a8B1FD06f7a",
+      "environment": "MONAD_TESTNET",
+      "status": 1,
+      "blockNumber": 68545150,
+      "blockHash": "0xeba9ebdd3325fc1db0a3a239a1402dd3fc7513126cda77a6eb7f64345c7e5e48",
+      "blockTimestamp": 1791246870,
+      "gasUsed": "470786",
+      "gasPriceWei": "102000000000",
+      "nativeGasCostWei": "48020172000000000",
+      "logs": []
+    },
+    {
+      "tag": "ledger-checkpoint-v1",
+      "intent": "0xb4022ed9cf59d8b83b0d338daa44307ea895e0dbe255f12602210f928bd9313b",
+      "transactionHash": "0x8cf577edcc4187376178b5e9fa42deae8e3b433e05b56c96a7d77f61d486fa51",
+      "contractAddress": "0xDFd9188E5CC1A72a9f9D68ad65e698e51950D822",
+      "sender": "0xF4b14dE963433e7709DfF3559abb1a8B1FD06f7a",
+      "environment": "MONAD_TESTNET",
+      "status": 1,
+      "blockNumber": 68545155,
+      "blockHash": "0x64a4807bd4c045e9335d1754dd6ee0673628b1a12c913e72d66e56e88da9bc9b",
+      "blockTimestamp": 1791246872,
+      "gasUsed": "468190",
+      "gasPriceWei": "102000000000",
+      "nativeGasCostWei": "47755380000000000",
+      "logs": []
+    }
+  ]
+}

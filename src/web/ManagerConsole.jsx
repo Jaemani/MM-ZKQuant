@@ -25,6 +25,7 @@ import {
 } from "./PlatformUI.jsx";
 import InvestmentPanel from "./InvestmentPanel.jsx";
 import ManagerFees from "./ManagerFees.jsx";
+import LedgerProofPanel from "./LedgerProofPanel.jsx";
 import { platformError } from "./platformErrors.js";
 const markets = [
   { id: 16, name: "BTC" },
@@ -881,6 +882,7 @@ function StrategyWorkspace({ strategy }) {
               busy={p.busy}
               onRefresh={() => p.run(readStatus)}
             />
+            <LedgerProofPanel />
             <Panel>
               <h2>공개 운용 조건</h2>
               <Conditions policy={strategy.policy} feeBps={strategy.fee_bps} />

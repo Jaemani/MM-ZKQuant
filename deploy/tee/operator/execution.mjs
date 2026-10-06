@@ -1,4 +1,5 @@
 import { SharedAccounts } from './shared-accounts.mjs';
+import { ledgerEvent,ledgerValue } from './ledger-journal.mjs';
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../../../src/platform/vault-retirement.js';
 import { executionError } from '../../../src/platform/execution-errors.js';
 import { Contract, Interface, keccak256, toUtf8Bytes } from 'ethers';
@@ -20,7 +21,7 @@ export class PlatformExecution {
   constructor({investments,provider,wallet,secret,storeDir,apiUrl}) {
     Object.assign(this,{investments,provider,wallet,apiUrl});
     this.exchange=new Contract('0x1964C32f0bE608E7D29302AFF5E61268E72080cc',JSON.parse(readFileSync(new URL('../../../protocol/perpl/exchange-abi.json',import.meta.url))),provider);
-    this.journal=new SealedStore(`${storeDir}/platform-transactions.json`,secret,'platform-transactions-v1');
+    this.journal=new SealedStore(`${storeDir}/platform-transactions.json`,secret,'platform-transactions-v1',{maxHexLength:128_000_000});
   }
   async initialize() {
     const initialNonce=await this.provider.getTransactionCount(this.wallet.address,'latest');
@@ -106,15 +107,16 @@ export class PlatformExecution {
     if(!effect)return;
     if(effect.kind.startsWith('SHARED_')){if(!this.shared)throw Error('SHARED_ACCOUNT_UNAVAILABLE');return this.shared.applyEffect(state,effect,result);}
     const book=state.books[effect.bookId];
-    if(effect.kind==='CASH')book.cash=String(n(book.cash)+n(effect.delta));
+    if(effect.kind==='CASH'){book.cash=String(n(book.cash)+n(effect.delta));ledgerEvent(book,'VENUE',{delta:String(effect.delta),txHash:result.hash});}
     if(effect.kind==='WITHDRAW'){const w=book.withdrawals[effect.withdrawalId];burnWithdrawal(book,w,n(effect.amount));w.txHash=result.hash;delete w.error;}
     if(effect.kind==='FEE'){
       book.feePayouts||=[];
       if(book.feePayouts.some(payment=>payment.txHash===result.hash))return;
       book.cash=String(n(book.cash)-n(effect.amount));book.feesDue=String(n(book.feesDue)-n(effect.amount));
       book.feePayouts.push({txHash:result.hash,amount:String(effect.amount),blockNumber:result.block||null,paidAt:Math.floor(Date.now()/1000)});
+      ledgerEvent(book,'FEE_PAY',{amount:String(effect.amount),txHash:result.hash});
     }
-    if(effect.kind==='PENDING_WITHDRAW'){const w=book.withdrawals[effect.withdrawalId],p=book.investors[w.wallet.toLowerCase()];p.pending=String(n(p.pending)-n(effect.amount));p.paid=String(n(p.paid)+n(effect.amount));w.status='PAID';w.txHash=result.hash;delete w.error;}
+    if(effect.kind==='PENDING_WITHDRAW'){const w=book.withdrawals[effect.withdrawalId],p=book.investors[w.wallet.toLowerCase()];p.pending=String(n(p.pending)-n(effect.amount));p.paid=String(n(p.paid)+n(effect.amount));w.status='PAID';w.txHash=result.hash;delete w.error;ledgerEvent(book,'PENDING_PAY',{wallet:p.wallet,amount:String(effect.amount),txHash:result.hash});}
   }
   async step(state,job,label,request,effect=null) {
     if(job.steps[label]?.applied)return job.steps[label];
@@ -306,6 +308,7 @@ export class PlatformExecution {
       settlement.referenceNav=book.nav;
       const gross=n(book.equity)*n(settlement.units)/n(settlement.total);
       book.equity=String(n(book.equity)-cost);
+      ledgerValue(book);
       const payout=gross-n(settlement.cost);if(payout<0n)throw Error('WITHDRAWAL_COST_EXCEEDS_VALUE');
       let left=payout;settlement.payouts={};
       settlement.withdrawalIds.forEach((id,i)=>{const w=book.withdrawals[id],amount=i===settlement.withdrawalIds.length-1?left:payout*n(w.units)/n(settlement.units);left-=amount;settlement.payouts[id]=String(amount);});this.save(state);
@@ -372,7 +375,7 @@ export class PlatformExecution {
           }
           const proposal=this.catalog?.find(s=>s.id===book.id)?.pending_policy;
           if(proposal&&proposal.version>(book.policyVersion||1)&&proposal.effectiveAfter<=Math.floor(Date.now()/1000)&&!book.settlement&&!Object.values(book.requests).some(r=>['QUEUED','EXECUTING'].includes(r.status))&&!Object.values(book.withdrawals).some(w=>['REQUESTED','SETTLING'].includes(w.status)&&w.settlementAt<=proposal.effectiveAfter)){
-            crystallizeFees(book);book.policy=validatePolicy(proposal.policy);book.feeBps=proposal.feeBps;book.policyVersion=proposal.version;this.save(state);
+            crystallizeFees(book);book.policy=validatePolicy(proposal.policy);book.feeBps=proposal.feeBps;ledgerEvent(book,'POLICY',{feeBps:book.feeBps});book.policyVersion=proposal.version;this.save(state);
           }
         }catch(e){book.valuationError=executionError(e);if(book.settlement)for(const id of book.settlement.withdrawalIds)if(book.withdrawals[id].status!=='PAID')book.withdrawals[id].error=book.valuationError;this.save(state);}
       }

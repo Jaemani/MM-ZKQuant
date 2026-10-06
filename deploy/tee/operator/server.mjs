@@ -7,6 +7,7 @@ import {encryptionIdentity} from '../../../src/integration/sealed.js';
 import {operatorKeys,createOperator} from './engine.mjs';
 import {PrivateInvestments} from './investments.mjs';
 import {PlatformExecution} from './execution.mjs';
+import {LedgerProofs} from './ledger-proofs.mjs';
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const manifest=JSON.parse(readFileSync('/app/manifest.json'));
 if(process.env.DSTACK_SIMULATOR_ENDPOINT)throw Error('SIMULATOR_FORBIDDEN');
@@ -26,6 +27,12 @@ const investments=new PrivateInvestments({secret,storeDir:'/state',provider:rpc,
 if(manifest.omnibusVault&&manifest.cashToken)await investments.pin({vaultAddress:manifest.omnibusVault,cashTokenAddress:manifest.cashToken});
 const execution=new PlatformExecution({investments,provider:rpc,wallet:keys.wallet.connect(rpc),secret,storeDir:'/state',apiUrl:'https://mm-zkquant.vercel.app/api'});
 await execution.initialize();
+let ledgerProofs;
+if(manifest.ledgerProofs){
+ ledgerProofs=new LedgerProofs({investments,execution,wallet:keys.wallet.connect(rpc),storeDir:'/state',manifest:manifest.ledgerProofs});
+ try{await ledgerProofs.initialize();}catch{console.error('Ledger proof initialization awaiting reconciliation');}
+ setInterval(async()=>{if(!ledgerProofs.ready){try{await ledgerProofs.initialize();}catch{return;}}await ledgerProofs.tick();},5000);
+}
 let ticking=false;
 setInterval(async()=>{if(ticking)return;ticking=true;try{await execution.tick();await execution.publish();}catch{console.error('Platform worker awaiting reconciliation');}finally{ticking=false;}},5000);
 const platformOrigins=new Set(['https://mm-zkquant.vercel.app','http://localhost:5173']);
@@ -41,7 +48,14 @@ const server=createServer(async(req,res)=>{
     const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>64_000)throw Error('SIZE');chunks.push(chunk);}
     try{body=JSON.parse(Buffer.concat(chunks));}catch{throw Error('JSON');}
    }
-   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,{mode:'TESTNET_PLATFORM_TEE',execution:execution.submitter?'STRATEGY_EXECUTION_AVAILABLE':'INITIALIZING',accountSharing:execution.shared?'COMPATIBLE_MARKET_DIRECTIONS':'LEGACY_EXCLUSIVE_ACCOUNTS',investments:investments.status()});
+   if(req.method==='GET'&&url.pathname==='/platform/status')return platformReply(200,{mode:'TESTNET_PLATFORM_TEE',execution:execution.submitter?'STRATEGY_EXECUTION_AVAILABLE':'INITIALIZING',accountSharing:execution.shared?'COMPATIBLE_MARKET_DIRECTIONS':'LEGACY_EXCLUSIVE_ACCOUNTS',investments:investments.status(),ledgerProofs:ledgerProofs?.status()||{enabled:false,status:'NOT_CONFIGURED'}});
+   if(req.method==='GET'&&url.pathname==='/platform/ledger-proof-status')return platformReply(200,ledgerProofs?.status()||{enabled:false,status:'NOT_CONFIGURED'});
+   if(req.method==='GET'&&url.pathname==='/platform/ledger-proofs'){
+    if(!ledgerProofs?.ready)return platformReply(503,{error:'LEDGER_PROOFS_UNAVAILABLE'});
+    const after=Number(url.searchParams.get('after')||0),limit=Number(url.searchParams.get('limit')||20);
+    if(!Number.isSafeInteger(after)||after<0||!Number.isInteger(limit)||limit<1||limit>50)return platformReply(400,{error:'INVALID_PROOF_PAGE'});
+    return platformReply(200,ledgerProofs.proofs({after,limit}));
+   }
    if(req.method==='GET'&&url.pathname==='/platform/metrics')return platformReply(200,execution.metrics());
    if(req.method==='POST'&&url.pathname==='/platform/encrypted-strategy'){
     try{const opened=channel.open(body);let result;try{result=await execution.accept(opened.message);}catch(e){result={error:e.message};}return platformReply(200,{reply:opened.reply(result)});}catch{return platformReply(400,{error:'INVALID_ENCRYPTED_REQUEST'});}
@@ -63,8 +77,9 @@ const server=createServer(async(req,res)=>{
   if(req.method==='GET'&&url.pathname==='/health')return reply(200,{mode:identity.mode,initialized:Boolean(engine)});
   if(req.method==='GET'&&url.pathname==='/attestation'){
    const challenge=url.searchParams.get('challenge');if(!/^[a-f0-9]{64}$/.test(challenge||''))return reply(400,{error:'CHALLENGE'});
-   const binding=sha(JSON.stringify({domain:'MM_COHORT_OPERATOR_V1',identity,challenge}));
-   const quote=await dstack('/GetQuote',{report_data:binding.padEnd(128,'0')});return reply(200,{identity,challenge,binding,quote});
+   const quotedIdentity={...identity,...(ledgerProofs?.attestation()?{ledgerGenesis:ledgerProofs.attestation()}:{})};
+   const binding=sha(JSON.stringify({domain:'MM_COHORT_OPERATOR_V1',identity:quotedIdentity,challenge}));
+   const quote=await dstack('/GetQuote',{report_data:binding.padEnd(128,'0')});return reply(200,{identity:quotedIdentity,challenge,binding,quote});
   }
   if(req.method!=='POST'||!['/initialize','/configure','/execute','/status'].includes(url.pathname))return reply(404,{error:'NOT_FOUND'});
   if(busy)return reply(429,{error:'BUSY'});busy=true;

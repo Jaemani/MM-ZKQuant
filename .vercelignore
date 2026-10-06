@@ -1,5 +1,6 @@
 .gitnexus/
 .data/
+dist/
 artifacts/
 perpl-zk-artifacts.tgz
 research/

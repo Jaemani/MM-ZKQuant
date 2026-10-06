@@ -12,7 +12,7 @@
       "destination": "/api/[...route]"
     },
     {
-      "source": "/((?!api/|assets/).*)",
+      "source": "/((?!api/|assets/|zk/).*)",
       "destination": "/index.html"
     }
   ]

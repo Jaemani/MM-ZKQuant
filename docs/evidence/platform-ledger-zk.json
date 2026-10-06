@@ -1,0 +1,97 @@
+{
+  "verified": true,
+  "chainId": 10143,
+  "vault": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
+  "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
+  "checkpoint": "0xDFd9188E5CC1A72a9f9D68ad65e698e51950D822",
+  "verifier": "0x3fa3A887833A3abE59D97b97AAD92f0c9A7a3dC4",
+  "verificationKeyHash": "2bb14f8061688eb5cdc49c866f74c75c9f68b131aa9d1089378c716f2bf7221d",
+  "genesisRoot": "18055927181367554054422602309928801871588405143950604475701374666380086633284",
+  "verifiedRoot": "16661046369194397118358819804240998157457042669181986994794356233825610410197",
+  "verifiedSequence": 9,
+  "onchainHead": 9,
+  "intervalSeconds": 300,
+  "checkpointTimes": [
+    1791247334,
+    1791247636
+  ],
+  "records": [
+    {
+      "sequence": 1,
+      "checkpointAt": 1791247334,
+      "provingMs": 13704,
+      "txHash": "0xf49d010dbb887e55af9b9cd3973c072f9b97235f1e70f438f95926ffaca2360f",
+      "blockNumber": 68546725,
+      "gasUsed": "1585754"
+    },
+    {
+      "sequence": 2,
+      "checkpointAt": 1791247334,
+      "provingMs": 13677,
+      "txHash": "0x6cf1c3d96ba8da13fc882b32318286e55c2f4052f0edd0942a8032326565b1d8",
+      "blockNumber": 68546786,
+      "gasUsed": "1578427"
+    },
+    {
+      "sequence": 3,
+      "checkpointAt": 1791247334,
+      "provingMs": 13652,
+      "txHash": "0x40fc8c43b9fbeebb9a348d8587a0c3b203ffa426e05f7ec84777cb78b7241f90",
+      "blockNumber": 68546837,
+      "gasUsed": "1578443"
+    },
+    {
+      "sequence": 4,
+      "checkpointAt": 1791247334,
+      "provingMs": 13677,
+      "txHash": "0xd8597a935d6fb7e1313015fa75a765e0fdece4d4c3a8e1efe96d0aef544f316e",
+      "blockNumber": 68546898,
+      "gasUsed": "1578427"
+    },
+    {
+      "sequence": 5,
+      "checkpointAt": 1791247334,
+      "provingMs": 13940,
+      "txHash": "0xf8c42244fb373e3dae6ec0c231ac76e1729883ec1f427abe4e9ea1a57e50639a",
+      "blockNumber": 68546954,
+      "gasUsed": "1578443"
+    },
+    {
+      "sequence": 6,
+      "checkpointAt": 1791247334,
+      "provingMs": 13778,
+      "txHash": "0x5a58baee1b7cebd1cefbad69a76b2e695cef485d8c02d369d95f9715d4cc01e4",
+      "blockNumber": 68547016,
+      "gasUsed": "1578411"
+    },
+    {
+      "sequence": 7,
+      "checkpointAt": 1791247636,
+      "provingMs": 14880,
+      "txHash": "0x3d019798bb1697fb365b1841f080b6dbac5235d605422bb0870d152b34ddb69e",
+      "blockNumber": 68547724,
+      "gasUsed": "1578427"
+    },
+    {
+      "sequence": 8,
+      "checkpointAt": 1791247636,
+      "provingMs": 14425,
+      "txHash": "0xed44f07d9e03969b9df3bd9ba58b8b840a85776f1dc6161b4dad161fae283c5f",
+      "blockNumber": 68547782,
+      "gasUsed": "1578411"
+    },
+    {
+      "sequence": 9,
+      "checkpointAt": 1791247636,
+      "provingMs": 13671,
+      "txHash": "0xbfded43782cd6b0a1b6a86d1711575b8a2fdc9e8c237d07549b5a09b36d914ce",
+      "blockNumber": 68547845,
+      "gasUsed": "1578460"
+    }
+  ],
+  "limitations": [
+    "Attested TEE genesis; earlier history is not proven",
+    "Prices, fills, exit costs and investor authorization are supplied by the TEE",
+    "Single-party testnet Groth16 phase 2; production needs a multiparty ceremony"
+  ]
+}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LedgerProofPanel from "./LedgerProofPanel.jsx";
 import { nextSettlement } from "../platform/policy.js";
 import { usePlatform } from "./PlatformContext.jsx";
 import { money, time, statusLabel, portfolioTotals } from "./platformModel.js";
@@ -346,6 +347,7 @@ export default function InvestorPortal() {
         }
       />
       <PortfolioSummary />
+      <LedgerProofPanel />
       {p.portfolio && (
         <p className="q-data-time">
           마지막 자산 조회{" "}

@@ -189,6 +189,7 @@ export class SharedAccounts {
       if(!receipt||receipt.status!==1)throw Error('PENDING_RECONCILE_REQUIRED');
       checkpointSharedAccount(pool,await this.read(pool,receipt.blockNumber),{actor:book.id});
       Object.assign(original,pool);book.cash=String(n(book.cash)-delta);
+      if(delta)ledgerEvent(book,'VENUE',{delta:String(-delta),txHash:result.hash});
       return;
     }
     const receipt=await e.provider.getTransactionReceipt(result.hash);
@@ -230,3 +231,4 @@ export class SharedAccounts {
     }
   }
 }
+import {ledgerEvent} from './ledger-journal.mjs';

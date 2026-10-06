@@ -1,10 +1,11 @@
 import { nextSettlement, validatePolicy } from '../../../src/platform/policy.js';
+import { initializeLedgerJournal,ledgerEvent,ledgerMark,ledgerValue } from './ledger-journal.mjs';
 
 export const SCALE = 10n ** 18n;
 const integer = x => BigInt(x || '0');
 const positive = x => { const n = integer(x); if (n <= 0n) throw Error('POSITIVE_AMOUNT_REQUIRED'); return n; };
 export function newBook(strategy) {
-  return { id: strategy.id, manager: strategy.strategist_wallet, feeBps: strategy.fee_bps, policy: validatePolicy(strategy.policy), policyVersion: strategy.policy_version || 1, cash: '0', equity: '0', totalUnits: '0', nav: String(SCALE), peakNav: String(SCALE), baselineNav: String(SCALE), referenceUnits: String(SCALE), referenceHwm: String(SCALE), status: 'ACTIVE', sequence: 0, investors: {}, withdrawals: {}, slots: {}, requests: {}, marks: [], feesDue: '0' };
+  return initializeLedgerJournal({ id: strategy.id, manager: strategy.strategist_wallet, feeBps: strategy.fee_bps, policy: validatePolicy(strategy.policy), policyVersion: strategy.policy_version || 1, cash: '0', equity: '0', totalUnits: '0', nav: String(SCALE), peakNav: String(SCALE), baselineNav: String(SCALE), referenceUnits: String(SCALE), referenceHwm: String(SCALE), status: 'ACTIVE', sequence: 0, investors: {}, withdrawals: {}, slots: {}, requests: {}, marks: [], feesDue: '0' });
 }
 export function investor(book, wallet) {
   const key = wallet.toLowerCase();
@@ -13,6 +14,7 @@ export function investor(book, wallet) {
 export function depositPending(book, wallet, amount) {
   const p = investor(book, wallet), n = positive(amount);
   p.pending = String(integer(p.pending) + n); p.deposited = String(integer(p.deposited) + n);
+  ledgerEvent(book,'DEPOSIT',{wallet:p.wallet,amount:String(n)});
 }
 // Equity supplied only by the venue adapter; excludes pending deposits and fees due.
 export function markBook(book, equity, now = Date.now(), {assessRisk=true} = {}) {
@@ -30,6 +32,7 @@ export function markBook(book, equity, now = Date.now(), {assessRisk=true} = {})
   const hour = Math.floor(now / 3600000) * 3600000;
   if (assessRisk && (!book.marks.length || book.marks.at(-1).time < hour)) book.marks.push({ time: hour, nav: book.nav });
   book.marks = book.marks.slice(-2160);
+  ledgerMark(book,n);
   return { nav: book.nav, drawdownBps: drawdown };
 }
 export function activatePending(book) {
@@ -40,6 +43,7 @@ export function activatePending(book) {
     const amount = integer(p.pending)-reserved; if (!amount) continue;
     const units = amount * SCALE / nav; if (!units) throw Error('DEPOSIT_TOO_SMALL');
     p.lots.push({ units: String(units), hwm: String(nav) });
+    ledgerEvent(book,'MINT',{wallet:p.wallet,amount:String(amount),units:String(units),lot:p.lots.length-1});
     p.units = String(integer(p.units) + units); p.pending = String(reserved);
     book.totalUnits = String(integer(book.totalUnits) + units); activated += amount;
   }
@@ -59,6 +63,7 @@ export function markVenueEquity(book, equity, options) {
   const actual=integer(equity),riskValue=actual+reservedCost;
   markBook(book,riskValue>0n?riskValue:0n,Date.now(),options);
   book.equity=String(actual>0n?actual:0n);
+  ledgerValue(book);
 }
 export function requestWithdrawal(book, wallet, units, id, nowSeconds) {
   const p = investor(book, wallet), n = positive(units);
@@ -93,13 +98,14 @@ export function crystallizeFees(book, exitCosts = {}) {
   for (const p of Object.values(book.investors)) {
     let burned = 0n, paid = 0n;
     const totalUnits=integer(p.units),exitCost=integer(exitCosts[p.wallet.toLowerCase()]);
-    for (const lot of p.lots) {
+    for (const [lotIndex,lot] of p.lots.entries()) {
       if (nav <= integer(lot.hwm)) continue;
       const gain=integer(lot.units)*(nav-integer(lot.hwm))/SCALE;
       const cost=totalUnits?exitCost*integer(lot.units)/totalUnits:0n;
       const fee = (gain>cost?gain-cost:0n)*BigInt(book.feeBps)/10000n;
       const burn = fee * SCALE / nav; const actualFee = burn * nav / SCALE;
       lot.units = String(integer(lot.units) - burn); lot.hwm = String(nav); burned += burn; paid += actualFee;
+      if(integer(lot.units)+burn>0n)ledgerEvent(book,'FEE',{wallet:p.wallet,lot:lotIndex,units:String(burn),amount:String(actualFee),cost:String(cost)});
     }
     const oldUnits = integer(p.units); p.units = String(oldUnits - burned); p.fees = String(integer(p.fees) + paid);
     // Redemption requests reserve a fraction of the investor's stake. Deduct
@@ -148,11 +154,13 @@ export function burnWithdrawal(book,w,amount) {
   for(let i=0;i<p.lots.length;i++) {
     const lot=p.lots[i],take=integer(lot.units)*units/oldUnits;
     lot.units=String(integer(lot.units)-take);remaining-=take;
+    if(take)ledgerEvent(book,'BURN',{wallet:p.wallet,lot:i,units:String(take),requested:String(units),remainder:false});
   }
-  for(const lot of p.lots){const take=integer(lot.units)<remaining?integer(lot.units):remaining;lot.units=String(integer(lot.units)-take);remaining-=take;if(!remaining)break;}
+  for(const [lotIndex,lot] of p.lots.entries()){const take=integer(lot.units)<remaining?integer(lot.units):remaining;lot.units=String(integer(lot.units)-take);remaining-=take;if(take)ledgerEvent(book,'BURN',{wallet:p.wallet,lot:lotIndex,units:String(take),requested:String(units),remainder:true});if(!remaining)break;}
   p.units=String(oldUnits-units);p.paid=String(integer(p.paid)+integer(amount));
   book.totalUnits=String(integer(book.totalUnits)-units);book.cash=String(integer(book.cash)-integer(amount));
   book.equity=String(integer(book.equity)-integer(amount));w.amount=String(amount);w.status='PAID';
   if(integer(book.totalUnits))book.nav=String(integer(book.equity)*SCALE/integer(book.totalUnits));
   else if(units)book.nav=String(integer(amount)*SCALE/units);
+  ledgerEvent(book,'PAY',{wallet:p.wallet,amount:String(amount),requested:String(units)});
 }

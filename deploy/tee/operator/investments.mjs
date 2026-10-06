@@ -12,7 +12,7 @@ const hex32 = value => typeof value === 'string' && /^0x[0-9a-fA-F]{64}$/.test(v
 
 export class PrivateInvestments {
   constructor({ secret, storeDir, provider, operator, accessHash, catalogUrl, contract }) {
-    this.store = new SealedStore(`${storeDir}/investments.json`, secret, 'private-investments-v1');
+    this.store = new SealedStore(`${storeDir}/investments.json`, secret, 'private-investments-v1',{maxHexLength:128_000_000});
     this.provider = provider;
     this.contract=contract||((address,abi)=>new Contract(address,abi,this.provider));
     this.operator = getAddress(operator);
