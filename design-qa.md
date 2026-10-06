@@ -51,3 +51,17 @@ Optional P3: self-host approved font subsets. No fresh deposits, trades or withd
 Code commit `2e89658` deployed successfully to https://mm-zkquant.vercel.app. Immutable deployment: https://mm-zkquant-4zcwzqprc-cosmoserys-projects.vercel.app (Vercel READY).
 
 Post-deployment Playwright verified desktop row selection/inspector update, comparison focus, 390px row-to-detail navigation and deep-link reload. No document overflow or page JavaScript errors. Production screenshots in `.data/design/production-split-desktop.png` and `production-split-mobile.png` were inspected. Original main workspace uncommitted work remains excluded and unchanged.
+
+## 2026-10-06 — official brand typography and palette correction
+
+final result: passed
+
+Visual truth: https://www.monad.xyz/brand-and-media-kit, captured in `docs/design/images/brand-source-type.png` and `brand-source-colors.png` (1440 × 1000 CSS/pixel dimensions, density 1). The page specifies Britti Sans for headings, Inter for body and Roboto Mono for labels/buttons/links. Its exact primary anchors are #6E54FF, #DDD7FE, #0E091C, #000000, #FFFFFF; secondary anchors are #85E6FF, #B9E3F9, #FF8EE4, #FFAE45.
+
+Implementation evidence: `brand-desktop.png` (1488px wide, viewport 1488 × 1056, full page), `brand-mobile.png` (320px wide, viewport 320 × 844, full page). `brand-comparison.png` places the 1440px official palette screenshot beside the 1488px implementation at native resolution, no rescaling. These are compared for palette/type roles, not marketing-page layout; the previously selected split workspace layout remains the layout reference. All source and implementation captures were opened for inspection.
+
+Resolved P2: the previous heading font was Inter, and product surfaces/status colors contained arbitrary non-brand hues. Added the actual official Britti Sans font, preload and dedicated heading token; applied Roboto Mono to UI labels/actions, retained Inter body. Replaced arbitrary hues with exact official anchors or explicitly derived color-mix surface/border/hover states. Positive/active uses cyan, negative/error uses pink, warnings use orange; status words and return signs preserve non-color meaning. Korean uses Noto Sans KR because the Latin brand fonts do not provide Hangul.
+
+Verified: production build passed; Playwright at 1488/1180/768/390/320px reports no horizontal overflow or page JavaScript errors. FontFaceSet confirms Britti Sans loads, computed heading/action families match the official roles, and computed canvas is exactly rgb(14, 9, 28). Chromium platform-font inspection confirms the custom headline font renders Latin glyphs, Korean uses Noto Sans KR and return figures use Roboto Mono. Mobile detail navigation and 320px detail overflow checks passed. Screenshots show readable captions and no clipped actions. This is a typography/color-only change; existing transaction logic is unchanged.
+
+No outstanding P0/P1/P2. Earlier palette/font statements above describe the previous release and are superseded by this section. Font source is documented in `public/fonts/README.md`.

@@ -1,34 +1,54 @@
-/* Monad Split Protocol: brand purple, quiet dark surfaces, readable semantic colors. */
+/* Source: https://www.monad.xyz/brand-and-media-kit (2026-10-06).
+   Primary/secondary anchors are exact; surface/border states blend those anchors. */
+@font-face {
+  font-family: "Britti Sans";
+  src: url("/fonts/britti-sans-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
 .q-shell {
   color-scheme: dark;
-  --q-primary: #6e54ff;
-  --q-primary-hover: #8068ff;
-  --q-primary-ink: #b6a7ff;
-  --q-lavender: #ddd7fe;
-  --q-ink: #f3f0fb;
-  --q-muted: #aaa4bb;
-  --q-line: #302a40;
-  --q-soft: #211a36;
-  --q-canvas: #100d1b;
-  --q-surface: #151120;
-  --q-on-primary: #ffffff;
-  --q-focus: #b6a7ff;
-  --q-sidebar: #0d0a17;
-  --q-sidebar-text: #aaa4bb;
-  --q-sidebar-hover: #211a36;
-  --q-sidebar-active: #29203f;
-  --q-sidebar-line: #302a40;
-  --q-success: #77d7ad;
-  --q-success-bg: #16372d;
-  --q-success-line: #2b5948;
-  --q-warning: #f0c47c;
-  --q-warning-bg: #352916;
-  --q-warning-line: #685032;
-  --q-danger: #ff7f95;
-  --q-danger-bg: #351b29;
-  --q-danger-line: #633041;
-  --q-backdrop: #05030bbb;
+  --monad-purple: #6e54ff;
+  --monad-lavender: #ddd7fe;
+  --monad-ink: #0e091c;
+  --monad-black: #000000;
+  --monad-white: #ffffff;
+  --monad-cyan: #85e6ff;
+  --monad-blue: #b9e3f9;
+  --monad-pink: #ff8ee4;
+  --monad-orange: #ffae45;
+  --q-primary: var(--monad-purple);
+  --q-primary-hover: color-mix(in srgb, var(--monad-purple) 88%, var(--monad-white));
+  --q-primary-ink: var(--monad-lavender);
+  --q-lavender: var(--monad-lavender);
+  --q-ink: var(--monad-white);
+  --q-muted: color-mix(in srgb, var(--monad-lavender) 72%, var(--monad-ink));
+  --q-line: color-mix(in srgb, var(--monad-lavender) 18%, var(--monad-ink));
+  --q-line-strong: color-mix(in srgb, var(--monad-lavender) 38%, var(--monad-ink));
+  --q-soft: color-mix(in srgb, var(--monad-purple) 16%, var(--monad-ink));
+  --q-canvas: var(--monad-ink);
+  --q-surface: color-mix(in srgb, var(--monad-lavender) 4%, var(--monad-ink));
+  --q-on-primary: var(--monad-white);
+  --q-focus: var(--monad-lavender);
+  --q-sidebar: var(--monad-ink);
+  --q-sidebar-text: var(--q-muted);
+  --q-sidebar-hover: var(--q-soft);
+  --q-sidebar-active: color-mix(in srgb, var(--monad-purple) 24%, var(--monad-ink));
+  --q-sidebar-line: var(--q-line);
+  --q-success: var(--monad-cyan);
+  --q-success-bg: color-mix(in srgb, var(--monad-cyan) 12%, var(--monad-ink));
+  --q-success-line: color-mix(in srgb, var(--monad-cyan) 35%, var(--monad-ink));
+  --q-warning: var(--monad-orange);
+  --q-warning-bg: color-mix(in srgb, var(--monad-orange) 12%, var(--monad-ink));
+  --q-warning-line: color-mix(in srgb, var(--monad-orange) 35%, var(--monad-ink));
+  --q-danger: var(--monad-pink);
+  --q-danger-bg: color-mix(in srgb, var(--monad-pink) 12%, var(--monad-ink));
+  --q-danger-line: color-mix(in srgb, var(--monad-pink) 35%, var(--monad-ink));
+  --q-info: var(--monad-blue);
+  --q-backdrop: color-mix(in srgb, var(--monad-black) 73%, transparent);
   --q-font: "Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --q-mono: "Roboto Mono", ui-monospace, SFMono-Regular, monospace;
+  --q-heading: "Britti Sans", "Noto Sans KR", sans-serif;
+  --q-mono: "Roboto Mono", "Noto Sans KR", ui-monospace, SFMono-Regular, monospace;
   --q-radius: 6px;
 }
