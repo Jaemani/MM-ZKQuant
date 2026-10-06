@@ -32,6 +32,7 @@ import {
   Conditions,
   Home,
   Settings2,
+  SlidersHorizontal,
   Search,
   Wallet,
   Layers,
@@ -233,6 +234,7 @@ function Explore() {
     [risk, setRisk] = useState(""),
     [state, setState] = useState(""),
     [sort, setSort] = useState("recent"),
+    [filtersOpen, setFiltersOpen] = useState(false),
     [selected, setSelected] = useState([]),
     [inspected, setInspected] = useState(null),
     [period, setPeriod] = useState("7d"),
@@ -304,6 +306,7 @@ function Explore() {
     };
   }, [selected.join(","), period]);
   const activeStrategy = rows.find(s => s.id === inspected) || rows[0];
+  const activeFilterCount = Number(Boolean(risk)) + Number(Boolean(state)) + Number(sort !== "recent");
   return (
     <div className="q-market-workspace">
     <section className="q-market-catalog" aria-label="전략 목록">
@@ -316,11 +319,16 @@ function Explore() {
           <Search size={18} />
           <input
             aria-label="전략 검색"
-            placeholder="전략 또는 전략가 검색"
+            placeholder="전략·전략가 검색"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
+        <button type="button" className="q-filter-toggle" aria-expanded={filtersOpen} aria-controls="q-filter-options" onClick={() => setFiltersOpen(open => !open)}>
+          <SlidersHorizontal size={16} aria-hidden="true" /> 필터
+          {activeFilterCount > 0 && <span className="q-filter-count" aria-label={`적용된 조건 ${activeFilterCount}개`}>{activeFilterCount}</span>}
+        </button>
+        <div id="q-filter-options" className={`q-filter-options${filtersOpen ? " expanded" : ""}`}>
         <label>
           <span className="sr-only">위험도</span>
           <select
@@ -359,6 +367,7 @@ function Explore() {
             <option value="age">등록 기간순</option>
           </select>
         </label>
+        </div>
       </div>
       <div className="q-row q-catalog-note">
         <span>{rows.length}개 전략</span>

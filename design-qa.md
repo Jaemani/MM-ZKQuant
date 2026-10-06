@@ -85,3 +85,17 @@ Fonts and palette remain official Monad Britti Sans/Inter/Roboto Mono roles and 
 Validation: `npm run build` passed. Playwright checked home → full catalog → selected desktop inspector → detail route, and loaded 390px/320px home with zero overflow and JavaScript errors. The browser integration flow passed for public comparison, manager and investor login, private portfolio, investment confirmation, route reload, account switching and mobile layout without submitting a transaction.
 
 Deployment check for this iteration: code `f8f19a0` is READY on Vercel at https://mm-zkquant-aai2e0557-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright confirmed distinct guest home, home-to-catalog navigation, desktop inspector-to-full-detail navigation and loaded 390px/320px home screens with no horizontal overflow or page JavaScript errors.
+
+## 2026-10-06 — compact mobile search filters
+
+final result: passed
+
+User finding (P2): three visible filter selects occupied three rows beneath mobile search, delaying the strategy list. Source truth for this scoped change is the prior browser capture `docs/design/images/brand-mobile.png` at a 320 × 844 CSS px viewport, device scale 1. The selected split-workspace reference remains the broader art direction.
+
+Implementation captures: `docs/design/images/filters-closed-320.png`, `filters-open-320.png`, `filters-closed-390.png`, `filters-open-390.png`. The 320px images were captured at 320 × 844 CSS px/density 1; 390px images at 390 × 844/density 1. `filter-compact-comparison.png` combines the first 844px of the before, new default, and new expanded state without scaling (960 × 844). The combined image and source/implementation captures were opened for comparison. Financial values changed slightly across live captures; layout is compared at the same catalog state.
+
+Fix: at 850px and below, search and an outlined filter action share one row. Risk, status and sort remain hidden until requested. The action reports how many non-default options are applied when collapsed; selections persist across closing/reopening. At 640px and below, the expanded options use two columns and a full-width sort selector. Desktop keeps all selects visible. Search, selection, filtering and comparison remain independent.
+
+Post-fix evidence: first strategy appears about 99px higher at 320px, the search action stays within 320px, and the expanded state retains readable 42px controls. No actionable P0/P1/P2 remains. Brand typography, colors, icons and live content are unchanged. No new raster asset is needed.
+
+Validation: `npm run build` passed. Playwright at 320/390/768/1488px checked default visibility, `aria-expanded`, reveal, selection, collapse, applied-count display, persistence, desktop visibility, no horizontal overflow and no JavaScript errors. Existing public/manager/investor browser flows, including mobile filters, comparison and private-portfolio relay, passed without submitting transactions.

@@ -75,6 +75,17 @@ try {
     ),
     false,
   );
+  await page.goto(`${base}/strategies`);
+  await page.locator(".q-market-row").first().waitFor();
+  const mobileFilter = page.getByRole("button", { name: /^필터/ });
+  assert.equal(await mobileFilter.getAttribute("aria-expanded"), "false");
+  assert.equal(await page.getByLabel("위험도", { exact: true }).isVisible(), false);
+  await mobileFilter.click();
+  await page.getByLabel("위험도", { exact: true }).selectOption("HIGH");
+  await page.getByLabel("정렬", { exact: true }).selectOption("capital");
+  await mobileFilter.click();
+  assert.equal(await page.getByLabel("정렬", { exact: true }).isVisible(), false);
+  assert.match(await mobileFilter.innerText(), /2/);
   await page.getByRole("link", { name: "내 자산", exact: true }).last().click();
   await page.getByRole("heading", { name: "내 자산", exact: true }).waitFor();
   await page.screenshot({ path: dir + "/assets-mobile.png", fullPage: true });
