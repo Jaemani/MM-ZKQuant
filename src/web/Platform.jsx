@@ -6,6 +6,8 @@ import InvestorPortal, {
   PortfolioGate,
 } from "./InvestorPortal.jsx";
 import ManagerConsole from "./ManagerConsole.jsx";
+import CashPanel from './CashPanel.jsx';
+import {AccountAccess} from './AccountAccess.jsx';
 import InvestmentPanel from "./InvestmentPanel.jsx";
 import { StrategyRow, StrategyInspector } from "./StrategyMarket.jsx";
 import {
@@ -45,10 +47,10 @@ import {
 import "./platform.css";
 import "./platform-tokens.css";
 const periods = [
-  ["1d", "1일"],
-  ["7d", "7일"],
-  ["30d", "30일"],
-  ["all", "전체"],
+  ["1d", "1D"],
+  ["7d", "7D"],
+  ["30d", "30D"],
+  ["all", "All"],
 ];
 function Dashboard() {
   const p = usePlatform();
@@ -64,17 +66,19 @@ function Dashboard() {
         eyebrow="OVERVIEW"
         title={
           p.session?.strategist
-            ? `${p.session.strategist.display_name}님의 대시보드`
-            : "내 투자와 전략, 한눈에"
+            ? `${p.session.strategist.display_name}'s dashboard`
+            : "Your investments and strategies"
         }
-        description="자산 현황을 확인하고 다음 운용을 준비하세요."
+        description="Check your assets and prepare your next move."
         action={
           <Link className="q-button secondary" to="/strategies">
-            전략 찾아보기 <ArrowRight size={16} />
+
+            Explore strategies <ArrowRight size={16} />
           </Link>
         }
       />
       <PortfolioSummary />
+      <CashPanel />
       {!p.portfolio ? (
         <Panel>
           <PortfolioGate />
@@ -82,9 +86,10 @@ function Dashboard() {
       ) : (
         <Panel>
           <div className="q-row">
-            <h2>내 투자</h2>
+            <h2>My investments</h2>
             <Link to="/assets" className="q-text-link">
-              전체 자산 보기 <ArrowRight size={15} />
+
+              View all assets <ArrowRight size={15} />
             </Link>
           </div>
           {p.portfolio.positions.length ? (
@@ -94,11 +99,11 @@ function Dashboard() {
                   <div>
                     <strong>
                       {p.strategies.find((s) => s.id === pos.strategyId)
-                        ?.name || "내 투자 전략"}
+                        ?.name || "My strategy"}
                     </strong>
                     <p className="q-muted">
                       {BigInt(pos.pending) > 0n
-                        ? `운용 시작 대기 ${money(pos.pending)} AUSD`
+                        ? `Pending allocation ${money(pos.pending)} AUSD`
                         : statusLabel(pos.status)}
                     </p>
                   </div>
@@ -110,11 +115,12 @@ function Dashboard() {
             </div>
           ) : (
             <Empty
-              title="아직 투자한 전략이 없습니다"
-              description="성과와 자기자본을 비교하고 첫 투자를 시작하세요."
+              title="No investments yet"
+              description="Compare performance and the strategist's own capital to make your first allocation."
               action={
                 <Link to="/strategies" className="q-text-link">
-                  전략 탐색 <ArrowRight size={15} />
+
+                  Explore <ArrowRight size={15} />
                 </Link>
               }
             />
@@ -123,9 +129,10 @@ function Dashboard() {
       )}
       <Panel>
         <div className="q-row">
-          <h2>내 전략</h2>
+          <h2>My strategies</h2>
           <Link className="q-text-link" to="/manage">
-            전략 관리 <ArrowRight size={15} />
+
+            Manage strategy <ArrowRight size={15} />
           </Link>
         </div>
         {p.owned.length ? (
@@ -137,7 +144,8 @@ function Dashboard() {
                   <div>
                     <strong>{s.name}</strong>
                     <p className="q-muted">
-                      자기자본 {money(m?.managerActive)} AUSD · 대기{" "}
+
+                      Own capital {money(m?.managerActive)}  AUSD · pending{" "}
                       {money(m?.managerPending)} AUSD
                     </p>
                   </div>
@@ -148,11 +156,11 @@ function Dashboard() {
           </div>
         ) : (
           <Empty
-            title="내 자본으로 전략을 시작하세요"
-            description="운용 조건을 공개하고 성과를 쌓아 투자자를 만나세요."
+            title="Start with your own capital"
+            description="Publish your investment rules, build a track record and attract investors."
             action={
               <Link className="q-button secondary" to="/manage/new">
-                <Plus size={16} />첫 전략 만들기
+                <Plus size={16} />Create your first strategy
               </Link>
             }
           />
@@ -160,14 +168,14 @@ function Dashboard() {
       </Panel>
       {p.portfolio && (
         <Panel>
-          <h2>예정된 출금</h2>
+          <h2>Scheduled redemptions</h2>
           {withdrawals.length ? (
             withdrawals.map((w) => (
               <div className="q-home-positions" key={w.id}>
                 <Link to="/assets">
                   <strong>
                     {p.strategies.find((s) => s.id === w.strategyId)?.name ||
-                      "내 투자 전략"}
+                      "My strategy"}
                   </strong>
                   <span>
                     {time(w.settlementAt)} · {statusLabel(w.status)}
@@ -176,7 +184,7 @@ function Dashboard() {
               </div>
             ))
           ) : (
-            <p className="q-muted q-space">예정된 출금이 없습니다.</p>
+            <p className="q-muted q-space">No scheduled redemptions.</p>
           )}
         </Panel>
       )}
@@ -191,41 +199,41 @@ function GuestHome() {
   return (
     <div className="q-guest-home">
       <section className="q-guest-intro" aria-labelledby="q-guest-title">
-        <span className="q-eyebrow">MONAD TESTNET · MMQUANT</span>
-        <h1 id="q-guest-title">전략을 살펴보고,<br />조건을 확인하세요.</h1>
-        <p>전략가의 운용 성과와 위험 한도를 비교한 뒤, 나에게 맞는 전략을 선택할 수 있습니다.</p>
+        <span className="q-eyebrow">MONAD TESTNET · VEILVEST</span>
+        <h1 id="q-guest-title">Discover strategies.<br />See the conditions.</h1>
+        <p>Compare performance and risk limits to find a strategy that fits you.</p>
         <div className="q-actions">
-          <Link className="q-button" to="/strategies">전략 탐색하기 <ArrowRight size={16} /></Link>
-          <Link className="q-button secondary" to="/manage/new">내 전략 만들기</Link>
+          <Link className="q-button" to="/strategies">Explore strategies <ArrowRight size={16} /></Link>
+          <Link className="q-button secondary" to="/manage/new">Create a strategy</Link>
         </div>
-        <p className="q-guest-caption">공개 성과는 TEE 집계입니다. 개인 투자 내역은 지갑 서명 후 확인합니다.</p>
+        <p className="q-guest-caption">Public performance is aggregated by the TEE. Sign in to view your private investments.</p>
       </section>
       <section className="q-guest-flow" aria-labelledby="q-guest-flow-title">
-        <h2 id="q-guest-flow-title">투자 시작 순서</h2>
+        <h2 id="q-guest-flow-title">How to get started</h2>
         <ol>
-          <li><span>01</span><div><strong>전략 비교</strong><p>수익률, 자기자본, 위험 한도를 함께 살펴보세요.</p></div></li>
-          <li><span>02</span><div><strong>지갑 연결과 입금</strong><p>입금 자금은 운용 시작 전까지 대기 자금으로 표시됩니다.</p></div></li>
-          <li><span>03</span><div><strong>운용과 자산 확인</strong><p>전략가의 다음 목표 제출부터 운용됩니다.</p></div></li>
+          <li><span>01</span><div><strong>Compare strategies</strong><p>Review returns, the strategist's own capital and risk limits.</p></div></li>
+          <li><span>02</span><div><strong>Sign in and add funds</strong><p>Your deposit becomes available cash in your platform balance.</p></div></li>
+          <li><span>03</span><div><strong>Allocate and track your assets</strong><p>Allocated funds start trading with the strategist's next submission.</p></div></li>
         </ol>
       </section>
       <section className="q-guest-recent" aria-labelledby="q-guest-recent-title">
-        <div className="q-row"><div><span className="q-eyebrow">DISCOVER</span><h2 id="q-guest-recent-title">최근 등록 전략</h2></div><Link className="q-text-link" to="/strategies">전체 전략 보기 <ArrowRight size={15} /></Link></div>
+        <div className="q-row"><div><span className="q-eyebrow">DISCOVER</span><h2 id="q-guest-recent-title">Recently added strategies</h2></div><Link className="q-text-link" to="/strategies">View all strategies <ArrowRight size={15} /></Link></div>
         {p.loading ? <CatalogLoading /> : recent.length ? (
           <div className="q-guest-recent-list">
             {recent.map(s => <Link key={s.id} to={`/strategies/${s.slug}`} className="q-guest-recent-row">
-              <span><strong>{s.name}</strong><small>{s.strategist_name} · 위험 {riskLabel(s.risk)}</small></span>
+              <span><strong>{s.name}</strong><small>{s.strategist_name}  · risk {riskLabel(s.risk)}</small></span>
               <span className="q-guest-recent-return">{percent(s.public_metrics?.pnlBps)}</span>
               <ArrowRight size={16} aria-hidden="true" />
             </Link>)}
           </div>
-        ) : <Empty title={p.catalogError ? "전략 정보를 불러오지 못했습니다" : "공개된 전략이 아직 없습니다"} description={p.catalogError ? "잠시 후 다시 시도해 주세요." : "전략이 등록되면 이곳에서 확인할 수 있습니다."} />}
+        ) : <Empty title={p.catalogError ? "Could not load strategies" : "No public strategies yet"} description={p.catalogError ? "Please try again shortly." : "Registered strategies will appear here."} />}
       </section>
     </div>
   );
 }
 function CatalogLoading() {
   return <div className="q-market-loading" role="status">
-    <span className="q-spinner" /> 전략을 불러오는 중입니다.
+    <span className="q-spinner" />  Loading strategies.
   </div>;
 }
 function Explore() {
@@ -295,7 +303,7 @@ function Explore() {
       .catch(() => {
         if (!cancelled)
           setHistoryError(
-            "비교 이력을 불러오지 못했습니다. 기간을 다시 선택해 주세요.",
+            "Could not load comparison history. Select the period again.",
           );
       })
       .finally(() => {
@@ -309,75 +317,76 @@ function Explore() {
   const activeFilterCount = Number(Boolean(risk)) + Number(Boolean(state)) + Number(sort !== "recent");
   return (
     <div className="q-market-workspace">
-    <section className="q-market-catalog" aria-label="전략 목록">
+    <section className="q-market-catalog" aria-label="Strategy list">
       <PageTitle
-        title="전략 탐색"
-        description="전략가의 자기자본과 실적, 위험 한도를 함께 비교하세요."
+        title="Explore"
+        description="Compare track records, own capital and risk limits."
       />
       <div className="q-filters">
         <label className="q-search">
           <Search size={18} />
           <input
-            aria-label="전략 검색"
-            placeholder="전략·전략가 검색"
+            aria-label="Search strategies"
+            placeholder="Search strategies or strategists"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
         <button type="button" className="q-filter-toggle" aria-expanded={filtersOpen} aria-controls="q-filter-options" onClick={() => setFiltersOpen(open => !open)}>
-          <SlidersHorizontal size={16} aria-hidden="true" /> 필터
-          {activeFilterCount > 0 && <span className="q-filter-count" aria-label={`적용된 조건 ${activeFilterCount}개`}>{activeFilterCount}</span>}
+          <SlidersHorizontal size={16} aria-hidden="true" />  Filters
+          {activeFilterCount > 0 && <span className="q-filter-count" aria-label={`Active filters: ${activeFilterCount}items`}>{activeFilterCount}</span>}
         </button>
         <div id="q-filter-options" className={`q-filter-options${filtersOpen ? " expanded" : ""}`}>
         <label>
-          <span className="sr-only">위험도</span>
+          <span className="sr-only">Risk</span>
           <select
-            aria-label="위험도"
+            aria-label="Risk"
             value={risk}
             onChange={(e) => setRisk(e.target.value)}
           >
-            <option value="">모든 위험도</option>
-            <option value="LOW">낮음</option>
-            <option value="MEDIUM">보통</option>
-            <option value="HIGH">높음</option>
+            <option value="">All risk levels</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
           </select>
         </label>
         <label>
-          <span className="sr-only">운용 상태</span>
+          <span className="sr-only">Trading status</span>
           <select
-            aria-label="운용 상태"
+            aria-label="Trading status"
             value={state}
             onChange={(e) => setState(e.target.value)}
           >
-            <option value="">모든 상태</option>
-            <option value="ACTIVE">투자 가능</option>
-            <option value="HALTED">운용 중단</option>
+            <option value="">All statuses</option>
+            <option value="ACTIVE">Open for investment</option>
+            <option value="HALTED">Trading halted</option>
           </select>
         </label>
         <label>
-          <span className="sr-only">정렬</span>
+          <span className="sr-only">Sort</span>
           <select
-            aria-label="정렬"
+            aria-label="Sort"
             value={sort}
             onChange={(e) => setSort(e.target.value)}
           >
-            <option value="recent">최근 등록순</option>
-            <option value="return">누적 수익률순</option>
-            <option value="capital">자기자본순</option>
-            <option value="age">등록 기간순</option>
+            <option value="recent">Newest first</option>
+            <option value="return">Highest total return</option>
+            <option value="capital">Most own capital</option>
+            <option value="age">Longest history</option>
           </select>
         </label>
         </div>
       </div>
       <div className="q-row q-catalog-note">
-        <span>{rows.length}개 전략</span>
+        <span>{rows.length}strategies</span>
         <span>
-          최대 3개 비교 · 누적 수익률의 운용 기간은 전략마다 다릅니다.
+
+          Compare up to 3 strategies. Each strategy has a different track record length.
         </span>
       </div>
       {p.loading ? <CatalogLoading /> : rows.length ? (
-        <div className="q-market-list" role="list" aria-label="공개 전략">
-          <div className="q-market-columns" aria-hidden="true"><span>전략 / 전략가</span><span>누적 수익률</span><span>자기자본 <small>AUSD</small></span><span>보수</span><span>위험</span><span>비교</span></div>
+        <div className="q-market-list" role="list" aria-label="Public strategies">
+          <div className="q-market-columns" aria-hidden="true"><span>Strategy / strategist</span><span>Total return</span><span>Own capital <small>AUSD</small></span><span>Fee</span><span>Risk</span><span>Compare</span></div>
           {rows.map(s => <StrategyRow key={s.id} strategy={s}
             active={activeStrategy?.id === s.id}
             onInspect={() => setInspected(s.id)}
@@ -388,31 +397,33 @@ function Explore() {
         <Empty
           title={
             p.loading
-              ? "전략을 불러오는 중입니다"
-              : "조건에 맞는 전략이 없습니다"
+              ? "Loading strategies"
+              : "No matching strategies"
           }
-          description={p.catalogError ? "상단의 다시 시도로 연결을 확인해 주세요." : "검색어나 필터를 바꾸면 다른 전략을 볼 수 있습니다."}
-          action={(search || risk || state) && <Button secondary onClick={() => { setSearch(""); setRisk(""); setState(""); }}>필터 초기화</Button>}
+          description={p.catalogError ? "Use Retry above to check the connection." : "Try a different search or filter."}
+          action={(search || risk || state) && <Button secondary onClick={() => { setSearch(""); setRisk(""); setState(""); }}>Clear filters</Button>}
         />
       )}
       {selected.length > 0 && (
         <div className="q-compare-dock">
-          <span role="status"><strong>{selected.length} / 3</strong> 전략 선택{selected.length === 3 ? " · 최대 선택 완료" : " · 최대 3개 비교"}</span>
-          <Button onClick={() => { const target = document.getElementById("q-comparison"); target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: "start" }); target?.focus({ preventScroll: true }); }}>선택한 전략 비교 <ArrowRight size={16} /></Button>
-          <button className="q-compare-clear" aria-label="선택한 전략 모두 해제" onClick={() => setSelected([])}><X size={18} /></button>
+          <span role="status"><strong>{selected.length} / 3</strong>  strategies selected{selected.length === 3 ? " · selection limit reached" : " · compare up to 3"}</span>
+          <Button onClick={() => { const target = document.getElementById("q-comparison"); target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: "start" }); target?.focus({ preventScroll: true }); }}>Compare selected strategies <ArrowRight size={16} /></Button>
+          <button className="q-compare-clear" aria-label="Clear selected strategies" onClick={() => setSelected([])}><X size={18} /></button>
         </div>
       )}
       {selected.length > 0 && (
         <Panel id="q-comparison" tabIndex={-1} className="q-comparison">
           <div className="q-row">
             <h2>
-              선택한 전략 비교 <small>{selected.length}/3</small>
+
+              Compare selected strategies <small>{selected.length}/3</small>
             </h2>
             <button className="q-text-link" onClick={() => setSelected([])}>
-              비교 초기화
+
+              Clear comparison
             </button>
           </div>
-          <div className="q-periods" aria-label="비교 기간">
+          <div className="q-periods" aria-label="Comparison period">
             {periods.map(([id, label]) => (
               <button
                 key={id}
@@ -425,11 +436,11 @@ function Explore() {
             ))}
           </div>
           {historyError && <p className="q-error">{historyError}</p>}
-          <div className="q-table-wrap" tabIndex={0} role="region" aria-label="전략 비교표, 좌우로 스크롤할 수 있습니다">
+          <div className="q-table-wrap" tabIndex={0} role="region" aria-label="Strategy comparison. Scroll horizontally to see all columns.">
             <table>
               <thead>
                 <tr>
-                  <th>비교 항목</th>
+                  <th>Metric</th>
                   {selected.map((id) => (
                     <th key={id}>
                       {p.strategies.find((s) => s.id === id)?.name}
@@ -440,40 +451,40 @@ function Explore() {
               <tbody>
                 {[
                   [
-                    "선택 기간 수익률",
+                    "Return for selected period",
                     (s) =>
                       historyBusy
-                        ? "조회 중"
+                        ? "Loading"
                         : percent(periodReturn(history[s.id] || [], period)),
                   ],
-                  ["누적 수익률", (s) => percent(s.public_metrics?.pnlBps)],
+                  ["Total return", (s) => percent(s.public_metrics?.pnlBps)],
                   [
-                    "연환산 변동성",
+                    "Annualized volatility",
                     (s) => rate(s.public_metrics?.volatilityBps),
                   ],
-                  ["최대 낙폭", (s) => rate(s.public_metrics?.maxDrawdownBps)],
+                  ["Maximum drawdown", (s) => rate(s.public_metrics?.maxDrawdownBps)],
                   [
-                    "전략가 자기자본",
+                    "Strategist's own capital",
                     (s) => `${money(s.public_metrics?.managerActive)} AUSD`,
                   ],
-                  ["성과보수", (s) => `${s.fee_bps / 100}%`],
+                  ["Performance fee", (s) => `${s.fee_bps / 100}%`],
                   [
-                    "최대 레버리지",
-                    (s) => `${s.policy.maxLeverageBps / 10000}배`,
+                    "Maximum leverage",
+                    (s) => `${s.policy.maxLeverageBps / 10000}×`,
                   ],
                   [
-                    "손절 / 낙폭 한도",
+                    "Stop loss / drawdown limit",
                     (s) =>
                       `${s.policy.stopLossBps / 100}% / ${s.policy.maxDrawdownBps / 100}%`,
                   ],
                   [
-                    "다음 출금 정산",
+                    "Next redemption settlement",
                     (s) =>
                       time(
                         nextSettlement(s.policy, Math.floor(Date.now() / 1000)),
                       ),
                   ],
-                  ["등록일", (s) => time(s.created_at)],
+                  ["Registered", (s) => time(s.created_at)],
                 ].map(([label, get]) => (
                   <tr key={label}>
                     <th>{label}</th>
@@ -487,15 +498,15 @@ function Explore() {
             </table>
           </div>
           <p className="q-muted q-space">
-            선택 기간의 충분한 기록이 없으면 ‘집계 전’으로 표시합니다. 전체 기간
-            수익률은 전략별 관측 시작일이 다릅니다.
+
+            Periods without sufficient history display “Not available”. Full-history returns may start on different dates.
           </p>
         </Panel>
       )}
-      <p className="q-market-disclosure">테스트 AUSD로 운용됩니다. 수익률의 관측 기간은 전략마다 다르며, 과거 성과가 이후 수익을 보장하지 않습니다.</p>
+      <p className="q-market-disclosure">Trading uses test AUSD. Track record lengths vary, and past performance does not guarantee future returns.</p>
     </section>
-    <aside className="q-inspector" aria-label="선택한 전략 상세">
-      {activeStrategy ? <StrategyInspector key={activeStrategy.id} strategy={activeStrategy} /> : <Empty title="전략을 선택해 주세요" description="목록에서 전략을 선택하면 성과와 운용 조건을 확인할 수 있습니다." />}
+    <aside className="q-inspector" aria-label="Selected strategy">
+      {activeStrategy ? <StrategyInspector key={activeStrategy.id} strategy={activeStrategy} /> : <Empty title="Select a strategy" description="Choose a strategy to see its performance and investment conditions." />}
     </aside>
     </div>
   );
@@ -530,18 +541,18 @@ function StrategyDetail({ slug }) {
   if (error)
     return (
       <Empty
-        title="전략을 불러오지 못했습니다"
+        title="Could not load the strategy"
         description={error}
         action={
-          <Button onClick={() => setRetry((v) => v + 1)}>다시 시도</Button>
+          <Button onClick={() => setRetry((v) => v + 1)}>Retry</Button>
         }
       />
     );
   if (loading || !detail)
     return (
       <Empty
-        title="전략을 불러오는 중입니다"
-        description="성과와 운용 조건을 확인하고 있습니다."
+        title="Loading strategies"
+        description="Loading performance and investment conditions."
       />
     );
   const s = {
@@ -554,10 +565,11 @@ function StrategyDetail({ slug }) {
   return (
     <>
       <Link to="/strategies" className="q-text-link q-back">
-        ← 전략 탐색
+
+        ← Explore strategies
       </Link>
       <PageTitle
-        eyebrow={`${s.strategist_name} · 위험 ${riskLabel(s.risk)}`}
+        eyebrow={`${s.strategist_name} · risk ${riskLabel(s.risk)}`}
         title={s.name}
         description={s.description}
         action={
@@ -574,26 +586,27 @@ function StrategyDetail({ slug }) {
             ?.scrollIntoView({ behavior: "smooth", block: "start" })
         }
       >
-        투자 금액 입력
+
+        Enter allocation amount
       </button>
       <div className="q-detail-layout">
         <div>
           <div className="q-stats">
             <Stat
-              label="누적 수익률"
+              label="Total return"
               value={percent(m?.pnlBps)}
               tone={!Number.isFinite(m?.pnlBps) || m.pnlBps === 0 ? "" : m.pnlBps < 0 ? "negative" : "positive"}
             />
             <Stat
-              label="전략가 자기자본"
+              label="Strategist's own capital"
               value={money(m?.managerActive)}
               suffix="AUSD"
             />
-            <Stat label="최대 낙폭" value={rate(m?.maxDrawdownBps)} />
+            <Stat label="Maximum drawdown" value={rate(m?.maxDrawdownBps)} />
           </div>
           <Panel>
             <div className="q-row">
-              <h2>{capital ? "자기자본 운용 이력" : "운용 성과"}</h2>
+              <h2>{capital ? "Own capital history" : "Performance"}</h2>
               <div className="q-periods">
                 {periods.map(([id, label]) => (
                   <button
@@ -613,68 +626,72 @@ function StrategyDetail({ slug }) {
                 className={!capital ? "active" : ""}
                 onClick={() => setCapital(false)}
               >
-                수익률
+
+                Return
               </button>
               <button
                 aria-pressed={capital}
                 className={capital ? "active" : ""}
                 onClick={() => setCapital(true)}
               >
-                자기자본
+
+                Own capital
               </button>
             </div>
             <HistoryChart history={detail.liveHistory} capital={capital} />
             <p className="q-muted">
               {capital
-                ? "전략가 본인 자금의 운용 평가액입니다."
-                : "성과보수와 거래 비용을 반영한 기준 투자자의 누적 수익률입니다. 개인 수익률은 가입 시점에 따라 다릅니다."}
+                ? "The current value of the strategist's own invested capital."
+                : "Reference investor returns include performance fees and trading costs. Individual returns depend on allocation timing."}
             </p>
             <p className="q-data-time">
-              TEE 집계 · 마지막 관측 {time(observed)}
+
+              TEE aggregate · last observation {time(observed)}
               {observed && Date.now() - Date.parse(observed) > 180000
-                ? " · 최신 정보 확인이 지연되고 있습니다."
+                ? " · Latest update is delayed."
                 : ""}
             </p>
           </Panel>
           <Panel>
-            <h2>전략가 소개와 자기자본</h2>
+            <h2>About the strategist and their capital</h2>
             <p className="q-muted">
               {s.strategist_name} ·{" "}
-              {s.strategist_bio || "공개 소개를 준비 중입니다."}
+              {s.strategist_bio || "No public introduction yet."}
             </p>
             <div className="q-position-stats">
               <Stat
-                label="운용 중"
+                label="Invested"
                 value={money(m?.managerActive)}
                 suffix="AUSD"
               />
               <Stat
-                label="운용 대기"
+                label="Pending"
                 value={money(m?.managerPending)}
                 suffix="AUSD"
               />
               <Stat
-                label="출금 요청"
+                label="Redemption requested"
                 value={money(m?.managerWithdrawing)}
                 suffix="AUSD"
               />
             </div>
             <p className="q-muted">
-              운용 기간과 자기자본 이력을 성과와 함께 살펴보세요.
+
+              Review the duration and history of own capital alongside performance.
             </p>
           </Panel>
           <Panel>
-            <h2>공개 운용 조건</h2>
+            <h2>Public investment conditions</h2>
             <Conditions policy={s.policy} feeBps={s.fee_bps} />
             <p className="q-callout">
-              위험 한도에 도달하면 포지션을 정리하고 운용을 중단합니다.
+
+              Reaching a risk limit closes positions and halts trading.
             </p>
             {s.pending_policy && (
               <div className="q-policy-notice">
-                <h3>운용 조건 변경 예고</h3>
+                <h3>Upcoming condition change</h3>
                 <p>
-                  {time(s.pending_policy.effectiveAfter)} 이후 기존 출금 정산이
-                  완료되면 적용됩니다.
+                  {time(s.pending_policy.effectiveAfter)}  Changes apply after existing redemptions settle, starting from this time.
                 </p>
                 <Conditions
                   policy={s.pending_policy.policy}
@@ -684,11 +701,10 @@ function StrategyDetail({ slug }) {
             )}
           </Panel>
           <details className="q-technical">
-            <summary>자금 보관과 비공개 운용 방식</summary>
+            <summary>Custody and private execution</summary>
             <p>
-              모든 자금은 하나의 공용 Vault에 보관됩니다. 투자자별 배분과 전략의
-              목표 비중은 TEE에서 비공개로 관리하며, 전략 주문은 각각 독립
-              실행됩니다.
+
+              Funds share a single Vault. The TEE privately manages investor allocations and target positions. Each strategy executes independently.
             </p>
             {p.config?.vaultAddress && (
               <a
@@ -696,7 +712,8 @@ function StrategyDetail({ slug }) {
                 target="_blank"
                 rel="noreferrer"
               >
-                공용 Vault 확인 ↗
+
+                View shared Vault ↗
               </a>
             )}
           </details>
@@ -712,8 +729,8 @@ function Shell() {
     [account, setAccount] = useState(false);
   useEffect(() => {
     setAccount(false);
-    const name = path.startsWith("/strategies/") ? "전략 상세" : path === "/strategies" ? "전략 탐색" : path === "/assets" ? "내 자산" : path.startsWith("/manage") ? "내 전략" : "홈";
-    document.title = `${name} · MMQuant`;
+    const name = path.startsWith("/strategies/") ? "Strategy details" : path === "/strategies" ? "Explore" : path === "/assets" ? "My assets" : path.startsWith("/manage") ? "My strategies" : "Home";
+    document.title = `${name} · Veilvest`;
   }, [path]);
   useEffect(() => {
     if (!account) return;
@@ -731,21 +748,22 @@ function Shell() {
         ? "/manage"
         : "/";
   const navigation = [
-    ["/", "홈", Home],
-    ["/strategies", "전략 탐색", Search],
-    ["/assets", "내 자산", Wallet],
-    ["/manage", "내 전략", Layers],
+    ["/", "Home", Home],
+    ["/strategies", "Explore", Search],
+    ["/assets", "My assets", Wallet],
+    ["/manage", "My strategies", Layers],
   ];
   return (
     <div className={`q-shell${path === "/strategies" ? " q-market-shell" : ""}`}>
       <a className="q-skip" href="#q-main">
-        본문으로 건너뛰기
+
+        Skip to main content
       </a>
       <aside className="q-sidebar">
-        <Link className="q-brand" to="/" aria-label="MMQuant 홈">
-          MM
+        <Link className="q-brand" to="/" aria-label="Veilvest home">
+          VV
         </Link>
-        <nav aria-label="주 메뉴">
+        <nav aria-label="Main navigation">
           {navigation.map(([to, label, Icon]) => (
             <Link
               key={to}
@@ -761,12 +779,12 @@ function Shell() {
           ))}
         </nav>
         <div className="q-sidebar-bottom">
-          <Link to="/manage/profile" aria-label="프로필 설정" title="프로필 설정"><Settings2 size={19} /></Link>
+          <Link to="/manage/profile" aria-label="Profile settings" title="Profile settings"><Settings2 size={19} /></Link>
         </div>
       </aside>
       <div className="q-main-shell">
         <header className="q-header">
-          <div className="q-breadcrumb"><Link to="/" className="q-mobile-brand">MM<span>Quant</span></Link><span className="q-desktop-breadcrumb">MMQuant <span>/</span> <strong>{navigation.find(([to]) => to === section)?.[1]}</strong></span></div>
+          <div className="q-breadcrumb"><Link to="/" className="q-mobile-brand">Veil<span>vest</span></Link><span className="q-desktop-breadcrumb">Veilvest <span>/</span> <strong>{navigation.find(([to]) => to === section)?.[1]}</strong></span></div>
           <span className="q-network-label">Monad <strong>TESTNET</strong></span>
           <div className="q-account">
             {p.session ? (
@@ -778,30 +796,31 @@ function Shell() {
                   aria-controls="q-account-menu"
                 >
                   {p.session.strategist?.display_name ||
-                    short(p.session.wallet)}
+                    p.session.username || short(p.session.wallet)}
                   <span className="q-account-dot" />
                 </button>
                 {account && (
                   <div id="q-account-menu" className="q-account-menu">
-                    <strong>{short(p.session.wallet)}</strong>
-                    <small>Monad Testnet</small>
-                    <Link to="/manage/profile">프로필 관리</Link>
-                    <Link to="/manage/api">API 연동</Link>
+                    <strong>{p.session.username || short(p.session.wallet)}</strong>
+                    <small>{p.session.wallet ? short(p.session.wallet) : "No funding wallet yet"}</small>
+                    <Link to="/manage/profile">Manage profile</Link>
+                    <Link to="/manage/api">API integration</Link>
                     <button
                       onClick={() => {
                         p.logout();
                         setAccount(false);
                       }}
                     >
-                      로그아웃
+
+                      Sign out
                     </button>
                   </div>
                 )}
               </>
             ) : (
               <Button disabled={p.busy || !p.config} onClick={p.login}>
-                <Wallet size={16} />
-                지갑으로 로그인
+                <ArrowRight size={16} />
+                Sign in
               </Button>
             )}
           </div>
@@ -810,8 +829,8 @@ function Shell() {
           {p.catalogError && (
             <div role="alert" className="q-notice error">
               <AlertCircle size={18} />
-              <span>연결을 확인해 주세요. {p.catalogError}</span>
-              <button onClick={p.refreshCatalog}>다시 시도</button>
+              <span>Check your connection. {p.catalogError}</span>
+              <button onClick={p.refreshCatalog}>Retry</button>
             </div>
           )}
           {p.message?.text && (
@@ -820,20 +839,22 @@ function Shell() {
               className={`q-notice ${p.message.error ? "error" : ""}`}
             >
               <span>{p.message.text}</span>
-              <button aria-label="알림 닫기" onClick={() => p.notify("")}>
+              <button aria-label="Dismiss notification" onClick={() => p.notify("")}>
                 <X size={16} />
               </button>
             </div>
           )}
+          {p.outbox && p.session && <div className="q-notice"><span>A previous request needs confirmation. Refresh assets or retry the same request.</span><Button secondary disabled={p.busy} onClick={p.retryPendingRequest}>Confirm previous request</Button></div>}
           {p.pending?.txHash &&
             p.session &&
             (!p.pending.wallet ||
               p.pending.wallet.toLowerCase() ===
-                p.session.wallet.toLowerCase()) && (
+                p.session.wallet?.toLowerCase()) && (
               <div className="q-notice">
-                <span>{p.pending.strategyName} · 입금 내역 확인 대기</span>
+                <span>{p.pending.strategyName}  · deposit confirmation pending</span>
                 <Button secondary disabled={p.busy} onClick={p.resumeDeposit}>
-                  입금 확인 계속하기
+
+                  Continue deposit confirmation
                 </Button>
               </div>
             )}
@@ -849,22 +870,24 @@ function Shell() {
             <ManagerConsole path={path} />
           ) : (
             <Empty
-              title="페이지를 찾을 수 없습니다"
-              description="홈에서 다시 시작해 주세요."
+              title="Page not found"
+              description="Return home to continue."
               action={
                 <Link to="/" className="q-button">
-                  홈으로
+
+                  Go home
                 </Link>
               }
             />
           )}
         </main>
         <footer className="q-footer">
-          <span>MMQuant · Monad Testnet</span>
-          <span>전략 정보는 공개 · 개인 투자 내역은 비공개</span>
+          <span>Veilvest · Monad Testnet</span>
+          <span>Public performance · private investments</span>
         </footer>
       </div>
-      <nav className="q-mobile-nav" aria-label="모바일 주 메뉴">
+      <AccountAccess />
+      <nav className="q-mobile-nav" aria-label="Mobile navigation">
         {navigation.map(([to, label, Icon]) => (
           <Link
             key={to}

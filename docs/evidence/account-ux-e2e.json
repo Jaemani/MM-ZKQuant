@@ -1,0 +1,17 @@
+{
+  "verified": true,
+  "accountLoginBothRoles": true,
+  "realTestnetFunding": true,
+  "pendingUntilTarget": true,
+  "independentPerplExecution": true,
+  "redemptionToBalance": true,
+  "settlementSeconds": 60,
+  "cashWithdrawalReceipt": "0xafc50b02d0a5b81a9c5e7fa0b5a7c799bd26caa0e2b978fc9966bc9d661477d7",
+  "privateCashInLedgerProofs": true,
+  "checkpointIncludesJudgeFunding": true,
+  "checkpointAt": 1791308944,
+  "laterMutationsAwaitHourlyCheckpoint": true,
+  "onchainCheckpointSequence": 142,
+  "genesisPreserved": true,
+  "proofIntervalSeconds": 3600
+}

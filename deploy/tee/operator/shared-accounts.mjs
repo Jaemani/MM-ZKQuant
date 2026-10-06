@@ -89,9 +89,9 @@ export class SharedAccounts {
     const equity=walletCash+a.balanceCNS+a.lockedBalanceCNS+Object.values(markets).reduce((sum,p)=>sum+n(p.deposit)+n(p.deltaPnl)+n(p.premium),0n);
     return {accountId:String(accountId),equity:String(equity),free:String(a.balanceCNS),walletCash:String(walletCash),markets};
   }
-  async refresh(state,blockTag) {
+  async refresh(state,blockTag,bookId=null) {
     const updates=[];
-    for(const pool of Object.values(state.sharedAccounts||{})){const copy=structuredClone(pool);checkpointSharedAccount(copy,await this.read(pool,blockTag));updates.push(copy);}
+    for(const pool of Object.values(state.sharedAccounts||{})){if(bookId!==null&&!pool.claims[bookId])continue;const copy=structuredClone(pool);checkpointSharedAccount(copy,await this.read(pool,blockTag));updates.push(copy);}
     for(const pool of updates)Object.assign(state.sharedAccounts[pool.address],pool);
     this.execution.save(state);
   }
@@ -128,13 +128,13 @@ export class SharedAccounts {
     return observations;
   }
   async observeBook(state,book,options) {
-    await this.refresh(state,await this.execution.provider.getBlockNumber());
+    await this.refresh(state,await this.execution.provider.getBlockNumber(),book.id);
     const values=this.observations(state,book);
     markVenueEquity(book,n(book.cash)+values.reduce((sum,p)=>sum+p.equity,0n)-n(book.feesDue),options);
     return values;
   }
   async observation(state,book,market,blockTag) {
-    await this.refresh(state,blockTag);
+    await this.refresh(state,blockTag,book.id);
     const address=book.slots[market],pool=state.sharedAccounts[address];
     const observation=this.observations(state,book).find(p=>p.address===address&&p.market===Number(market));
     if(!observation)throw Error('SHARED_ACCOUNT_RECONCILIATION_REQUIRED');
@@ -209,7 +209,7 @@ export class SharedAccounts {
   }
   async trade(state,book,job,market,target,label,opaque) {
     const e=this.execution,pool=state.sharedAccounts[book.slots[market]];if(!pool)return;
-    await this.refresh(state,await e.provider.getBlockNumber());
+    await this.refresh(state,await e.provider.getBlockNumber(),book.id);
     const owned=n(claim(pool,book.id).quantities[market]);if(owned===target)return;
     if(Math.floor(Date.now()/1000)>=job.deadline)throw Error('ORDER_EXPIRED');
     if(!compatible(pool,market,book.id,target))throw Error('SHARED_ACCOUNT_DIRECTION_CONFLICT');
@@ -222,7 +222,7 @@ export class SharedAccounts {
     if(result.effect?.hasFill)job.hasFill=true;
   }
   async recover(state,book,job,label,opaque) {
-    await this.refresh(state,await this.execution.provider.getBlockNumber());
+    await this.refresh(state,await this.execution.provider.getBlockNumber(),book.id);
     for(const pool of Object.values(state.sharedAccounts)) {
       if(!pool.claims[book.id])continue;
       const amount=this.free(state,pool,book);if(amount<10000n)continue;

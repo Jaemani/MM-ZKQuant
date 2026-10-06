@@ -450,3 +450,17 @@
 .q-shell :is(button,label,th,summary),
 .q-shell :is(.q-button,.q-text-link,.q-breadcrumb,.q-badge,.q-market-columns,.q-market-row-link small,.q-stat > span,.q-inspector-policy dt,.q-inspector-observed,.q-footer,.q-mobile-nav a,.q-sidebar nav a) { font-family: var(--q-mono); }
 .q-shell :is(.q-brand,.q-mobile-brand,.q-market-identity > strong) { font-family: var(--q-heading); }
+
+/* Account access and platform cash use the existing workspace tokens. */
+.q-account-form { max-width: 520px; }
+.q-wallet-address { font: 12px var(--q-mono); overflow-wrap: anywhere; margin-block: 12px; }
+#q-platform-balance > .q-row { flex-wrap: wrap; align-items: flex-start; gap: 16px; }
+#q-platform-balance .q-actions { flex-wrap: wrap; }
+@media (max-width: 600px) { #q-platform-balance .q-actions { width: 100%; } #q-platform-balance .q-actions .q-button { flex: 1; } }
+
+@media (max-width: 600px) {
+  .q-position-stats { display: grid; grid-template-columns: 1fr; margin: 16px 0; }
+  .q-position-stats .q-stat { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-width: 0; padding: 10px 0; }
+  .q-position-stats .q-stat > span { margin: 0; }
+  .q-position-stats .q-stat > strong { text-align: right; white-space: nowrap; }
+}

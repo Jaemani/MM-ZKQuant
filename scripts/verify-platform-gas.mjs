@@ -12,7 +12,7 @@ const endpoint = (values.MM_TEE_REUSE_ENDPOINT || values.PLATFORM_TEE_URL || '')
 assert.ok(endpoint, 'PLATFORM_TEE_URL is required');
 const expectedOperator = values.PLATFORM_OPERATOR_ADDRESS || '0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7';
 const expectedKey = values.PLATFORM_TEE_ENCRYPTION_PUBLIC_KEY || '03725e6c5dd02ad7cf9f4c00ef135d0d08a2c9697403e2c2f1817dfa9e518585ed';
-const runtimeFiles = ['protocol/cohort/durable-submitter.mjs', 'deploy/tee/operator/execution.mjs', 'deploy/tee/operator/ledger.mjs', 'src/platform/execution-errors.js','deploy/tee/operator/ledger-journal.mjs','deploy/tee/operator/ledger-proofs.mjs','deploy/tee/operator/ledger-prover.mjs','deploy/tee/operator/ledger-prove-worker.mjs','protocol/platform/ledger-witness.mjs','src/integration/sealed.js'];
+const runtimeFiles = ['deploy/tee/operator/server.mjs','deploy/tee/operator/investments.mjs','deploy/tee/operator/cash-ledger.mjs','src/platform/policy.js','protocol/cohort/durable-submitter.mjs', 'deploy/tee/operator/execution.mjs', 'deploy/tee/operator/ledger.mjs', 'src/platform/execution-errors.js','deploy/tee/operator/ledger-journal.mjs','deploy/tee/operator/ledger-proofs.mjs','deploy/tee/operator/ledger-prover.mjs','deploy/tee/operator/ledger-prove-worker.mjs','protocol/platform/ledger-witness.mjs','src/integration/sealed.js'];
 const hashes = Object.fromEntries(runtimeFiles.map(path => [path, createHash('sha256').update(readFileSync(path)).digest('hex')]));
 async function get(url) {
   const response = await fetch(url, { signal: AbortSignal.timeout(15000) });

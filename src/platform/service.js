@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { getAddress, isAddress, verifyMessage } from 'ethers';
+import {normalizeUsername,hashPassword,checkPassword} from './password.js';
 import { validatePolicy, nextSettlement } from './policy.js';
 import { verifyPlatformTee } from './tee-attestation.js';
 
@@ -51,87 +52,160 @@ export class PlatformService {
       if (verifyMessage(rows[0].message, signature).toLowerCase() !== wallet.toLowerCase()) throw new PlatformError('INVALID_SIGNATURE', 401);
       await client.query('UPDATE auth_challenges SET used_at=now() WHERE nonce=$1', [nonce]);
       const knownWallet = await client.query('SELECT user_id FROM wallets WHERE address=$1 FOR UPDATE', [wallet]);
+      let userId=knownWallet.rows[0]?.user_id;
       if (knownWallet.rows[0]) await client.query('UPDATE wallets SET verified_at=now() WHERE address=$1', [wallet]);
       else {
-        const userId = randomUUID();
+        userId = randomUUID();
         await client.query('INSERT INTO users(id) VALUES($1)', [userId]);
         await client.query('INSERT INTO wallets(address,user_id,verified_at) VALUES($1,$2,now())', [wallet, userId]);
       }
-      const token = `mmq_session_${randomBytes(32).toString('base64url')}`;
-      await client.query('INSERT INTO sessions(token_hash,wallet_address,expires_at) VALUES($1,$2,now()+interval \'24 hours\')', [sessionHash(token), wallet]);
-      return { wallet, sessionToken: token, expiresAt: new Date(Date.now() + 86_400_000).toISOString() };
+      return this.createSession(client,userId,wallet);
     });
   }
 
+  async createSession(client,userId,wallet=null,username=null) {
+    const token=`mmq_session_${randomBytes(32).toString('base64url')}`;
+    await client.query("INSERT INTO sessions(token_hash,user_id,wallet_address,expires_at) VALUES($1,$2,$3,now()+interval '24 hours')",[sessionHash(token),userId,wallet]);
+    return {userId,username,wallet,sessionToken:token,expiresAt:new Date(Date.now()+86400000).toISOString()};
+  }
+
+  async register(input) {
+    let username,passwordHash;
+    try{username=normalizeUsername(input.username);passwordHash=await hashPassword(input.password);}catch(e){throw new PlatformError(e.message);}
+    try{return await this.database.transaction(async client=>{
+      const userId=randomUUID();
+      await client.query('INSERT INTO users(id,username,password_hash) VALUES($1,$2,$3)',[userId,username,passwordHash]);
+      return this.createSession(client,userId,null,username);
+    });}catch(e){if(e.code==='23505')throw new PlatformError('USERNAME_TAKEN',409);throw e;}
+  }
+
+  async login(input) {
+    let username;try{username=normalizeUsername(input.username);}catch{throw new PlatformError('INVALID_CREDENTIALS',401);}
+    const {rows}=await this.database.query('SELECT u.id,u.username,u.password_hash,w.address AS wallet FROM users u LEFT JOIN wallets w ON w.user_id=u.id WHERE u.username=$1',[username]);
+    if(!rows[0]||!await checkPassword(input.password,rows[0].password_hash))throw new PlatformError('INVALID_CREDENTIALS',401);
+    return this.createSession(this.database,rows[0].id,rows[0].wallet,rows[0].username);
+  }
+
+  async setCredentials(authorization,input) {
+    const account=await this.session(authorization);
+    let username,passwordHash;
+    try{username=normalizeUsername(input.username);passwordHash=await hashPassword(input.password);}catch(e){throw new PlatformError(e.message);}
+    try{
+      const {rows}=await this.database.query('UPDATE users SET username=$2,password_hash=$3 WHERE id=$1 AND password_hash IS NULL RETURNING username',[account.userId,username,passwordHash]);
+      if(!rows[0])throw new PlatformError('CREDENTIALS_ALREADY_SET',409);
+      return {username};
+    }catch(e){if(e.code==='23505')throw new PlatformError('USERNAME_TAKEN',409);throw e;}
+  }
+
+  async logout(authorization) {
+    await this.database.query('UPDATE sessions SET revoked_at=now() WHERE token_hash=$1',[sessionHash(authorizationToken(authorization))]);
+    return {loggedOut:true};
+  }
+
   async session(authorization) {
-    const token = authorizationToken(authorization);
-    if (!/^mmq_session_[A-Za-z0-9_-]{20,}$/.test(token)) throw new PlatformError('SESSION_REQUIRED', 401);
-    const { rows } = await this.database.query('UPDATE sessions SET last_used_at=now() WHERE token_hash=$1 AND revoked_at IS NULL AND expires_at>now() RETURNING wallet_address', [sessionHash(token)]);
-    if (!rows[0]) throw new PlatformError('SESSION_EXPIRED', 401);
-    return rows[0].wallet_address;
+    const token=authorizationToken(authorization);
+    if(!/^mmq_session_[A-Za-z0-9_-]{20,}$/.test(token))throw new PlatformError('SESSION_REQUIRED',401);
+    const {rows}=await this.database.query(`WITH active AS (
+      UPDATE sessions SET last_used_at=now() WHERE token_hash=$1 AND revoked_at IS NULL AND expires_at>now() RETURNING user_id
+    ) SELECT u.id AS "userId",u.username,w.address AS wallet FROM active a JOIN users u ON u.id=a.user_id LEFT JOIN wallets w ON w.user_id=u.id`,[sessionHash(token)]);
+    if(!rows[0])throw new PlatformError('SESSION_EXPIRED',401);
+    return rows[0];
+  }
+
+  async accountAuthorization(authorization,input={}) {
+    const account=await this.session(authorization);
+    if(input.wallet){
+      const wallet=address(input.wallet);
+      if(account.wallet&&account.wallet.toLowerCase()!==wallet.toLowerCase())throw new PlatformError('FUNDING_WALLET_MISMATCH',403);
+      const linked=await this.database.query('SELECT user_id FROM wallets WHERE lower(address)=lower($1)',[wallet]);
+      if(linked.rows[0]&&linked.rows[0].user_id!==account.userId)throw new PlatformError('WALLET_ALREADY_LINKED',409);
+    }
+    return account;
+  }
+
+  async bindWallet(input) {
+    const payload=input.payload||{};
+    if(!Number.isSafeInteger(payload.observedAt)||Math.abs(Date.now()-payload.observedAt)>300000)throw new PlatformError('WALLET_BINDING_EXPIRED',401);
+    const configured=await this.database.query("SELECT value FROM platform_settings WHERE key='tee_operator_address'");
+    let signer;try{signer=verifyMessage(`VEILVEST_ACCOUNT_WALLET_V1\n${JSON.stringify(payload)}`,input.signature);}catch{throw new PlatformError('WALLET_BINDING_INVALID',401);}
+    if(!configured.rows[0]||signer.toLowerCase()!==configured.rows[0].value.toLowerCase())throw new PlatformError('WALLET_BINDING_INVALID',401);
+    const wallet=address(payload.wallet);
+    try{return await this.database.transaction(async client=>{
+      const owner=await client.query('SELECT id FROM users WHERE id=$1 FOR UPDATE',[payload.userId]);
+      if(!owner.rows[0])throw new PlatformError('ACCOUNT_NOT_FOUND',404);
+      const linked=await client.query('SELECT address,user_id FROM wallets WHERE user_id=$1 OR lower(address)=lower($2)',[payload.userId,wallet]);
+      if(linked.rows.some(w=>w.user_id!==payload.userId||w.address.toLowerCase()!==wallet.toLowerCase()))throw new PlatformError('WALLET_ALREADY_LINKED',409);
+      if(!linked.rows.length)await client.query('INSERT INTO wallets(address,user_id,verified_at) VALUES($1,$2,now())',[wallet,payload.userId]);
+      await client.query('UPDATE strategists SET wallet_address=$2 WHERE user_id=$1 AND wallet_address IS NULL',[payload.userId,wallet]);
+      await client.query("UPDATE strategies SET strategist_wallet=$2,status=CASE WHEN status='DRAFT' THEN 'FUNDING' ELSE status END WHERE user_id=$1 AND strategist_wallet IS NULL",[payload.userId,wallet]);
+      await client.query('UPDATE api_keys SET strategist_wallet=$2 WHERE user_id=$1 AND strategist_wallet IS NULL',[payload.userId,wallet]);
+      return {linked:true,wallet};
+    });}catch(e){if(e.code==='23505')throw new PlatformError('WALLET_ALREADY_LINKED',409);throw e;}
   }
 
   async apiKey(authorization, {touch=true}={}) {
     const token = authorizationToken(authorization);
     if (!/^mmq_test_[A-Za-z0-9_-]{20,}$/.test(token)) throw new PlatformError('API_KEY_REQUIRED', 401);
     const tokenHash = apiKeyHash(token);
-    const { rows } = await this.database.query('SELECT id,strategist_wallet,key_hash FROM api_keys WHERE key_hash=$1 AND revoked_at IS NULL AND (expires_at IS NULL OR expires_at>now())', [tokenHash]);
+    const { rows } = await this.database.query('SELECT id,user_id,strategist_wallet,key_hash FROM api_keys WHERE key_hash=$1 AND revoked_at IS NULL AND (expires_at IS NULL OR expires_at>now())', [tokenHash]);
     if (!rows[0] || !compareHash(rows[0].key_hash, tokenHash)) throw new PlatformError('API_KEY_INVALID', 401);
     if(touch)await this.database.query('UPDATE api_keys SET last_used_at=now() WHERE id=$1', [rows[0].id]);
     return rows[0];
   }
 
-  async upsertStrategist(authorization, input) {
-    const wallet = await this.session(authorization), displayName = text(input.displayName, 'INVALID_DISPLAY_NAME', 2, 60), bio = text(input.bio, 'INVALID_BIO', 2, 500);
-    const { rows } = await this.database.query(`INSERT INTO strategists(wallet_address,display_name,bio,status) VALUES($1,$2,$3,'ACTIVE') ON CONFLICT(wallet_address) DO UPDATE SET display_name=excluded.display_name,bio=excluded.bio,updated_at=now() RETURNING wallet_address,display_name,bio,status,created_at,updated_at`, [wallet, displayName, bio]);
+  async upsertStrategist(authorization,input) {
+    const account=await this.session(authorization),displayName=text(input.displayName,'INVALID_DISPLAY_NAME',2,60),bio=text(input.bio,'INVALID_BIO',2,500);
+    const {rows}=await this.database.query(`INSERT INTO strategists(user_id,wallet_address,display_name,bio,status) VALUES($1,$2,$3,$4,'ACTIVE') ON CONFLICT(user_id) DO UPDATE SET display_name=excluded.display_name,bio=excluded.bio,updated_at=now() RETURNING wallet_address,display_name,bio,status,created_at,updated_at`,[account.userId,account.wallet,displayName,bio]);
     return rows[0];
   }
 
   async issueApiKey(authorization) {
-    const wallet = await this.session(authorization);
-    const strategist = await this.database.query('SELECT wallet_address FROM strategists WHERE wallet_address=$1 AND status=\'ACTIVE\'', [wallet]);
-    if (!strategist.rows[0]) throw new PlatformError('STRATEGIST_REQUIRED', 403);
-    const apiKey = `mmq_test_${randomBytes(24).toString('base64url')}`, id = randomUUID();
-    await this.database.query('INSERT INTO api_keys(id,strategist_wallet,key_prefix,key_hash) VALUES($1,$2,$3,$4)', [id, wallet, apiKey.slice(0, 14), apiKeyHash(apiKey)]);
-    return { id, apiKey, createdAt: new Date().toISOString() };
+    const account=await this.session(authorization);
+    const strategist=await this.database.query("SELECT user_id FROM strategists WHERE user_id=$1 AND status='ACTIVE'",[account.userId]);
+    if(!strategist.rows[0])throw new PlatformError('STRATEGIST_REQUIRED',403);
+    const apiKey=`mmq_test_${randomBytes(24).toString('base64url')}`,id=randomUUID();
+    await this.database.query('INSERT INTO api_keys(id,user_id,strategist_wallet,key_prefix,key_hash) VALUES($1,$2,$3,$4,$5)',[id,account.userId,account.wallet,apiKey.slice(0,14),apiKeyHash(apiKey)]);
+    return {id,apiKey,createdAt:new Date().toISOString()};
   }
 
-  async managerWallet(authorization, options) {
-    if (authorizationToken(authorization).startsWith('mmq_session_')) {
-      const wallet = await this.session(authorization);
-      const {rows} = await this.database.query("SELECT wallet_address FROM strategists WHERE wallet_address=$1 AND status='ACTIVE'", [wallet]);
-      if (!rows[0]) throw new PlatformError('STRATEGIST_REQUIRED', 403);
-      return wallet;
+  async managerWallet(authorization,options) {
+    if(authorizationToken(authorization).startsWith('mmq_session_')){
+      const account=await this.session(authorization);
+      const {rows}=await this.database.query("SELECT user_id FROM strategists WHERE user_id=$1 AND status='ACTIVE'",[account.userId]);
+      if(!rows[0])throw new PlatformError('STRATEGIST_REQUIRED',403);
+      return account.userId;
     }
-    return (await this.apiKey(authorization, options)).strategist_wallet;
+    return (await this.apiKey(authorization,options)).user_id;
   }
 
   async listApiKeys(authorization) {
-    const wallet = await this.session(authorization);
-    const {rows} = await this.database.query('SELECT id,key_prefix,created_at,last_used_at,expires_at,revoked_at FROM api_keys WHERE strategist_wallet=$1 ORDER BY created_at DESC', [wallet]);
+    const account=await this.session(authorization);
+    const {rows}=await this.database.query('SELECT id,key_prefix,created_at,last_used_at,expires_at,revoked_at FROM api_keys WHERE user_id=$1 ORDER BY created_at DESC',[account.userId]);
     return {keys:rows};
   }
 
-  async revokeApiKey(authorization, id) {
-    const wallet = await this.session(authorization);
-    const {rows} = await this.database.query('UPDATE api_keys SET revoked_at=COALESCE(revoked_at,now()) WHERE id=$1 AND strategist_wallet=$2 RETURNING id,revoked_at', [id,wallet]);
-    if (!rows[0]) throw new PlatformError('API_KEY_NOT_FOUND',404);
+  async revokeApiKey(authorization,id) {
+    const account=await this.session(authorization);
+    const {rows}=await this.database.query('UPDATE api_keys SET revoked_at=COALESCE(revoked_at,now()) WHERE id=$1 AND user_id=$2 RETURNING id,revoked_at',[id,account.userId]);
+    if(!rows[0])throw new PlatformError('API_KEY_NOT_FOUND',404);
     return rows[0];
   }
 
-  async createStrategy(authorization, input) {
-    const wallet = await this.managerWallet(authorization), slug = text(input.slug, 'INVALID_SLUG', 3, 48).toLowerCase();
-    if (!/^[a-z][a-z0-9-]{2,47}$/.test(slug)) throw new PlatformError('INVALID_SLUG');
-    const risk = ['LOW', 'MEDIUM', 'HIGH'].includes(input.risk) ? input.risk : 'HIGH';
-    let policy;try { policy=validatePolicy(input.policy); } catch(e) {throw new PlatformError(e.message);}
-    let rows;
-    try { ({rows}=await this.database.query(`INSERT INTO strategies(id,slug,strategist_wallet,name,description,risk,fee_bps,status,policy) VALUES($1,$2,$3,$4,$5,$6,$7,'FUNDING',$8) RETURNING *`, [randomUUID(), slug, wallet, text(input.name, 'INVALID_STRATEGY_NAME', 2, 100), text(input.description, 'INVALID_DESCRIPTION', 2, 500), risk, integer(input.feeBps, 'INVALID_FEE_BPS', 0, 2000),JSON.stringify(policy)])); }
-    catch(error) { if(error.code==='23505'&&error.constraint==='strategies_slug_key')throw new PlatformError('STRATEGY_SLUG_TAKEN',409);throw error; }
-    return rows[0];
+  async createStrategy(authorization,input) {
+    const userId=await this.managerWallet(authorization),slug=text(input.slug,'INVALID_SLUG',3,48).toLowerCase();
+    if(!/^[a-z][a-z0-9-]{2,47}$/.test(slug))throw new PlatformError('INVALID_SLUG');
+    const strategist=await this.database.query('SELECT wallet_address FROM strategists WHERE user_id=$1',[userId]);
+    const wallet=strategist.rows[0]?.wallet_address||null;
+    const risk=['LOW','MEDIUM','HIGH'].includes(input.risk)?input.risk:'HIGH';
+    let policy;try{policy=validatePolicy(input.policy);}catch(e){throw new PlatformError(e.message);}
+    try{
+      const {rows}=await this.database.query('INSERT INTO strategies(id,slug,user_id,strategist_wallet,name,description,risk,fee_bps,status,policy) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *',[randomUUID(),slug,userId,wallet,text(input.name,'INVALID_STRATEGY_NAME',2,100),text(input.description,'INVALID_DESCRIPTION',2,500),risk,integer(input.feeBps,'INVALID_FEE_BPS',0,2000),wallet?'FUNDING':'DRAFT',JSON.stringify(policy)]);
+      return rows[0];
+    }catch(e){if(e.code==='23505'&&e.constraint==='strategies_slug_key')throw new PlatformError('STRATEGY_SLUG_TAKEN',409);throw e;}
   }
 
   async recordPerformance(authorization, strategyId, input) {
-    const key = await this.apiKey(authorization), strategy = await this.ownedStrategy(key.strategist_wallet, strategyId);
+    const key = await this.apiKey(authorization), strategy = await this.ownedStrategy(key.user_id, strategyId);
     const start = new Date(input.periodStart), end = new Date(input.periodEnd);
     if (Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf()) || end <= start) throw new PlatformError('INVALID_PERIOD');
     const { rows } = await this.database.query('INSERT INTO performance_records(id,strategy_id,period_start,period_end,return_bps,volatility_bps,source,evidence_uri) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [randomUUID(), strategy.id, start.toISOString(), end.toISOString(), integer(input.returnBps, 'INVALID_RETURN_BPS', -1_000_000, 1_000_000), integer(input.volatilityBps, 'INVALID_VOLATILITY_BPS', 0, 1_000_000), text(input.source, 'INVALID_SOURCE', 2, 100), text(input.evidenceUri, 'INVALID_EVIDENCE_URI', 8, 2000)]);
@@ -159,8 +233,8 @@ export class PlatformService {
   }
 
   async myStrategies(authorization) {
-    const wallet=await this.session(authorization);
-    const {rows}=await this.database.query('SELECT * FROM strategies WHERE strategist_wallet=$1 ORDER BY created_at DESC',[wallet]);
+    const account=await this.session(authorization);
+    const {rows}=await this.database.query('SELECT * FROM strategies WHERE user_id=$1 ORDER BY created_at DESC',[account.userId]);
     return {strategies:rows};
   }
 
@@ -178,14 +252,14 @@ export class PlatformService {
     });return proposal;
   }
 
-  async ownedStrategy(wallet, strategyId) {
-    const { rows } = await this.database.query('SELECT * FROM strategies WHERE id=$1 AND strategist_wallet=$2', [strategyId, wallet]);
+  async ownedStrategy(userId, strategyId) {
+    const { rows } = await this.database.query('SELECT * FROM strategies WHERE id=$1 AND user_id=$2', [strategyId, userId]);
     if (!rows[0]) throw new PlatformError('STRATEGY_FORBIDDEN', 403);
     return rows[0];
   }
 
   async publicStrategies() {
-    const { rows } = await this.database.query(`SELECT s.id,s.slug,s.name,s.description,s.risk,s.fee_bps,s.status,s.created_at,st.display_name AS strategist_name,st.bio AS strategist_bio,st.wallet_address AS strategist_wallet,n.unit_nav,COALESCE(n.pnl_bps,p.return_bps) AS pnl_bps,COALESCE(n.volatility_bps,p.volatility_bps) AS volatility_bps,n.marked_at FROM strategies s JOIN strategists st ON st.wallet_address=s.strategist_wallet LEFT JOIN LATERAL (SELECT unit_nav,pnl_bps,volatility_bps,marked_at FROM nav_marks WHERE strategy_id=s.id ORDER BY marked_at DESC LIMIT 1) n ON true LEFT JOIN LATERAL (SELECT return_bps,volatility_bps FROM performance_records WHERE strategy_id=s.id ORDER BY period_end DESC LIMIT 1) p ON true WHERE s.status <> 'SUSPENDED' ORDER BY s.created_at DESC`);
+    const { rows } = await this.database.query(`SELECT s.id,s.slug,s.name,s.description,s.risk,s.fee_bps,s.status,s.created_at,st.display_name AS strategist_name,st.bio AS strategist_bio,st.wallet_address AS strategist_wallet,n.unit_nav,COALESCE(n.pnl_bps,p.return_bps) AS pnl_bps,COALESCE(n.volatility_bps,p.volatility_bps) AS volatility_bps,n.marked_at FROM strategies s JOIN strategists st ON st.user_id=s.user_id LEFT JOIN LATERAL (SELECT unit_nav,pnl_bps,volatility_bps,marked_at FROM nav_marks WHERE strategy_id=s.id ORDER BY marked_at DESC LIMIT 1) n ON true LEFT JOIN LATERAL (SELECT return_bps,volatility_bps FROM performance_records WHERE strategy_id=s.id ORDER BY period_end DESC LIMIT 1) p ON true WHERE s.status NOT IN ('SUSPENDED','DRAFT') ORDER BY s.created_at DESC`);
     const configs=await this.database.query('SELECT id,policy,policy_version,pending_policy FROM strategies');
     const marks=await this.database.query('SELECT strategy_id,observed_at,metrics FROM strategy_public_metrics');
     return { strategies: rows.map(row=>{const m=marks.rows.find(m=>m.strategy_id===row.id);return {...row,...configs.rows.find(c=>c.id===row.id),performance_source:m?'TEE_LIVE':null,pnl_bps:m?.metrics.pnlBps??null,volatility_bps:m?.metrics.volatilityBps??null,public_metrics:m?.metrics||null,marked_at:m?.observed_at||null};}) };
@@ -234,7 +308,7 @@ export class PlatformService {
 
   async strategyDetail(slug, query = {}) {
     const normalized = text(slug, 'INVALID_STRATEGY_SLUG', 3, 48).toLowerCase();
-    const { rows } = await this.database.query(`SELECT s.id,s.slug,s.name,s.description,s.risk,s.fee_bps,s.status,s.created_at,st.display_name AS strategist_name,st.bio AS strategist_bio,st.wallet_address AS strategist_wallet FROM strategies s JOIN strategists st ON st.wallet_address=s.strategist_wallet WHERE s.slug=$1`, [normalized]);
+    const { rows } = await this.database.query(`SELECT s.id,s.slug,s.name,s.description,s.risk,s.fee_bps,s.status,s.created_at,st.display_name AS strategist_name,st.bio AS strategist_bio,st.wallet_address AS strategist_wallet FROM strategies s JOIN strategists st ON st.user_id=s.user_id WHERE s.slug=$1`, [normalized]);
     if (!rows[0]) throw new PlatformError('STRATEGY_NOT_FOUND', 404);
     const config=await this.database.query('SELECT policy,policy_version,pending_policy FROM strategies WHERE id=$1',[rows[0].id]);
     const strategy = {...rows[0],...config.rows[0]};
@@ -247,9 +321,9 @@ export class PlatformService {
   }
 
   async me(authorization) {
-    const wallet = await this.session(authorization);
-    const {rows} = await this.database.query('SELECT display_name,bio,status,created_at FROM strategists WHERE wallet_address=$1', [wallet]);
-    return { wallet, strategist:rows[0]||null };
+    const account = await this.session(authorization);
+    const {rows} = await this.database.query('SELECT display_name,bio,status,created_at FROM strategists WHERE user_id=$1', [account.userId]);
+    return { ...account, displayName:rows[0]?.display_name||account.username, strategist:rows[0]||null };
   }
 
   async publicConfig() {

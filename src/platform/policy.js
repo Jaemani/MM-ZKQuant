@@ -2,7 +2,7 @@
 export const DEFAULT_POLICY = Object.freeze({ maxLeverageBps: 20000, stopLossBps: 1500, maxDrawdownBps: 2000, settlementPeriodSeconds: 86400, settlementOffsetSeconds: 0, withdrawalCutoffSeconds: 3600, orderTtlSeconds: 120, slippageBps: 50 });
 export function validatePolicy(value = {}) {
   const p = { ...DEFAULT_POLICY, ...value };
-  const ranges = { maxLeverageBps: [10000, 100000], stopLossBps: [100, 10000], maxDrawdownBps: [100, 10000], settlementPeriodSeconds: [3600, 2592000], settlementOffsetSeconds: [0, 2591999], withdrawalCutoffSeconds: [0, 2591999], orderTtlSeconds: [15, 300], slippageBps: [1, 100] };
+  const ranges = { maxLeverageBps: [10000, 100000], stopLossBps: [100, 10000], maxDrawdownBps: [100, 10000], settlementPeriodSeconds: [60, 2592000], settlementOffsetSeconds: [0, 2591999], withdrawalCutoffSeconds: [0, 2591999], orderTtlSeconds: [15, 300], slippageBps: [1, 100] };
   for (const [key, [min, max]] of Object.entries(ranges)) if (!Number.isSafeInteger(p[key]) || p[key] < min || p[key] > max) throw Error(`INVALID_POLICY_${key}`);
   if (p.settlementOffsetSeconds >= p.settlementPeriodSeconds || p.withdrawalCutoffSeconds >= p.settlementPeriodSeconds) throw Error('INVALID_SETTLEMENT_SCHEDULE');
   return Object.fromEntries(Object.keys(ranges).map(k => [k, p[k]]));

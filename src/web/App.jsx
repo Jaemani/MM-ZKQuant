@@ -7,8 +7,8 @@ const currentPath = () => window.location.hash.replace(/^#/, '') || '/';
 export default function App() {
   const [path, setPath] = useState(currentPath);
   useEffect(() => { const update = () => setPath(currentPath()); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
-  if (path.startsWith('/legacy')) return <><a className="legacy-return" href="#/domains/settlement/state">현재 서비스로 돌아가기</a><Suspense fallback={<p>이전 기록을 불러오는 중입니다.</p>}><LegacyApp /></Suspense></>;
-  if (path === '/demo') return <Suspense fallback={<p>이전 검증 기록을 불러오는 중입니다.</p>}><TestnetDemo /></Suspense>;
-  if (path.startsWith('/domains/')) return <Suspense fallback={<p>이전 검토 화면을 불러오는 중입니다.</p>}><DomainWorkbench path={path} /></Suspense>;
+  if (path.startsWith('/legacy')) return <><a className="legacy-return" href="/">Return to the platform</a><Suspense fallback={<p>Loading archived records.</p>}><LegacyApp /></Suspense></>;
+  if (path === '/demo') return <Suspense fallback={<p>Loading archived verification records.</p>}><TestnetDemo /></Suspense>;
+  if (path.startsWith('/domains/')) return <Suspense fallback={<p>Loading the archived review screen.</p>}><DomainWorkbench path={path} /></Suspense>;
   return <Platform />;
 }

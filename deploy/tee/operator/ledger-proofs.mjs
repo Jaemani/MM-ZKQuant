@@ -1,3 +1,4 @@
+import {assertCashTransfers} from './cash-ledger.mjs';
 import {createHash} from 'node:crypto';
 import {existsSync,readFileSync,writeFileSync,mkdirSync,renameSync,openSync,fsyncSync,closeSync} from 'node:fs';
 import {Contract,keccak256,toUtf8Bytes,verifyMessage} from 'ethers';
@@ -17,7 +18,7 @@ function atomicPublic(path,value) {
  const temporary=path+'.pending';writeFileSync(temporary,JSON.stringify(value),{mode:0o600,flush:true});renameSync(temporary,path);
  const fd=openSync(path.slice(0,path.lastIndexOf('/')),'r');try{fsyncSync(fd);}finally{closeSync(fd);}
 }
-const publicErrors=new Set(['LEDGER_INVESTOR_CAPACITY','LEDGER_LOT_CAPACITY','LEDGER_STRATEGY_CAPACITY','LEDGER_PROVING_FAILED','LEDGER_PROVING_TIMEOUT','OPERATOR_GAS_INSUFFICIENT','LEDGER_REGISTRY_UNAVAILABLE','LEDGER_ARTIFACT_UNAVAILABLE','LEDGER_SNAPSHOT_BOOK_MISMATCH','LEDGER_SNAPSHOT_ACCOUNT_MISMATCH','LEDGER_SNAPSHOT_LOT_MISMATCH']);
+const publicErrors=new Set(['LEDGER_INVESTOR_CAPACITY','LEDGER_LOT_CAPACITY','LEDGER_STRATEGY_CAPACITY','LEDGER_PROVING_FAILED','LEDGER_PROVING_TIMEOUT','OPERATOR_GAS_INSUFFICIENT','LEDGER_REGISTRY_UNAVAILABLE','LEDGER_ARTIFACT_UNAVAILABLE','LEDGER_SNAPSHOT_BOOK_MISMATCH','LEDGER_SNAPSHOT_ACCOUNT_MISMATCH','LEDGER_SNAPSHOT_LOT_MISMATCH','CASH_TRANSFER_RECONCILIATION_REQUIRED']);
 export class LedgerProofs {
  constructor({investments,execution,wallet,storeDir,manifest,artifactBase='https://mm-zkquant.vercel.app',prove=proveLedgerTransition}) {
   Object.assign(this,{investments,execution,wallet,storeDir,manifest,artifactBase,prove});
@@ -66,9 +67,13 @@ export class LedgerProofs {
  }
  archive(sequence){const path=`${this.proofDir}/${sequence}.json`;return existsSync(path)?JSON.parse(readFileSync(path)):null;}
  writeArchive(record){atomicPublic(`${this.proofDir}/${record.payload.sequence}.json`,record);}
+ async requestCheckpoint(input) {
+  this.investments.authorizeConfiguration(input.accessToken);
+  return this.investments.serial(()=>{const state=this.investments.state();if(!this.ready)throw Error('LEDGER_PROOFS_UNAVAILABLE');state.ledgerProofs.forceCheckpoint=true;this.save(state);return {scheduled:true};});
+ }
  async freeze(now) {
   return this.investments.serial(()=>{
-   const state=this.investments.state(),ledger=state.ledgerProofs;if(ledger.job||now<ledger.nextCheckpointAt)return;
+   const state=this.investments.state(),ledger=state.ledgerProofs;if(ledger.job||(!ledger.forceCheckpoint&&now<ledger.nextCheckpointAt))return;
    const tasks=[],replayed=clone(ledger.mirrors);
    for(const book of Object.values(state.books)){
     initializeLedgerJournal(book);flushLedgerMark(book);
@@ -92,8 +97,9 @@ export class LedgerProofs {
     if(!ledger.mirrors.length)ledger.mirrors.push(this.builder.blankBook());
     if(!tasks.length)tasks.push({bookId:null,index:0,events:[{kind:'NONE'}],snapshot:null});else tasks[0].events.push({kind:'NONE'});
    }
+   assertCashTransfers(tasks,state.cashTransfers);
    ledger.job={checkpointAt:now,firstSequence:ledger.sequence+1,tasks,task:0,event:0,validated:false};
-   ledger.nextCheckpointAt=now+this.intervalSeconds;ledger.error=null;this.save(state);
+   if(!ledger.forceCheckpoint)ledger.nextCheckpointAt=now+this.intervalSeconds;delete ledger.forceCheckpoint;ledger.error=null;this.save(state);
   });
  }
  async validateJob() {

@@ -1,0 +1,10 @@
+import {readFileSync,existsSync} from 'node:fs';
+import {homedir} from 'node:os';
+import {join} from 'node:path';
+import {spawn} from 'node:child_process';
+import {environment} from './platform-ops.mjs';
+const authPath=join(process.env.XDG_DATA_HOME||join(homedir(),'.local/share'),'com.vercel.cli/auth.json');
+const token=environment.VERCEL_TOKEN||(existsSync(authPath)?JSON.parse(readFileSync(authPath)).token:null);
+if(!token)throw Error('Vercel CLI authentication is required. Run vercel login.');
+const child=spawn('npx',['--yes','vercel','deploy','--prod','--yes','--scope','cosmoserys-projects','--token',token],{stdio:'inherit',env:{...process.env,npm_config_cache:'/tmp/veilvest-vercel-npm-cache'}});
+const code=await new Promise((resolve,reject)=>{child.on('exit',resolve);child.on('error',reject);});process.exitCode=code||0;

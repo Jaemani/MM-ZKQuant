@@ -28,7 +28,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  money,
+  durationLabel, money,
   percent,
   time,
   statusLabel,
@@ -137,7 +137,7 @@ export function Empty({ title, description, action }) {
 export const Stat = ({ label, value, suffix, hint, tone = "" }) => (
   <div className="q-stat">
     <span>{label}</span>
-    <strong className={value === "—" || value === "집계 전" ? "" : tone}>
+    <strong className={value === "—" || value === "Not available" ? "" : tone}>
       {value}
       <small>{suffix}</small>
     </strong>
@@ -164,7 +164,7 @@ export function Modal({ title, children, onClose, busy = false }) {
     >
       <div className="q-dialog-title">
         <h2 id={titleId}>{title}</h2>
-        <button aria-label="닫기" disabled={busy} onClick={onClose}>
+        <button aria-label="Close" disabled={busy} onClick={onClose}>
           <X size={20} />
         </button>
       </div>
@@ -173,42 +173,39 @@ export function Modal({ title, children, onClose, busy = false }) {
   );
 }
 export function Conditions({ policy, feeBps }) {
-  if (!policy) return <p className="q-muted">운용 조건을 불러오는 중입니다.</p>;
+  if (!policy) return <p className="q-muted">Loading investment conditions.</p>;
   return (
     <dl className="q-definition">
       <div>
-        <dt>성과보수</dt>
+        <dt>Performance fee</dt>
         <dd>
-          {feeBps / 100}% <small>개인별 최고 평가액 초과 이익에 부과</small>
+          {feeBps / 100}% <small>Charged on individual gains above the high watermark</small>
         </dd>
       </div>
       <div>
-        <dt>최대 레버리지</dt>
-        <dd>{policy.maxLeverageBps / 10000}배</dd>
+        <dt>Maximum leverage</dt>
+        <dd>{policy.maxLeverageBps / 10000}×</dd>
       </div>
       <div>
-        <dt>손절 / 최대 낙폭 한도</dt>
+        <dt>Stop loss / maximum drawdown limit</dt>
         <dd>
           {policy.stopLossBps / 100}% / {policy.maxDrawdownBps / 100}%
         </dd>
       </div>
       <div>
-        <dt>출금 정산 주기</dt>
+        <dt>Redemption settlement frequency</dt>
         <dd>
-          {policy.settlementPeriodSeconds % 86400 === 0
-            ? `${policy.settlementPeriodSeconds / 86400}일`
-            : `${policy.settlementPeriodSeconds / 3600}시간`}
-          마다
+          {durationLabel(policy.settlementPeriodSeconds)}
         </dd>
       </div>
       <div>
-        <dt>출금 신청 마감</dt>
-        <dd>정산 {policy.withdrawalCutoffSeconds / 60}분 전</dd>
+        <dt>Redemption cutoff</dt>
+        <dd>{policy.withdrawalCutoffSeconds / 60} minutes before settlement</dd>
       </div>
       <div>
-        <dt>주문 유효 시간 / 슬리피지</dt>
+        <dt>Order validity / slippage</dt>
         <dd>
-          {policy.orderTtlSeconds}초 / {policy.slippageBps / 100}%
+          {policy.orderTtlSeconds} seconds / {policy.slippageBps / 100}%
         </dd>
       </div>
     </dl>
@@ -222,7 +219,7 @@ export function StrategyCard({ strategy, compare, onCompare, compareDisabled = f
         <Badge tone={["HALTED", "RISK_EXIT"].includes(m?.status) ? "warning" : ["LIVE", "ACTIVE"].includes(m?.status || strategy.status) ? "success" : ""}>
           {statusLabel(m?.status || strategy.status)}
         </Badge>
-        <span className="q-muted">위험 {riskLabel(strategy.risk)}</span>
+        <span className="q-muted">Risk {riskLabel(strategy.risk)}</span>
       </div>
       <Link to={`/strategies/${strategy.slug}`} className="q-strategy-name">
         {strategy.name}
@@ -231,41 +228,43 @@ export function StrategyCard({ strategy, compare, onCompare, compareDisabled = f
       <p className="q-muted">{strategy.strategist_name}</p>
       <p className="q-card-description">{strategy.description}</p>
       <div className="q-card-return">
-        <span>누적 수익률</span>
+        <span>Total return</span>
         <strong className={!Number.isFinite(m?.pnlBps) ? "q-unavailable" : m.pnlBps < 0 ? "negative" : m.pnlBps > 0 ? "positive" : ""}>
           {percent(m?.pnlBps)}
         </strong>
       </div>
       <dl className="q-card-metrics">
         <div>
-          <dt>전략가 자기자본</dt>
+          <dt>Strategist's own capital</dt>
           <dd>
             {money(m?.managerActive)} <small>AUSD</small>
           </dd>
         </div>
         <div>
-          <dt>성과보수</dt>
+          <dt>Performance fee</dt>
           <dd>{strategy.fee_bps / 100}%</dd>
         </div>
         <div>
-          <dt>운용 데이터</dt>
-          <dd>{strategy.marked_at ? time(strategy.marked_at) : "집계 전"}</dd>
+          <dt>Trading data</dt>
+          <dd>{strategy.marked_at ? time(strategy.marked_at) : "Not available"}</dd>
         </div>
       </dl>
       <div className="q-row q-card-actions">
         <Link className="q-text-link" to={`/strategies/${strategy.slug}`}>
-          전략 살펴보기 <ArrowRight size={15} />
+
+          Explore strategy <ArrowRight size={15} />
         </Link>
         {onCompare && (
-          <label className="q-checkbox" title={compareDisabled ? "최대 3개까지 비교할 수 있습니다. 선택한 전략을 먼저 해제하세요." : undefined}>
+          <label className="q-checkbox" title={compareDisabled ? "Compare up to 3 strategies. Remove a selected strategy first." : undefined}>
             <input
               type="checkbox"
               checked={compare}
               disabled={compareDisabled}
-              aria-label={`${strategy.name} 비교`}
+              aria-label={`${strategy.name} Compare`}
               onChange={() => onCompare(strategy.id)}
             />{" "}
-            비교
+
+            Compare
           </label>
         )}
       </div>
@@ -285,8 +284,8 @@ export function HistoryChart({ history, capital = false }) {
   if (!rows.some((r) => Number.isFinite(r.value)))
     return (
       <Empty
-        title="아직 집계된 이력이 없습니다"
-        description="운용 결과가 쌓이면 실제 기록을 바탕으로 차트가 표시됩니다."
+        title="No history yet"
+        description="Charts will show actual observations as trading history grows."
       />
     );
   return (
@@ -296,8 +295,8 @@ export function HistoryChart({ history, capital = false }) {
         role="img"
         aria-label={
           capital
-            ? "전략가 자기자본 운용 평가액 이력"
-            : "기준 투자자의 누적 수익률 이력"
+            ? "Strategist's own invested capital history"
+            : "Reference investor return history"
         }
       >
         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -312,7 +311,7 @@ export function HistoryChart({ history, capital = false }) {
               type="number"
               domain={["dataMin", "dataMax"]}
               tickFormatter={(v) =>
-                new Date(v).toLocaleDateString("ko-KR", {
+                new Date(v).toLocaleDateString("en-US", {
                   month: "numeric",
                   day: "numeric",
                 })
@@ -331,10 +330,10 @@ export function HistoryChart({ history, capital = false }) {
               domain={["auto", "auto"]}
             />
             <Tooltip
-              labelFormatter={(v) => new Date(v).toLocaleString("ko-KR")}
+              labelFormatter={(v) => new Date(v).toLocaleString("en-US")}
               formatter={(v) => [
-                `${Number(v).toLocaleString("ko-KR", { maximumFractionDigits: 2 })}${capital ? " AUSD" : "%"}`,
-                capital ? "자기자본" : "누적 수익률",
+                `${Number(v).toLocaleString("en-US", { maximumFractionDigits: 2 })}${capital ? " AUSD" : "%"}`,
+                capital ? "Own capital" : "Total return",
               ]}
             />
             <Line
@@ -350,23 +349,23 @@ export function HistoryChart({ history, capital = false }) {
         </ResponsiveContainer>
       </div>
       <details className="q-chart-data">
-        <summary>기록을 표로 보기</summary>
+        <summary>View records as a table</summary>
         <div className="q-table-wrap">
           <table>
             <thead>
               <tr>
-                <th>관측 시각</th>
-                <th>{capital ? "자기자본 (AUSD)" : "누적 수익률"}</th>
+                <th>Observed at</th>
+                <th>{capital ? "Own capital (AUSD)" : "Total return"}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r, i) => (
                 <tr key={i}>
-                  <td>{new Date(r.date).toLocaleString("ko-KR")}</td>
+                  <td>{new Date(r.date).toLocaleString("en-US")}</td>
                   <td>
-                    {Number.isFinite(r.value) ? r.value.toLocaleString("ko-KR", {
+                    {Number.isFinite(r.value) ? r.value.toLocaleString("en-US", {
                       maximumFractionDigits: 2,
-                    }) : "집계 전"}
+                    }) : "Not available"}
                     {capital || !Number.isFinite(r.value) ? "" : "%"}
                   </td>
                 </tr>

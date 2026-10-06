@@ -65,9 +65,9 @@ test("RPC diagnostics preserve gas reason and do not publish sensitive RPC input
 });
 test("both browser sessions and API tokens authorize only their owned strategy", async () => {
   const s = new PlatformService({});
-  s.session = async () => "alice";
-  s.database.query = async () => ({ rows: [{ wallet_address: "alice" }] });
-  s.apiKey = async () => ({ strategist_wallet: "bob" });
+  s.session = async () => ({userId:"alice",wallet:"alice"});
+  s.database.query = async () => ({ rows: [{ user_id: "alice" }] });
+  s.apiKey = async () => ({ user_id: "bob", strategist_wallet: "bob" });
   s.ownedStrategy = async (wallet, id) => {
     if (id !== `${wallet}-strategy`) throw Error("NOT_OWNER");
     return { id };

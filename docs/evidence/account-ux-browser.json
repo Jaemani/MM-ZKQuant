@@ -1,0 +1,21 @@
+{
+  "verified": true,
+  "roles": [
+    {
+      "role": "investor",
+      "login": true,
+      "assets": true,
+      "sessionRestored": true
+    },
+    {
+      "role": "strategist",
+      "login": true,
+      "assets": true,
+      "sessionRestored": true
+    }
+  ],
+  "walletRequests": 0,
+  "pageErrors": [],
+  "mobileOverflow": false,
+  "english": true
+}

@@ -2,7 +2,7 @@ import { formatUnits } from "ethers";
 export const money = (value) =>
   value === null || value === undefined
     ? "—"
-    : Number(formatUnits(String(value), 6)).toLocaleString("ko-KR", {
+    : Number(formatUnits(String(value), 6)).toLocaleString("en-US", {
         maximumFractionDigits:
           Math.abs(Number(formatUnits(String(value), 6))) > 0 &&
           Math.abs(Number(formatUnits(String(value), 6))) < 0.01
@@ -10,41 +10,41 @@ export const money = (value) =>
             : 2,
       });
 export const rate = (value) =>
-  Number.isFinite(value) ? `${(value / 100).toFixed(2)}%` : "집계 전";
+  Number.isFinite(value) ? `${(value / 100).toFixed(2)}%` : "Not available";
 export const percent = (value) =>
   Number.isFinite(value)
     ? `${value > 0 ? "+" : ""}${(value / 100).toFixed(2)}%`
-    : "집계 전";
+    : "Not available";
 export const short = (value) =>
   value ? `${value.slice(0, 6)}…${value.slice(-4)}` : "";
 export const time = (value) =>
   value
     ? new Date(typeof value === "number" ? value * 1000 : value).toLocaleString(
-        "ko-KR",
+        "en-US",
         { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" },
       )
     : "—";
 export const riskLabel = (value) =>
-  ({ LOW: "낮음", MEDIUM: "보통", HIGH: "높음" })[value] || value;
+  ({ LOW: "Low", MEDIUM: "Medium", HIGH: "High" })[value] || value;
 export const statusLabel = (value) =>
   ({
-    FUNDING: "투자 모집 중",
-    LIVE: "운용 중",
-    ACTIVE: "운용 중",
-    HALTED: "운용 중단",
-    RISK_EXIT: "포지션 정리 중",
-    QUEUED: "접수 완료",
-    EXECUTING: "실행 확인 중",
-    EXECUTED: "실행 완료",
-    PARTIALLY_FILLED: "부분 체결",
-    EXPIRED: "유효 시간 만료",
-    FAILED: "실행 실패",
-    REQUESTED: "정산 대기",
-    SETTLING: "정산 중",
-    PAID: "지급 완료",
-    CANCELLED: "취소 완료",
-    DRAFT: "준비 중",
-  })[value] || "상태 확인 필요";
+    FUNDING: "Open for investment",
+    LIVE: "Invested",
+    ACTIVE: "Invested",
+    HALTED: "Trading halted",
+    RISK_EXIT: "Closing positions",
+    QUEUED: "Accepted",
+    EXECUTING: "Confirming execution",
+    EXECUTED: "Executed",
+    PARTIALLY_FILLED: "Partially filled",
+    EXPIRED: "Expired",
+    FAILED: "Failed",
+    REQUESTED: "Awaiting settlement",
+    SETTLING: "Settling",
+    PAID: "Paid",
+    CANCELLED: "Cancelled",
+    DRAFT: "Preparing",
+  })[value] || "Check status";
 export const investable = (s) =>
   ["FUNDING", "LIVE"].includes(s.status) &&
   !["HALTED", "RISK_EXIT"].includes(s.public_metrics?.status);
@@ -80,4 +80,10 @@ export function periodReturn(history, period, now = Date.now()) {
   return first <= -10000
     ? null
     : ((10000 + last) / (10000 + first)) * 10000 - 10000;
+}
+
+export function durationLabel(seconds) {
+  if(seconds%86400===0)return `${seconds/86400} day${seconds===86400?'':'s'}`;
+  if(seconds%3600===0)return `${seconds/3600} hour${seconds===3600?'':'s'}`;
+  return `${seconds/60} minute${seconds===60?'':'s'}`;
 }

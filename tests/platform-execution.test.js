@@ -127,3 +127,11 @@ test('old failed gas-budget requests are historical and are not silently resubmi
  const f=gasFixture();f.job.status='FAILED';f.job.error='TEE_GAS_BUDGET';f.topUp();
  await f.e.tick();assert.equal(f.job.status,'FAILED');assert.equal(f.job.error,'TEE_GAS_BUDGET');assert.equal(f.broadcasts(),0);
 });
+
+test('background execution releases the financial mutex between strategies and reads fresh account changes',async()=>{
+ const f=gasFixture(),events=[];f.job.status='EXECUTED';f.state.books.other=newBook({id:'other',strategist_wallet:'bob',fee_bps:0});
+ let tail=Promise.resolve(),mutation;
+ f.e.investments.serial=fn=>{const result=tail.then(fn);tail=result.catch(()=>{});return result;};
+ f.e.observeBook=async book=>{events.push(book.id);if(book===f.book)mutation=f.e.investments.serial(()=>{events.push('account');f.state.books.other.cash='123';});else assert.equal(book.cash,'123');return [];};
+ await f.e.tick();await mutation;assert.deepEqual(events,[f.book.id,'account','other']);
+});

@@ -23,7 +23,7 @@ const secret=Buffer.from(derived.key,'hex'),channel=encryptionIdentity(secret,{m
 const identity={mode:'COHORT_TESTNET_OPERATOR',chainId:10143,encryptionPublicKey:channel.publicKey,operator:keys.wallet.address,managerKeys:[keys.publicKey(0),keys.publicKey(1)],...manifest};
 const rpc=new JsonRpcProvider('https://testnet-rpc.monad.xyz',undefined,{batchMaxCount:1,cacheTimeout:-1});
 let engine,busy=false;const seen=new Set();
-const investments=new PrivateInvestments({secret,storeDir:'/state',provider:rpc,operator:keys.wallet.address,accessHash:manifest.accessHash,catalogUrl:'https://mm-zkquant.vercel.app/api/v1/strategies'});
+const investments=new PrivateInvestments({secret,storeDir:'/state',provider:rpc,operator:keys.wallet.address,wallet:keys.wallet,accessHash:manifest.accessHash,catalogUrl:'https://mm-zkquant.vercel.app/api/v1/strategies'});
 if(manifest.omnibusVault&&manifest.cashToken)await investments.pin({vaultAddress:manifest.omnibusVault,cashTokenAddress:manifest.cashToken});
 const execution=new PlatformExecution({investments,provider:rpc,wallet:keys.wallet.connect(rpc),secret,storeDir:'/state',apiUrl:'https://mm-zkquant.vercel.app/api'});
 await execution.initialize();
@@ -65,7 +65,7 @@ const server=createServer(async(req,res)=>{
      const opened=channel.open(body),input=opened.message;
      let result;
      try {
-      result=input.action==='PREPARE'?await investments.prepare(input):input.action==='COMPLETE'?await investments.complete(input):input.action==='PORTFOLIO'?await investments.portfolio(input):input.action==='CONFIGURE'?await investments.configure(input):input.action==='RETIREMENT_CHECK'?await investments.retirementCheck(input):input.action==='PAUSE_FOR_RETIREMENT'?await execution.pauseForRetirement(input):['WITHDRAW','WITHDRAW_PENDING','CANCEL_WITHDRAWAL'].includes(input.action)?await investments.withdrawal(input):null;
+      result=input.action==='CHECKPOINT_NOW'?await ledgerProofs.requestCheckpoint(input):input.sessionToken?await investments.accountRequest(input):input.action==='PREPARE'?await investments.prepare(input):input.action==='COMPLETE'?await investments.complete(input):input.action==='PORTFOLIO'?await investments.portfolio(input):input.action==='CONFIGURE'?await investments.configure(input):input.action==='RETIREMENT_CHECK'?await investments.retirementCheck(input):input.action==='PAUSE_FOR_RETIREMENT'?await execution.pauseForRetirement(input):['WITHDRAW','WITHDRAW_PENDING','CANCEL_WITHDRAWAL'].includes(input.action)?await investments.withdrawal(input):null;
       if(!result)throw Error('UNKNOWN_ACTION');
      } catch(error) { result={error:error.message}; }
      return platformReply(200,{reply:opened.reply(result)});

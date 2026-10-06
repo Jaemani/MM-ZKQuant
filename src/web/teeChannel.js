@@ -15,7 +15,7 @@ async function channelKey(publicKey) {
 }
 
 export async function encryptedTeeRequest(endpoint, publicKey, path, message, { relayBase } = {}) {
-  if (!endpoint || !publicKey) throw Error('TEE 연결이 설정되지 않았습니다.');
+  if (!endpoint || !publicKey) throw Error("TEE connection is not configured.");
   const { ephemeral, key } = await channelKey(publicKey);
   const iv = randomBytes(12);
   const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: encoder.encode('request'), tagLength: 128 }, key, encoder.encode(JSON.stringify(message))));
@@ -28,11 +28,11 @@ export async function encryptedTeeRequest(endpoint, publicKey, path, message, { 
     throw Error(error.name === 'TimeoutError' ? 'TEE_RESPONSE_TIMEOUT' : 'TEE_CONNECTION_FAILED');
   }
   const body = await response.json().catch(() => ({}));
-  if (!response.ok || !body.reply) throw Error(body.error || 'TEE 요청이 거절되었습니다.');
+  if (!response.ok || !body.reply) throw Error(body.error || "TEE request rejected.");
   const sealed = body.reply;
   const cipher = new Uint8Array([...hexToBytes(sealed.data), ...hexToBytes(sealed.tag)]);
   const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: hexToBytes(sealed.iv), additionalData: encoder.encode('response'), tagLength: 128 }, key, cipher);
   const result=JSON.parse(decoder.decode(plaintext));
-  if(result.error)throw Error(result.error);
+  if(result.error){const error=Error(result.error);error.teeRejected=true;throw error;}
   return result;
 }

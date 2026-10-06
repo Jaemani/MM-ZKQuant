@@ -1,3 +1,4 @@
+import {redeemToCash,debitPending} from './cash-ledger.mjs';
 import { SharedAccounts } from './shared-accounts.mjs';
 import { ledgerEvent,ledgerValue } from './ledger-journal.mjs';
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../../../src/platform/vault-retirement.js';
@@ -61,10 +62,15 @@ export class PlatformExecution {
   }
   async accept(input) {
     const strategy=await this.authorize(input);
+    if(input.action==='STATUS'){
+      const state=this.investments.state(),book=state.books[strategy.id]||newBook(strategy);
+      return {sequence:book.sequence,status:strategy.strategist_wallet?book.status:'DRAFT',policy:book.policy,policyVersion:book.policyVersion,valuationError:book.valuationError||null,reconciliationError:this.reconciliationError||null,performanceFees:this.performanceFees(book),requests:Object.values(book.requests).map(({id,status,error,sequence,createdAt,diagnostic})=>({id,status,error,sequence,createdAt,diagnostic}))};
+    }
     return this.investments.serial(()=>{
-      const state=this.investments.state(),book=state.books[strategy.id] ||=newBook(strategy);
+      const state=this.investments.state();
+      if(!strategy.strategist_wallet)throw Error('ADD_FUNDS_FIRST');
+      const book=state.books[strategy.id] ||=newBook(strategy);
       book.policyVersion??=strategy.policy_version||1;
-      if(input.action==='STATUS')return {sequence:book.sequence,status:book.status,policy:book.policy,policyVersion:book.policyVersion,valuationError:book.valuationError||null,reconciliationError:this.reconciliationError||null,performanceFees:this.performanceFees(book),requests:Object.values(book.requests).map(({id,status,error,sequence,createdAt})=>({id,status,error,sequence,createdAt}))};
       if(input.action==='RESUME') {if(book.status!=='HALTED')throw Error('NOT_HALTED');book.status='ACTIVE';book.baselineNav=book.nav;book.peakNav=book.nav;this.save(state);return {status:book.status};}
       if(input.action!=='TARGET')throw Error('INVALID_ACTION');
       if(!['FUNDING','LIVE'].includes(strategy.status))throw Error('STRATEGY_NOT_ACTIVE');
@@ -116,6 +122,7 @@ export class PlatformExecution {
       book.feePayouts.push({txHash:result.hash,amount:String(effect.amount),blockNumber:result.block||null,paidAt:Math.floor(Date.now()/1000)});
       ledgerEvent(book,'FEE_PAY',{amount:String(effect.amount),txHash:result.hash});
     }
+    if(effect.kind==='CASH_WITHDRAW'){const w=book.withdrawals[effect.withdrawalId];if(w.status==='PAID')return;debitPending(book,w.wallet,effect.amount,{txHash:result.hash});w.status='PAID';w.txHash=result.hash;w.paidAt=Math.floor(Date.now()/1000);delete w.error;}
     if(effect.kind==='PENDING_WITHDRAW'){const w=book.withdrawals[effect.withdrawalId],p=book.investors[w.wallet.toLowerCase()];p.pending=String(n(p.pending)-n(effect.amount));p.paid=String(n(p.paid)+n(effect.amount));w.status='PAID';w.txHash=result.hash;delete w.error;ledgerEvent(book,'PENDING_PAY',{wallet:p.wallet,amount:String(effect.amount),txHash:result.hash});}
   }
   async step(state,job,label,request,effect=null) {
@@ -236,6 +243,7 @@ export class PlatformExecution {
   }
   async settle(state,book,now) {
     for(const w of Object.values(book.withdrawals).filter(w=>w.kind==='PENDING'&&['REQUESTED','SETTLING'].includes(w.status)&&w.settlementAt<=now)){
+      if(w.destination==='BALANCE'){redeemToCash(state,book,w,w.amount);this.save(state);continue;}
       w.status='SETTLING';w.job ||= {id:opaque(`pending-withdraw:${w.id}`),steps:{}};this.save(state);
       await this.step(state,w.job,'pay',await this.vault(state).withdraw.populateTransaction(w.wallet,n(w.amount),opaque(w.job.id)),{bookId:book.id,kind:'PENDING_WITHDRAW',withdrawalId:w.id,amount:w.amount});
     }
@@ -318,6 +326,7 @@ export class PlatformExecution {
     for(const id of settlement.withdrawalIds){
       const w=book.withdrawals[id];if(w.status==='PAID')continue;
       const amount=n(settlement.payouts[id]);
+      if(w.destination==='BALANCE'){redeemToCash(state,book,w,amount);this.save(state);continue;}
       if(amount===0n){burnWithdrawal(book,w,0n);this.save(state);continue;}
       await this.step(state,settlement,`pay-${id}`,await this.vault(state).withdraw.populateTransaction(w.wallet,amount,opaque(`${settlement.id}:pay-${id}`)),{bookId:book.id,kind:'WITHDRAW',withdrawalId:id,amount:String(amount)});
     }
@@ -331,27 +340,46 @@ export class PlatformExecution {
     await this.step(state,job,'pay',await this.vault(state).withdraw.populateTransaction(book.manager,amount,opaque(job.id)),{bookId:book.id,kind:'FEE',amount:String(amount)});
     delete book.feePayment;this.save(state);
   }
+  async settleCash(state,book) {
+    for(const w of Object.values(book.withdrawals).filter(w=>['REQUESTED','SETTLING'].includes(w.status))){
+      try{
+        w.status='SETTLING';w.job||={id:opaque(`cash-withdraw:${book.id}:${w.id}`),steps:{}};this.save(state);
+        await this.step(state,w.job,'pay',await this.vault(state).withdraw.populateTransaction(w.wallet,n(w.amount),opaque(w.job.id)),{bookId:book.id,kind:'CASH_WITHDRAW',withdrawalId:w.id,amount:w.amount});
+      }catch(e){w.error=executionError(e);this.save(state);}
+    }
+  }
   async tick() {
     if(!this.submitter)return;
-    return this.investments.serial(async()=>{
-      const state=this.investments.state();if(!state.config)return;
+    const synchronized=await this.investments.serial(async()=>{
+      const state=this.investments.state();if(!state.config)return false;
       try {await this.submitter.sync();this.reconciliationError=null;} catch(error) {
         this.reconciliationError=executionError(error);
         for(const book of Object.values(state.books))for(const job of Object.values(book.requests)) {
           if(!['QUEUED','EXECUTING'].includes(job.status))continue;
           if(Object.values(job.steps||{}).some(step=>this.submitter.lookup(step.id)?.status===undefined&&this.submitter.lookup(step.id)))job.error=this.reconciliationError;
         }
-        this.save(state);return;
+        this.save(state);return false;
       }
-      if(!this.catalogAt||Date.now()-this.catalogAt>60000){try{const r=await fetch(`${this.apiUrl}/v1/strategies`,{signal:AbortSignal.timeout(5000)});if(r.ok){this.catalog=(await r.json()).strategies;this.catalogAt=Date.now();}}catch{}}
-      for(const book of Object.values(state.books)) {
+      return true;
+    });
+    if(!synchronized)return;
+    if(!this.catalogAt||Date.now()-this.catalogAt>60000){try{const r=await fetch(`${this.apiUrl}/v1/strategies`,{signal:AbortSignal.timeout(5000)});if(r.ok){this.catalog=(await r.json()).strategies;this.catalogAt=Date.now();}}catch{}}
+    // Release the financial mutex between books. Each operation still uses the
+    // latest committed state, while account requests can run between strategies.
+    for(const id of Object.keys(this.investments.state().books)) {
+      await this.investments.serial(async()=>{
+        const state=this.investments.state(),book=state.books[id];if(!book)return;
         // Chain confirmation can precede a process crash. Apply saved monetary
         // effects before reading venue state or skipping already-completed steps.
         const jobs=[...Object.values(book.requests),...Object.values(book.withdrawals).map(w=>w.job),book.settlement,book.settlement?.job,book.riskJob,book.feePayment].filter(Boolean);
         for(const job of jobs)for(const step of Object.values(job.steps||{}))if(!step.applied){const result=this.submitter.lookup(step.id);if(result?.status===1){await this.applyEffect(state,step.effect,result);if(step.effect?.hasFill)job.hasFill=true;step.applied=true;step.hash=result.hash;this.save(state);}}
+        if(book.kind==='CASH_ACCOUNT'){await this.settleCash(state,book);return;}
         for(const job of Object.values(book.requests).filter(r=>['QUEUED','EXECUTING'].includes(r.status))) {
           try {await this.execute(state,book,job);}catch(e){
             job.error=executionError(e);
+            // Private owner diagnostics contain only exception type and code location.
+            // Never include RPC messages, calldata, target weights or signed bytes.
+            job.diagnostic={name:/^[A-Za-z]+Error$/.test(e.name||'')?e.name:'Error',code:/^[A-Z_]+$/.test(e.code||'')?e.code:null,location:e.stack?.match(/(?:execution|shared-accounts|ledger|ledger-journal)\.mjs:\d+:\d+/)?.[0]||null};
             const pending=Object.values(this.submitter.publicState().records).some(r=>r.status===undefined)||Object.values(job.steps).some(step=>!step.applied&&this.submitter.lookup(step.id)?.status===1);
             if(pending)job.status='EXECUTING';
             else if(job.error==='OPERATOR_GAS_INSUFFICIENT'){
@@ -378,10 +406,10 @@ export class PlatformExecution {
             crystallizeFees(book);book.policy=validatePolicy(proposal.policy);book.feeBps=proposal.feeBps;ledgerEvent(book,'POLICY',{feeBps:book.feeBps});book.policyVersion=proposal.version;this.save(state);
           }
         }catch(e){book.valuationError=executionError(e);if(book.settlement)for(const id of book.settlement.withdrawalIds)if(book.withdrawals[id].status!=='PAID')book.withdrawals[id].error=book.valuationError;this.save(state);}
-      }
-    });
+      });
+    }
   }
-  metrics() {return {strategies:Object.values(this.investments.state().books).filter(b=>!b.valuationError).map(b=>({strategyId:b.id,...publicMetrics(b)}))};}
+  metrics() {return {strategies:Object.values(this.investments.state().books).filter(b=>b.kind!=='CASH_ACCOUNT'&&!b.valuationError).map(b=>({strategyId:b.id,...publicMetrics(b)}))};}
   async publish() {
     const observedAt=Math.floor(Date.now()/60000)*60000;
     if(this.lastPublished===observedAt)return;

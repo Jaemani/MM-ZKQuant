@@ -40,6 +40,12 @@ export async function handlePlatformRequest(request, response, service, { origin
     if (request.method !== 'POST') throw new PlatformError('METHOD_NOT_ALLOWED', 405);
     const input = await readBody(request);
     if (pathname === '/v1/tee-metrics') return reply(response,200,await service.publishMetrics(input));
+    if (pathname === '/v1/auth/register') return reply(response,201,await service.register(input));
+    if (pathname === '/v1/auth/login') return reply(response,200,await service.login(input));
+    if (pathname === '/v1/auth/credentials') return reply(response,200,await service.setCredentials(request.headers.authorization,input));
+    if (pathname === '/v1/auth/logout') return reply(response,200,await service.logout(request.headers.authorization));
+    if (pathname === '/v1/account-authorization') return reply(response,200,await service.accountAuthorization(request.headers.authorization,input));
+    if (pathname === '/v1/tee-wallet-binding') return reply(response,200,await service.bindWallet(input));
     if (pathname === '/v1/auth/challenge') return reply(response, 200, await service.challenge(input));
     if (pathname === '/v1/auth/verify') return reply(response, 200, await service.verify(input));
     if (pathname === '/v1/strategists') return reply(response, 201, await service.upsertStrategist(request.headers.authorization, input));

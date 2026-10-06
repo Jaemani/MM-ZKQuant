@@ -93,7 +93,7 @@ test('real platform ownership authorization denies another strategist before acc
   const keyHash=createHash('sha256').update(`MMQ_API_KEY_V1:${token}`).digest('hex');
   let wallet=other,bookReads=0;
   const service=new PlatformService({query:async(sql,params)=>{
-    if(sql.startsWith('SELECT id,strategist_wallet,key_hash'))return {rows:[{id:'key',strategist_wallet:wallet,key_hash:keyHash}]};
+    if(sql.startsWith('SELECT id,user_id,strategist_wallet,key_hash'))return {rows:[{id:'key',user_id:wallet,strategist_wallet:wallet,key_hash:keyHash}]};
     if(sql.startsWith('SELECT * FROM strategies'))return {rows:params[1]===owner?[{id:'s',strategist_wallet:owner}]:[]};
     throw Error(`Unexpected query: ${sql}`);
   }});

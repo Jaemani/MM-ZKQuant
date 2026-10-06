@@ -22,7 +22,7 @@ if(reuseEndpoint){
 const token=reused?null:randomBytes(32).toString('hex');
 const runtime=['deploy/tee/operator/server.mjs','deploy/tee/operator/engine.mjs','deploy/tee/operator/platform.mjs','deploy/tee/operator/investments.mjs','protocol/cohort/durable-submitter.mjs','protocol/perpl/target-prover.mjs','src/platform/investment-message.js','src/integration/sealed.js'];
 const files=Object.fromEntries(runtime.map(p=>[p,readFileSync(p)]));
-for(const p of ['deploy/tee/operator/execution.mjs','deploy/tee/operator/shared-accounts.mjs','deploy/tee/operator/ledger.mjs','src/platform/policy.js','src/platform/execution-errors.js','src/platform/vault-retirement.js','protocol/perpl/exchange-abi.json']) {runtime.push(p);files[p]=readFileSync(p);}
+for(const p of ['deploy/tee/operator/cash-ledger.mjs','deploy/tee/operator/execution.mjs','deploy/tee/operator/shared-accounts.mjs','deploy/tee/operator/ledger.mjs','src/platform/policy.js','src/platform/execution-errors.js','src/platform/vault-retirement.js','protocol/perpl/exchange-abi.json']) {runtime.push(p);files[p]=readFileSync(p);}
 for(const p of ['deploy/tee/operator/ledger-journal.mjs','deploy/tee/operator/ledger-proofs.mjs','deploy/tee/operator/ledger-prover.mjs','deploy/tee/operator/ledger-prove-worker.mjs','protocol/platform/ledger-witness.mjs']){runtime.push(p);files[p]=readFileSync(p);}
 let ledgerProofs;
 if(existsSync('public/zk/platform-ledger-v1/manifest.json')){
@@ -37,6 +37,9 @@ files[sharedArtifact]=Buffer.from(JSON.stringify(await compilePlatformSharedAcco
 for(const p of ['circuits/perpl-target-mvp.circom','artifacts/perpl-zk/TargetVerifier.sol','artifacts/perpl-zk/verification-key.json'])files[p]=readFileSync(p);
 // R1CS is a build input, not needed by the enclave. Pin the proving runtime files only.
 const hashes=Object.fromEntries(['circuits/perpl-target-mvp.circom','artifacts/perpl-zk/perpl-target-mvp_js/perpl-target-mvp.wasm','artifacts/perpl-zk/perpl-target-mvp.zkey','artifacts/perpl-zk/TargetVerifier.sol'].map(p=>[p,sha(readFileSync(p))]));
+// Platform updates preserve the enrolled legacy target-prover key as well as the live ledger key.
+if(reused&&process.env.MM_TEE_PINNED_WASM_SHA256)hashes['artifacts/perpl-zk/perpl-target-mvp_js/perpl-target-mvp.wasm']=process.env.MM_TEE_PINNED_WASM_SHA256;
+if(reused&&process.env.MM_TEE_PINNED_ZKEY_SHA256)hashes['artifacts/perpl-zk/perpl-target-mvp.zkey']=process.env.MM_TEE_PINNED_ZKEY_SHA256;
 files['artifacts/perpl-zk/build.json']=Buffer.from(JSON.stringify({sha256:hashes}));
 const manifest={controller:reused?.controller||'0xA761529aE65a0966125C47911DEDCC7F23951D57',experimentId:reused?.experimentId||randomBytes(16).toString('hex'),sourceHashes:Object.fromEntries(runtime.map(p=>[p,sha(files[p])])),lockSha256:sha(files['package-lock.json']),wasmSha256:hashes['artifacts/perpl-zk/perpl-target-mvp_js/perpl-target-mvp.wasm'],zkeySha256:hashes['artifacts/perpl-zk/perpl-target-mvp.zkey'],accessHash:reused?.accessHash||sha(token),...(process.env.OMNIBUS_VAULT_ADDRESS&&process.env.PLATFORM_CASH_TOKEN_ADDRESS?{omnibusVault:process.env.OMNIBUS_VAULT_ADDRESS,cashToken:process.env.PLATFORM_CASH_TOKEN_ADDRESS}:{})};
 if(ledgerProofs)manifest.ledgerProofs=ledgerProofs;
