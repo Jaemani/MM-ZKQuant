@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .data/
+.codegraph/
+.serena/
 .env
 .env.*
 !.env.example
