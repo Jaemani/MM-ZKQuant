@@ -15,3 +15,5 @@ npm run build
 TEE worker를 새 compose로 배포하면 측정값이 바뀔 수 있다. 새 quote와 control-plane compose hash를 검토하고 [고정 정책](../src/platform/tee-attestation-policy.js)을 명시적으로 갱신한 뒤 웹/API를 배포해야 한다. 불일치 동안 비공개 요청은 안전하게 차단된다. 이 게이트는 이미 완료된 거래를 소급 검증하지 않으며, 장부 ZK proof와 별개의 검증이다.
 
 현재 worker는 변경하지 않는 배포 순서는 다음과 같다. 배포 전 `npm run verify:tee:platform`의 성공과 Phala control-plane의 compose hash를 대조한다. 승인 후 기존 Vercel 프로젝트에 웹/API를 배포하고, 로그인한 테스트 지갑으로 `/api/v1/tee-attestation`이 200을 반환하는지 확인한다. 이어서 전략 상태 조회와 투자자 포트폴리오 조회를 수행하되 새 거래는 보내지 않는다. 실패하면 비공개 요청을 차단한 상태에서 배포를 되돌린다.
+
+2026-10-06 운영 배포 `dpl_4fUuSnfh67vZchcbbuUWHScLTrwb`를 확인했다. 운영 도메인의 무인증 attestation 요청은 401, 새 테스트 지갑 로그인 후 요청은 `VERIFIED_PINNED_TDX_VIA_PHALA`를 반환했다. 검증된 키로 동일 출처 릴레이를 거쳐 실제 TEE에 상태를 바꾸지 않는 검사 메시지를 보내고, 암호화 응답 `UNKNOWN_ACTION`을 복호화했다. 새 거래는 생성하지 않았다. Phala control-plane의 compose 등록 기록 독립 대조는 아직 남아 있다.
