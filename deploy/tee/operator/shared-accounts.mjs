@@ -15,6 +15,14 @@ const scale=info=>10n**(n(info.priceDecimals)+n(info.lotDecimals));
 const value=(qty,price,info)=>qty*price*1000000n/scale(info);
 const totalQty=(pool,market,exclude)=>Object.entries(pool.claims).reduce((sum,[id,c])=>sum+(id===exclude?0n:n(c.quantities[market])),0n);
 const compatible=(pool,market,bookId,target)=>Object.entries(pool.claims).every(([id,c])=>id===bookId||sameSide(n(c.quantities[market]),target));
+const lockedCollateral=(pool,bookId,market)=>{
+  const position=pool.checkpoint?.markets[market],qty=n(pool.claims[bookId]?.quantities[market]),total=n(position?.qty);
+  const owned=qty<0n?-qty:qty,whole=total<0n?-total:total;
+  if(!owned||!whole)return 0n;
+  // Same-direction owners share the position's actual deposit. Round up so
+  // a strategy never spends collateral that is still locked on the exchange.
+  return (n(position.deposit)*owned+whole-1n)/whole;
+};
 export function claim(pool,bookId) {return pool.claims[bookId]||={equity:'0',quantities:{}};}
 
 // Prefer reuse, including across markets. Opposing strategies never net: they
@@ -102,7 +110,8 @@ export class SharedAccounts {
       for(const [m,q] of Object.entries(c.quantities)) {
         const p=pool.checkpoint?.markets[m];if(!p||!n(q))continue;
         const qty=n(q),notional=value(qty<0n?-qty:qty,n(p.mark),p.info);
-        reserved+=notional*11000n/BigInt(state.books[id].policy.maxLeverageBps);
+        const estimate=notional*11000n/BigInt(state.books[id].policy.maxLeverageBps),actual=lockedCollateral(pool,id,m);
+        reserved+=actual>estimate?actual:estimate;
       }
       const amount=n(c.equity)-reserved;available[id]=amount>0n?amount:0n;
     }
@@ -169,13 +178,19 @@ export class SharedAccounts {
     }
     claim(pool,book.id).quantities[market]||='0';book.slots[market]=pool.address;this.execution.save(state);return pool.address;
   }
-  funding(state,book,market,target,marketInfo) {
+  funding(state,book,market,target,marketInfo,{reserveActual=true}={}) {
     const pool=state.sharedAccounts[book.slots[market]],c=claim(pool,book.id);
     let needed=0n;
     for(const [m,q] of Object.entries(c.quantities)) {
       const p=pool.checkpoint.markets[m];if(!p&&String(m)!==String(market))continue;
       const qty=String(m)===String(market)?target:n(q),info=p?.info||marketInfo;
-      if(info)needed+=value(qty<0n?-qty:qty,n(p?.mark||info.markPNS),info)*11000n/BigInt(book.policy.maxLeverageBps);
+      if(info){
+        const estimate=value(qty<0n?-qty:qty,n(p?.mark||info.markPNS),info)*11000n/BigInt(book.policy.maxLeverageBps);
+        // An order in this market cannot release another market's deposit.
+        // The policy cap is an estimate, not the collateral actually locked.
+        const actual=reserveActual&&String(m)!==String(market)?lockedCollateral(pool,book.id,m):0n;
+        needed+=actual>estimate?actual:estimate;
+      }
     }
     return needed>n(c.equity)?needed-n(c.equity):0n;
   }

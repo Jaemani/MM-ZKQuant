@@ -7,6 +7,20 @@ import { newBook,depositPending,portfolio,requestWithdrawal } from '../deploy/te
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../src/platform/vault-retirement.js';
 
 const unit=1000000n;
+test('funding a second market reserves actual collateral locked in the first market',()=>{
+ const info={markPNS:'1',priceDecimals:'0',lotDecimals:'0'},book={id:'a',slots:{16:'pool',32:'pool'},policy:{maxLeverageBps:20000}},pool={claims:{a:{equity:String(100n*unit),quantities:{16:'100',32:'0'}}},checkpoint:{free:'0',walletCash:'0',markets:{16:{qty:'100',mark:'1',deposit:String(100n*unit),info}}}},state={books:{a:book},sharedAccounts:{pool}};
+ const shared=new SharedAccounts({});
+ // The first position holds 100 AUSD despite the current 2x policy. The new
+ // 100 AUSD exposure needs another 55 AUSD; locked funds cannot fund it.
+ assert.equal(shared.funding(state,book,32,100n,info),55n*unit);
+ assert.equal(shared.free(state,pool,book),0n);
+ // A second owner has their own locked 100 AUSD. Do not reserve their
+ // collateral against this owner or treat their account cash as spendable.
+ pool.claims.b={equity:String(100n*unit),quantities:{16:'100'}};state.books.b={id:'b',policy:book.policy};
+ pool.checkpoint.markets[16].qty='200';pool.checkpoint.markets[16].deposit=String(200n*unit);pool.checkpoint.free=String(100n*unit);
+ assert.equal(shared.funding(state,book,32,100n,info),55n*unit);
+ assert.equal(shared.free(state,pool,book),0n);
+});
 function fixture({bridge=false}={}) {
   const state={books:{},sharedAccounts:{},config:{vaultAddress:'0x1111111111111111111111111111111111111111',cashTokenAddress:'0x2222222222222222222222222222222222222222'}},banks={},records={},receipts={};let count=0,broadcasts=0,perplAccounts=0,pays=0,persisted;
   const e=Object.create(PlatformExecution.prototype);

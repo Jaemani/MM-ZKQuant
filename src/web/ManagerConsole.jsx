@@ -1051,6 +1051,7 @@ function StrategyWorkspace({ strategy }) {
                       )}
                       {diagnoses[r.id] && <p className="q-callout">
                         {[...new Set((diagnoses[r.id].probes || []).map(probe => probe.code).filter(Boolean))].map(platformError).join(' ') || 'The original cause could not be classified from historical contract checks.'}
+                        {diagnoses[r.id].fundingAssessment?.lockedCollateralUnderestimated && <span> Collateral locked in another market exceeds the earlier funding estimate.</span>}
                         <small className="q-muted"> Historical contract checks. This does not retry the order.</small>
                       </p>}
                       {["QUEUED", "EXECUTING"].includes(r.status) && (

@@ -104,8 +104,15 @@ export class PlatformExecution {
       return this.provider.getBlock(low);
     };
     const probes=[];
-    for(const offset of [5,30,90]){
-      const timestamp=Math.min(latest.timestamp,job.deadline-1,job.createdAt+offset),block=await atTime(timestamp);
+    // A creation-time replay can precede this job's funding transactions. Replay
+    // the last confirmed prerequisite first so unfunded early snapshots cannot
+    // be mistaken for the failure seen by the actual executor.
+    const confirmedBlocks=Object.values(job.steps||{}).filter(s=>s.applied).map(s=>this.submitter?.lookup(s.id)?.block).filter(Number.isSafeInteger);
+    const prerequisiteBlock=confirmedBlocks.length?await this.provider.getBlock(Math.max(...confirmedBlocks)):null;
+    const blocks=prerequisiteBlock?[prerequisiteBlock]:[];
+    blocks.push(await atTime(Math.min(latest.timestamp,job.deadline-1)));
+    if(!prerequisiteBlock)for(const offset of [5,30,90])blocks.push(await atTime(Math.min(latest.timestamp,job.deadline-1,job.createdAt+offset)));
+    for(const block of blocks){
       if(probes.some(p=>p.blockNumber===block.number))continue;
       try{await this.provider.call({...step.request,from:this.wallet.address,blockTag:block.number});probes.push({blockNumber:block.number,timestamp:block.timestamp,result:'CALL_SUCCEEDED'});}
       catch(error){
@@ -118,7 +125,18 @@ export class PlatformExecution {
         probes.push({blockNumber:block.number,timestamp:block.timestamp,result:error.code==='CALL_EXCEPTION'?'REVERTED':'RPC_UNAVAILABLE',reason:venue?.reason||reason,selector:data?.slice(0,10)||null,...(venue?{resultCode:venue.resultCode,code:venue.code}:{})});
       }
     }
-    return {id:job.id,status:job.status,error:job.error,stage,probes,historicalReplay:true};
+    let fundingAssessment;
+    const targetMarket=label.match(/^target-(\d+)-/);
+    if(this.shared&&book.executionMode==='SHARED'&&targetMarket){
+      const state=this.investments.state(),market=Number(targetMarket[1]),pool=state.sharedAccounts?.[book.slots[market]],info=pool?.checkpoint?.markets[market]?.info||await this.exchange.getPerpetualInfoV2(market);
+      if(pool&&job.plan?.[market]!==undefined){
+        const required=this.shared.funding(state,book,market,n(job.plan[market]),info),estimated=this.shared.funding(state,book,market,n(job.plan[market]),info,{reserveActual:false});
+        // Only diagnostic flags leave the enclave; market, positions, deposits
+        // and strategy capital allocations remain in the private ledger.
+        fundingAssessment={source:'CURRENT_ACCOUNT_STATE',lockedCollateralUnderestimated:required>estimated,additionalCollateralRequired:required>0n};
+      }
+    }
+    return {id:job.id,status:job.status,error:job.error,stage,probes,historicalReplay:true,prerequisitesConfirmed:Boolean(prerequisiteBlock),...(fundingAssessment?{fundingAssessment}:{})};
   }
   performanceFees(book) {
     const totals=managerFeeTotals(book),payments=new Map((book.feePayouts||[]).map(payment=>[payment.txHash,{...payment,status:'PAID'}]));
