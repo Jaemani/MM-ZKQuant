@@ -55,7 +55,7 @@ export function StrategyInspector({ strategy: s }) {
     </div>
     <div className="q-inspector-observed"><span>마지막 관측</span><span>{s.marked_at ? time(s.marked_at) : "집계 전"}</span></div>
     <div className="q-inspector-policy">
-      <div className="q-row"><h3>운용 조건</h3><Link to={`/strategies/${s.slug}`} className="q-text-link">성과·조건 상세 <ArrowRight size={14} /></Link></div>
+      <h3>운용 조건</h3>
       <dl>
         <div><dt>최대 레버리지</dt><dd>{s.policy.maxLeverageBps / 10000}배</dd></div>
         <div><dt>손절 한도</dt><dd>{s.policy.stopLossBps / 100}%</dd></div>
@@ -63,6 +63,9 @@ export function StrategyInspector({ strategy: s }) {
         <div><dt>정산 주기</dt><dd>{s.policy.settlementPeriodSeconds % 86400 === 0 ? `${s.policy.settlementPeriodSeconds / 86400}일` : `${s.policy.settlementPeriodSeconds / 3600}시간`}</dd></div>
       </dl>
     </div>
+    <Link to={`/strategies/${s.slug}`} className="q-inspector-detail-link">
+      전략 상세보기 <ArrowRight size={16} aria-hidden="true" />
+    </Link>
     <InvestmentPanel key={s.id} strategy={s} />
     <p className="q-inspector-note">Monad Testnet · 테스트 AUSD로 운용됩니다.<br />공개 성과는 TEE 집계이며 ZK 검증 성과는 아닙니다.</p>
   </>;

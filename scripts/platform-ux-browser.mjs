@@ -25,8 +25,9 @@ try {
   if (process.env.MMQ_BLOCK_DIRECT_TEE === "1")
     await page.route("**/*.phala.network/**", route => route.abort());
   await page.goto(base);
-  await page.getByRole("heading", { name: "전략 탐색" }).waitFor();
-  await page.locator(".q-market-row").first().waitFor();
+  await page.getByRole("heading", { name: /전략을 살펴보고/ }).waitFor();
+  await page.locator(".q-guest-recent-row").first().waitFor();
+  assert.equal(await page.getByRole("heading", { name: "투자 시작 순서" }).isVisible(), true);
   await page.screenshot({ path: dir + "/home-desktop.png", fullPage: true });
   await page
     .getByRole("link", { name: "전략 탐색", exact: true })
@@ -55,7 +56,7 @@ try {
   assert.equal(await page.locator(".q-compare-dock").count(), 0);
   await page.locator(".q-market-row-link").nth(1).click();
   assert.equal(await page.locator(".q-market-row").nth(1).getAttribute("class").then(v => v.split(" ").includes("active")), true);
-  await page.getByRole("link", {name:"성과·조건 상세"}).click();
+  await page.getByRole("link", {name:"전략 상세보기"}).click();
   await page
     .getByRole("heading", { name: "이 전략에 투자", exact: true })
     .waitFor();
@@ -74,6 +75,17 @@ try {
     ),
     false,
   );
+  await page.goto(`${base}/strategies`);
+  await page.locator(".q-market-row").first().waitFor();
+  const mobileFilter = page.getByRole("button", { name: /^필터/ });
+  assert.equal(await mobileFilter.getAttribute("aria-expanded"), "false");
+  assert.equal(await page.getByLabel("위험도", { exact: true }).isVisible(), false);
+  await mobileFilter.click();
+  await page.getByLabel("위험도", { exact: true }).selectOption("HIGH");
+  await page.getByLabel("정렬", { exact: true }).selectOption("capital");
+  await mobileFilter.click();
+  assert.equal(await page.getByLabel("정렬", { exact: true }).isVisible(), false);
+  assert.match(await mobileFilter.innerText(), /2/);
   await page.getByRole("link", { name: "내 자산", exact: true }).last().click();
   await page.getByRole("heading", { name: "내 자산", exact: true }).waitFor();
   await page.screenshot({ path: dir + "/assets-mobile.png", fullPage: true });

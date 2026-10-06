@@ -51,3 +51,63 @@ Optional P3: self-host approved font subsets. No fresh deposits, trades or withd
 Code commit `2e89658` deployed successfully to https://mm-zkquant.vercel.app. Immutable deployment: https://mm-zkquant-4zcwzqprc-cosmoserys-projects.vercel.app (Vercel READY).
 
 Post-deployment Playwright verified desktop row selection/inspector update, comparison focus, 390px row-to-detail navigation and deep-link reload. No document overflow or page JavaScript errors. Production screenshots in `.data/design/production-split-desktop.png` and `production-split-mobile.png` were inspected. Original main workspace uncommitted work remains excluded and unchanged.
+
+## 2026-10-06 — official brand typography and palette correction
+
+final result: passed
+
+Visual truth: https://www.monad.xyz/brand-and-media-kit, captured in `docs/design/images/brand-source-type.png` and `brand-source-colors.png` (1440 × 1000 CSS/pixel dimensions, density 1). The page specifies Britti Sans for headings, Inter for body and Roboto Mono for labels/buttons/links. Its exact primary anchors are #6E54FF, #DDD7FE, #0E091C, #000000, #FFFFFF; secondary anchors are #85E6FF, #B9E3F9, #FF8EE4, #FFAE45.
+
+Implementation evidence: `brand-desktop.png` (1488px wide, viewport 1488 × 1056, full page), `brand-mobile.png` (320px wide, viewport 320 × 844, full page). `brand-comparison.png` places the 1440px official palette screenshot beside the 1488px implementation at native resolution, no rescaling. These are compared for palette/type roles, not marketing-page layout; the previously selected split workspace layout remains the layout reference. All source and implementation captures were opened for inspection.
+
+Resolved P2: the previous heading font was Inter, and product surfaces/status colors contained arbitrary non-brand hues. Added the actual official Britti Sans font, preload and dedicated heading token; applied Roboto Mono to UI labels/actions, retained Inter body. Replaced arbitrary hues with exact official anchors or explicitly derived color-mix surface/border/hover states. Positive/active uses cyan, negative/error uses pink, warnings use orange; status words and return signs preserve non-color meaning. Korean uses Noto Sans KR because the Latin brand fonts do not provide Hangul.
+
+Verified: production build passed; Playwright at 1488/1180/768/390/320px reports no horizontal overflow or page JavaScript errors. FontFaceSet confirms Britti Sans loads, computed heading/action families match the official roles, and computed canvas is exactly rgb(14, 9, 28). Chromium platform-font inspection confirms the custom headline font renders Latin glyphs, Korean uses Noto Sans KR and return figures use Roboto Mono. Mobile detail navigation and 320px detail overflow checks passed. Screenshots show readable captions and no clipped actions. This is a typography/color-only change; existing transaction logic is unchanged.
+
+No outstanding P0/P1/P2. Earlier palette/font statements above describe the previous release and are superseded by this section. Font source is documented in `public/fonts/README.md`.
+
+Brand correction deployment: code `37f7e32`, Vercel READY at https://mm-zkquant-2sonkfucm-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright checked 1488px/320px, actual font loading, computed families/canvas, mobile detail navigation and no overflow/page errors. Font response is 200 `font/woff2`. The first test sampled font readiness before render-triggered loading; explicitly awaited FontFaceSet.load, then confirmed loaded status and passing checks. Production mobile capture inspected.
+
+## 2026-10-06 — home and full-detail navigation
+
+final result: passed
+
+User finding: before this change, logged-out `/` and `/strategies` rendered the same exploration component. On desktop, clicking a strategy changed the inspector; its only full-detail link was small and easy to miss. Severity: P1 navigation clarity.
+
+The guest home now has a compact start view: what can be compared, the three investment steps, and four recent strategies from the live catalog. The full list and filters remain on `/strategies`. Logged-in `/` continues to use its existing personal dashboard. The selected strategy's inspector now has a full-width **전략 상세보기** action immediately after operating conditions, leading to `/strategies/:slug` and its full performance/history and investment detail. Mobile rows already open that route directly.
+
+Visual source: `docs/design/images/split-reference.png` (1488 × 1056 px, density 1), selected by the user for the strategy workspace. Rendered evidence: `inspector-detail-button.png` (1488 × 1056 CSS px/pixels, density 1); full-view native-resolution pairing `inspector-detail-comparison.png` (2976 × 1056). The source and implementation were opened and compared together. The new full-width detail action is an intentional requested addition to the reference. Home has no supplied mockup; its new `home-distinct-desktop.png` (1488 × 1056) and `home-distinct-mobile-320.png` (320 × 844 viewport, full-page image) were inspected against the established dark typography/color/layout system. `home-explore-comparison.png` shows home beside exploration at their actual desktop state. Both use live data; values can differ between captures.
+
+P2 iteration: the first 320px home capture had excessively narrow recent-strategy names. Reduced fixed return column and gaps, recaptured the loaded state; the final mobile evidence shows readable names, returns and links with no document overflow. The first mobile capture showed a temporary loading state and was rejected as final evidence.
+
+Fonts and palette remain official Monad Britti Sans/Inter/Roboto Mono roles and purple/lavender/ink anchors. Headline wraps at 320px; helper copy and numbers remain readable. No new image assets required. The home uses live registered strategies and states no invented performance. The TEE/testnet and pending-funds explanations remain visible.
+
+Validation: `npm run build` passed. Playwright checked home → full catalog → selected desktop inspector → detail route, and loaded 390px/320px home with zero overflow and JavaScript errors. The browser integration flow passed for public comparison, manager and investor login, private portfolio, investment confirmation, route reload, account switching and mobile layout without submitting a transaction.
+
+Deployment check for this iteration: code `f8f19a0` is READY on Vercel at https://mm-zkquant-aai2e0557-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright confirmed distinct guest home, home-to-catalog navigation, desktop inspector-to-full-detail navigation and loaded 390px/320px home screens with no horizontal overflow or page JavaScript errors.
+
+## 2026-10-06 — compact mobile search filters
+
+final result: passed
+
+User finding (P2): three visible filter selects occupied three rows beneath mobile search, delaying the strategy list. Source truth for this scoped change is the prior browser capture `docs/design/images/brand-mobile.png` at a 320 × 844 CSS px viewport, device scale 1. The selected split-workspace reference remains the broader art direction.
+
+Implementation captures: `docs/design/images/filters-closed-320.png`, `filters-open-320.png`, `filters-closed-390.png`, `filters-open-390.png`. The 320px images were captured at 320 × 844 CSS px/density 1; 390px images at 390 × 844/density 1. `filter-compact-comparison.png` combines the first 844px of the before, new default, and new expanded state without scaling (960 × 844). The combined image and source/implementation captures were opened for comparison. Financial values changed slightly across live captures; layout is compared at the same catalog state.
+
+Fix: at 850px and below, search and an outlined filter action share one row. Risk, status and sort remain hidden until requested. The action reports how many non-default options are applied when collapsed; selections persist across closing/reopening. At 640px and below, the expanded options use two columns and a full-width sort selector. Desktop keeps all selects visible. Search, selection, filtering and comparison remain independent.
+
+Post-fix evidence: first strategy appears about 99px higher at 320px, the search action stays within 320px, and the expanded state retains readable 42px controls. No actionable P0/P1/P2 remains. Brand typography, colors, icons and live content are unchanged. No new raster asset is needed.
+
+Validation: `npm run build` passed. Playwright at 320/390/768/1488px checked default visibility, `aria-expanded`, reveal, selection, collapse, applied-count display, persistence, desktop visibility, no horizontal overflow and no JavaScript errors. Existing public/manager/investor browser flows, including mobile filters, comparison and private-portfolio relay, passed without submitting transactions.
+
+Production verification: code `272a496` is Vercel READY at https://mm-zkquant-rhmc829t0-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright repeated default collapsed state, expansion, risk/sort selection, retained applied count and zero overflow at 320/390/768/1488px. No page JavaScript errors.
+
+## 2026-10-06 — mobile search/filter control alignment
+
+final result: passed
+
+User finding (P2): the mobile search control and adjacent filter button had unequal heights. Before browser evidence at 390 × 844 CSS px, density 1: `docs/design/images/filters-closed-390.png`; computed search height 46.8px vs button 42px. The selected strategy-workspace visual remains the broader style source. After screenshot: `filters-aligned-390.png` at the same viewport/state, density 1, plus `filters-aligned-320.png` at 320 × 844. `filter-height-comparison.png` combines the first 844px of before/after 390px captures at native size, 780 × 844. The combined image was opened and inspected.
+
+Fix: both outer controls now use 44px height below 850px, with the input filling the 42px inner content box without vertical padding. This retains a 16px input font at phone widths for readable entry and avoids mobile zoom. Computed rectangles have identical y and 44px heights at 320, 390 and 768px. Search and filter interactions, 320/390/768/1488px overflow checks and build passed with no page JavaScript errors. No outstanding P0/P1/P2.
+
+Alignment deployment: code `c5f6d57` is Vercel READY at https://mm-zkquant-rmquqqw0j-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Chromium measured both outer controls at the same y and exactly 44px high at 320, 390 and 768px.

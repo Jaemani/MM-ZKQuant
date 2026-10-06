@@ -15,6 +15,7 @@ import {
   Layers,
   Home,
   Settings2,
+  SlidersHorizontal,
   ArrowDownToLine,
 } from "lucide-react";
 import {
@@ -49,6 +50,7 @@ export {
   Layers,
   Home,
   Settings2,
+  SlidersHorizontal,
   ArrowDownToLine,
 };
 export function navigate(path) {
