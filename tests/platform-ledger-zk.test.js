@@ -9,13 +9,24 @@ import {newBook,depositPending,activatePending,markBook,markVenueEquity,crystall
 import {ledgerEvent,flushLedgerMark,financialSnapshot} from '../deploy/tee/operator/ledger-journal.mjs';
 import {createLedgerWitness,clone} from '../protocol/platform/ledger-witness.mjs';
 import {proveLedgerTransition} from '../deploy/tee/operator/ledger-prover.mjs';
-import {LedgerProofs} from '../deploy/tee/operator/ledger-proofs.mjs';
+import {LedgerProofs,rescheduleLedgerCheckpoint} from '../deploy/tee/operator/ledger-proofs.mjs';
 import {compileLedgerContracts} from '../protocol/platform/ledger-contracts.mjs';
 import {createLocalPilotChain} from '../src/pilot/chain.js';
 
 const manifest=JSON.parse(readFileSync('public/zk/platform-ledger-v1/manifest.json'));
 const artifacts=Object.fromEntries(['wasm','zkey','verificationKey'].map(kind=>[kind,'public'+manifest.artifacts[kind].path]));
 const vault='0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6',alice='0x'+'11'.repeat(20),bob='0x'+'22'.repeat(20);
+
+test('existing sealed ledger moves its next checkpoint to the new hourly cadence',()=>{
+ assert.equal(manifest.intervalSeconds,3600);
+ const job={checkpointAt:100,firstSequence:7},ledger={sequence:6,root:'123',job,nextCheckpointAt:500};
+ rescheduleLedgerCheckpoint(ledger,manifest.intervalSeconds,1000);
+ assert.equal(ledger.nextCheckpointAt,4600);
+ assert.equal(ledger.checkpointIntervalSeconds,3600);
+ assert.equal(ledger.sequence,6);assert.equal(ledger.root,'123');assert.equal(ledger.job,job);
+ rescheduleLedgerCheckpoint(ledger,manifest.intervalSeconds,1010);
+ assert.equal(ledger.nextCheckpointAt,4600);
+});
 
 test('real financial journal matches all circuit operations and rejects a changed mint and private Merkle path',async()=>{
  const builder=await createLedgerWitness(),book=newBook({id:'private-strategy',strategist_wallet:alice,fee_bps:2000});
@@ -80,7 +91,7 @@ test('checkpoint retry recovers archived proof without reproving; missing actual
  const service=new LedgerProofs({investments,execution:{},wallet,storeDir:temp,manifest});service.builder=builder;service.artifacts=artifacts;service.ready=true;
  const mirrors=[builder.importBook(book.zkLedger.baseline)],salt='1';
  state.ledgerProofs={mirrors,indexes:{[book.id]:0},salt,root:String(builder.commitment(builder.globalTree(mirrors).root,salt,10143,vault)),vault,sequence:0,nextCheckpointAt:0};
- depositPending(state.books[book.id],alice,'10');await service.freeze(1800000000);await service.validateJob();const page=await service.preparePage();
+ depositPending(state.books[book.id],alice,'10');await service.freeze(1800000000);assert.equal(state.ledgerProofs.nextCheckpointAt,1800003600);await service.validateJob();const page=await service.preparePage();
  let proofs=0;service.prove=async witness=>{proofs++;return {proof:{testFixture:true},publicSignals:witness.pub.map(String),calldata:[],provingMs:1};};
  const saved=clone(state),write=investments.store.write;let crash=true;
  investments.store.write=value=>{if(crash){crash=false;throw Error('simulated crash after public archive');}write(value);};
@@ -88,7 +99,7 @@ test('checkpoint retry recovers archived proof without reproving; missing actual
  await service.provePage(await service.preparePage());assert.equal(proofs,1);assert.equal(state.ledgerProofs.sequence,1);
  await service.preparePage();assert.equal(service.proofs().records.length,1);
  const json=JSON.stringify(service.proofs());assert.ok(!json.includes(book.id));assert.ok(!json.toLowerCase().includes(alice.toLowerCase()));assert.ok(!json.includes('witness'));
- state.books[book.id].cash='999';await service.freeze(1800000300);await assert.rejects(()=>service.validateJob(),/LEDGER_SNAPSHOT_BOOK_MISMATCH/);
+ state.books[book.id].cash='999';await service.freeze(1800003600);await assert.rejects(()=>service.validateJob(),/LEDGER_SNAPSHOT_BOOK_MISMATCH/);
  assert.equal(service.proofs().lastSequence,1);
  rmSync(temp,{recursive:true,force:true});
 });

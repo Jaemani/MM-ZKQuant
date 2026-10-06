@@ -8,6 +8,11 @@ import {proveLedgerTransition} from './ledger-prover.mjs';
 export const checkpointAbi=['function operator() view returns(address)','function vault() view returns(address)','function verifier() view returns(address)','function verificationKeyHash() view returns(bytes32)','function root() view returns(uint256)','function sequence() view returns(uint256)','function genesisRoot() view returns(uint256)','function initializeRoot(uint256)','function append(uint256[2],uint256[2][2],uint256[2],uint256[7])','event TransitionVerified(uint256 indexed sequence,uint256 indexed checkpointAt,uint256 oldRoot,uint256 newRoot,uint256 eventsRoot)'];
 export const proofMessage=payload=>`VEILVEST_LEDGER_PROOF_V1\n${JSON.stringify(payload)}`;
 const sha=value=>createHash('sha256').update(value).digest('hex');
+export function rescheduleLedgerCheckpoint(ledger,intervalSeconds,now) {
+ if(ledger.checkpointIntervalSeconds===intervalSeconds)return;
+ ledger.checkpointIntervalSeconds=intervalSeconds;
+ ledger.nextCheckpointAt=now+intervalSeconds;
+}
 function atomicPublic(path,value) {
  const temporary=path+'.pending';writeFileSync(temporary,JSON.stringify(value),{mode:0o600,flush:true});renameSync(temporary,path);
  const fd=openSync(path.slice(0,path.lastIndexOf('/')),'r');try{fsyncSync(fd);}finally{closeSync(fd);}
@@ -16,7 +21,7 @@ const publicErrors=new Set(['LEDGER_INVESTOR_CAPACITY','LEDGER_LOT_CAPACITY','LE
 export class LedgerProofs {
  constructor({investments,execution,wallet,storeDir,manifest,artifactBase='https://mm-zkquant.vercel.app',prove=proveLedgerTransition}) {
   Object.assign(this,{investments,execution,wallet,storeDir,manifest,artifactBase,prove});
-  this.intervalSeconds=manifest.intervalSeconds||300;this.proofDir=`${storeDir}/platform-ledger-proofs`;mkdirSync(this.proofDir,{recursive:true,mode:0o700});
+  this.intervalSeconds=manifest.intervalSeconds||3600;this.proofDir=`${storeDir}/platform-ledger-proofs`;mkdirSync(this.proofDir,{recursive:true,mode:0o700});
  }
  save(state){this.investments.store.write(state);}
  async initialize() {
@@ -32,10 +37,11 @@ export class LedgerProofs {
      indexes[book.id]=mirrors.length;mirrors.push(this.builder.importBook(book.zkLedger.baseline));
     }
     const salt=String(randomSalt()),root=String(this.builder.commitment(this.builder.globalTree(mirrors).root,salt,10143,state.config.vaultAddress));
-    state.ledgerProofs={version:1,verificationKeyHash:this.manifest.artifacts.verificationKey.sha256,vault:state.config.vaultAddress,genesisAt:Math.floor(Date.now()/1000),genesisRoot:root,root,sequence:0,salt,mirrors,indexes,lastAnchoredSequence:0,lastCompleted:null,nextCheckpointAt:Math.floor(Date.now()/1000)+10,error:null};
+    state.ledgerProofs={version:1,verificationKeyHash:this.manifest.artifacts.verificationKey.sha256,vault:state.config.vaultAddress,genesisAt:Math.floor(Date.now()/1000),genesisRoot:root,root,sequence:0,salt,mirrors,indexes,lastAnchoredSequence:0,lastCompleted:null,nextCheckpointAt:Math.floor(Date.now()/1000)+10,checkpointIntervalSeconds:this.intervalSeconds,error:null};
    }
    const ledger=state.ledgerProofs;
    if(ledger.verificationKeyHash!==this.manifest.artifacts.verificationKey.sha256||ledger.vault.toLowerCase()!==state.config.vaultAddress.toLowerCase())throw Error('LEDGER_DOMAIN_CHANGED');
+   rescheduleLedgerCheckpoint(ledger,this.intervalSeconds,Math.floor(Date.now()/1000));
    for(const book of Object.values(state.books))initializeLedgerJournal(book);
    this.save(state);
   });

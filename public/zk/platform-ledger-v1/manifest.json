@@ -3,7 +3,7 @@
   "circuit": "platform-ledger-transition",
   "protocol": "groth16",
   "curve": "bn128",
-  "intervalSeconds": 300,
+  "intervalSeconds": 3600,
   "setup": "PUBLIC_PHASE1_SINGLE_PARTY_TESTNET_PHASE2",
   "phase1Url": "https://circom.info/powersOfTau28_hez_final_16.ptau",
   "phase1Sha256": "1c401abb57c9ce531370f3015c3e75c0892e0f32b8b1e94ace0f6682d9695922",
