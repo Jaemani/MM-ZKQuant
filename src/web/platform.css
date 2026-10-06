@@ -141,6 +141,8 @@
 .q-inspector-policy dl > div { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; }
 .q-inspector-policy dt { color: var(--q-muted); }
 .q-inspector-policy dd { margin: 0; font-family: var(--q-mono); }
+.q-inspector-detail-link { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 42px; margin-top: 18px; border: 1px solid var(--q-line-strong); border-radius: 4px; color: var(--q-lavender); background: var(--q-soft); font: 500 12px var(--q-mono); }
+.q-inspector-detail-link:hover { color: var(--q-ink); border-color: var(--q-primary); background: var(--q-sidebar-active); }
 .q-inspector > .q-invest-panel { border: 0; background: none; border-radius: 0; padding: 20px 0 0; margin: 0; position: static; }
 .q-inspector .q-invest-panel h2 { font-size: 16px; }
 .q-inspector .q-invest-panel > p { font-size: 11px; }
@@ -151,6 +153,29 @@
 .q-inspector .q-invest-panel > .q-invest-steps { display: none; }
 .q-inspector .q-invest-conditions > div:first-child { display: none; }
 .q-inspector-note { color: var(--q-muted); font-size: 11px; padding-top: 16px; }
+.q-guest-home { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(290px,1fr); gap: 0 36px; max-width: 1180px; margin: 24px auto; }
+.q-guest-intro { padding: 36px 0 52px; }
+.q-guest-intro h1 { font-size: clamp(30px,3.6vw,48px); line-height: 1.25; letter-spacing: -1.4px; }
+.q-guest-intro > p:not(.q-guest-caption) { max-width: 510px; margin: 22px 0 26px; color: var(--q-lavender); font-size: 15px; }
+.q-guest-caption { margin-top: 25px; color: var(--q-muted); font-size: 11px; }
+.q-guest-flow { align-self: start; border-left: 1px solid var(--q-line); padding: 36px 0 24px 30px; }
+.q-guest-flow h2 { font-size: 16px; margin-bottom: 20px; }
+.q-guest-flow ol { list-style: none; margin: 0; padding: 0; }
+.q-guest-flow li { display: flex; gap: 18px; padding: 14px 0; border-top: 1px solid var(--q-line); }
+.q-guest-flow li > span { flex: none; color: var(--q-primary-ink); font: 12px var(--q-mono); }
+.q-guest-flow li strong { font-size: 13px; }
+.q-guest-flow li p { margin-top: 4px; color: var(--q-muted); font-size: 12px; }
+.q-guest-recent { grid-column: 1/-1; border-top: 1px solid var(--q-line); padding-top: 26px; }
+.q-guest-recent > .q-row { margin-bottom: 14px; }
+.q-guest-recent h2 { font-size: 20px; }
+.q-guest-recent-list { border-top: 1px solid var(--q-line); }
+.q-guest-recent-row { display: grid; grid-template-columns: minmax(0,1fr) 100px 18px; align-items: center; gap: 16px; min-height: 74px; padding: 12px 10px; border-bottom: 1px solid var(--q-line); }
+.q-guest-recent-row:hover { background: var(--q-soft); }
+.q-guest-recent-row strong,.q-guest-recent-row small { display: block; }
+.q-guest-recent-row strong { font-size: 14px; }
+.q-guest-recent-row small { color: var(--q-muted); margin-top: 4px; }
+.q-guest-recent-return { text-align: right; font: 500 15px var(--q-mono); }
+.q-guest-recent-row > svg { color: var(--q-primary-ink); }
 .q-compare-dock { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--q-soft); border: 1px solid var(--q-line-strong); border-radius: 4px; position: sticky; bottom: 16px; margin-top: 16px; z-index: 20; }
 .q-compare-dock > span { flex: 1; color: var(--q-muted); font-size: 11px; }
 .q-compare-dock strong { color: var(--q-ink); }
@@ -288,6 +313,10 @@
   .q-detail-layout .q-stats .q-stat + .q-stat { border-left: 0; border-top: 1px solid var(--q-line); }
 }
 @media (max-width: 850px) {
+  .q-guest-home { grid-template-columns: 1fr; margin: 0 auto; }
+  .q-guest-intro { padding: 18px 0 32px; }
+  .q-guest-flow { border-left: 0; border-top: 1px solid var(--q-line); padding: 24px 0; }
+  .q-guest-recent { grid-column: 1; }
   .q-sidebar { display: none; }
   .q-main-shell { margin-left: 0; }
   .q-header { height: 60px; padding-inline: 18px; gap: 12px; }
@@ -307,6 +336,9 @@
   .q-market-row-link { grid-template-columns: minmax(160px,1fr) 96px 96px 48px 44px; }
 }
 @media (max-width: 640px) {
+  .q-guest-recent-row { grid-template-columns: minmax(0,1fr) 78px 16px; gap: 8px; padding-inline: 6px; }
+  .q-guest-recent-row strong { font-size: 13px; line-height: 1.5; }
+  .q-guest-recent-return { font-size: 13px; }
   .q-header { padding-inline: 16px; gap: 8px; }
   .q-header .q-button { min-height: 40px; padding: 8px 10px; font-size: 11px; }
   .q-account-button { max-width: 172px; padding: 8px 10px; font-size: 11px; }

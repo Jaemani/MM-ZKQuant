@@ -51,7 +51,7 @@ const periods = [
 ];
 function Dashboard() {
   const p = usePlatform();
-  if (!p.session) return <Explore />;
+  if (!p.session) return <GuestHome />;
   const withdrawals = (p.portfolio?.positions || []).flatMap((pos) =>
     (pos.withdrawals || [])
       .filter((w) => ["REQUESTED", "SETTLING"].includes(w.status))
@@ -180,6 +180,46 @@ function Dashboard() {
         </Panel>
       )}
     </>
+  );
+}
+function GuestHome() {
+  const p = usePlatform();
+  const recent = [...p.strategies]
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+    .slice(0, 4);
+  return (
+    <div className="q-guest-home">
+      <section className="q-guest-intro" aria-labelledby="q-guest-title">
+        <span className="q-eyebrow">MONAD TESTNET · MMQUANT</span>
+        <h1 id="q-guest-title">전략을 살펴보고,<br />조건을 확인하세요.</h1>
+        <p>전략가의 운용 성과와 위험 한도를 비교한 뒤, 나에게 맞는 전략을 선택할 수 있습니다.</p>
+        <div className="q-actions">
+          <Link className="q-button" to="/strategies">전략 탐색하기 <ArrowRight size={16} /></Link>
+          <Link className="q-button secondary" to="/manage/new">내 전략 만들기</Link>
+        </div>
+        <p className="q-guest-caption">공개 성과는 TEE 집계입니다. 개인 투자 내역은 지갑 서명 후 확인합니다.</p>
+      </section>
+      <section className="q-guest-flow" aria-labelledby="q-guest-flow-title">
+        <h2 id="q-guest-flow-title">투자 시작 순서</h2>
+        <ol>
+          <li><span>01</span><div><strong>전략 비교</strong><p>수익률, 자기자본, 위험 한도를 함께 살펴보세요.</p></div></li>
+          <li><span>02</span><div><strong>지갑 연결과 입금</strong><p>입금 자금은 운용 시작 전까지 대기 자금으로 표시됩니다.</p></div></li>
+          <li><span>03</span><div><strong>운용과 자산 확인</strong><p>전략가의 다음 목표 제출부터 운용됩니다.</p></div></li>
+        </ol>
+      </section>
+      <section className="q-guest-recent" aria-labelledby="q-guest-recent-title">
+        <div className="q-row"><div><span className="q-eyebrow">DISCOVER</span><h2 id="q-guest-recent-title">최근 등록 전략</h2></div><Link className="q-text-link" to="/strategies">전체 전략 보기 <ArrowRight size={15} /></Link></div>
+        {p.loading ? <CatalogLoading /> : recent.length ? (
+          <div className="q-guest-recent-list">
+            {recent.map(s => <Link key={s.id} to={`/strategies/${s.slug}`} className="q-guest-recent-row">
+              <span><strong>{s.name}</strong><small>{s.strategist_name} · 위험 {riskLabel(s.risk)}</small></span>
+              <span className="q-guest-recent-return">{percent(s.public_metrics?.pnlBps)}</span>
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>)}
+          </div>
+        ) : <Empty title={p.catalogError ? "전략 정보를 불러오지 못했습니다" : "공개된 전략이 아직 없습니다"} description={p.catalogError ? "잠시 후 다시 시도해 주세요." : "전략이 등록되면 이곳에서 확인할 수 있습니다."} />}
+      </section>
+    </div>
   );
 }
 function CatalogLoading() {
@@ -688,7 +728,7 @@ function Shell() {
     ["/manage", "내 전략", Layers],
   ];
   return (
-    <div className={`q-shell${path === "/strategies" || (path === "/" && !p.session) ? " q-market-shell" : ""}`}>
+    <div className={`q-shell${path === "/strategies" ? " q-market-shell" : ""}`}>
       <a className="q-skip" href="#q-main">
         본문으로 건너뛰기
       </a>

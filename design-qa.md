@@ -67,3 +67,19 @@ Verified: production build passed; Playwright at 1488/1180/768/390/320px reports
 No outstanding P0/P1/P2. Earlier palette/font statements above describe the previous release and are superseded by this section. Font source is documented in `public/fonts/README.md`.
 
 Brand correction deployment: code `37f7e32`, Vercel READY at https://mm-zkquant-2sonkfucm-cosmoserys-projects.vercel.app, aliased to https://mm-zkquant.vercel.app. Post-deploy Playwright checked 1488px/320px, actual font loading, computed families/canvas, mobile detail navigation and no overflow/page errors. Font response is 200 `font/woff2`. The first test sampled font readiness before render-triggered loading; explicitly awaited FontFaceSet.load, then confirmed loaded status and passing checks. Production mobile capture inspected.
+
+## 2026-10-06 — home and full-detail navigation
+
+final result: passed
+
+User finding: before this change, logged-out `/` and `/strategies` rendered the same exploration component. On desktop, clicking a strategy changed the inspector; its only full-detail link was small and easy to miss. Severity: P1 navigation clarity.
+
+The guest home now has a compact start view: what can be compared, the three investment steps, and four recent strategies from the live catalog. The full list and filters remain on `/strategies`. Logged-in `/` continues to use its existing personal dashboard. The selected strategy's inspector now has a full-width **전략 상세보기** action immediately after operating conditions, leading to `/strategies/:slug` and its full performance/history and investment detail. Mobile rows already open that route directly.
+
+Visual source: `docs/design/images/split-reference.png` (1488 × 1056 px, density 1), selected by the user for the strategy workspace. Rendered evidence: `inspector-detail-button.png` (1488 × 1056 CSS px/pixels, density 1); full-view native-resolution pairing `inspector-detail-comparison.png` (2976 × 1056). The source and implementation were opened and compared together. The new full-width detail action is an intentional requested addition to the reference. Home has no supplied mockup; its new `home-distinct-desktop.png` (1488 × 1056) and `home-distinct-mobile-320.png` (320 × 844 viewport, full-page image) were inspected against the established dark typography/color/layout system. `home-explore-comparison.png` shows home beside exploration at their actual desktop state. Both use live data; values can differ between captures.
+
+P2 iteration: the first 320px home capture had excessively narrow recent-strategy names. Reduced fixed return column and gaps, recaptured the loaded state; the final mobile evidence shows readable names, returns and links with no document overflow. The first mobile capture showed a temporary loading state and was rejected as final evidence.
+
+Fonts and palette remain official Monad Britti Sans/Inter/Roboto Mono roles and purple/lavender/ink anchors. Headline wraps at 320px; helper copy and numbers remain readable. No new image assets required. The home uses live registered strategies and states no invented performance. The TEE/testnet and pending-funds explanations remain visible.
+
+Validation: `npm run build` passed. Playwright checked home → full catalog → selected desktop inspector → detail route, and loaded 390px/320px home with zero overflow and JavaScript errors. The browser integration flow passed for public comparison, manager and investor login, private portfolio, investment confirmation, route reload, account switching and mobile layout without submitting a transaction.
