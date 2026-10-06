@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {Interface} from 'ethers';
 import {PlatformExecution} from '../deploy/tee/operator/execution.mjs';
 import {newBook,depositPending,activatePending,markBook,markVenueEquity,requestWithdrawal,portfolio,requestPendingWithdrawal,publicMetrics} from '../deploy/tee/operator/ledger.mjs';
 
@@ -144,4 +145,9 @@ test('failed execution diagnostics replay historical calls without broadcasting 
  e.provider={getBlock:async tag=>({number:tag==='latest'?100:tag,timestamp:200+(tag==='latest'?100:tag)}),call:async request=>{calls.push(request);const error=Error('RPC message contains private request');error.code='CALL_EXCEPTION';error.reason='ORDER_TOO_SMALL';throw error;}};
  const result=await e.accept({action:'DIAGNOSE',requestId:'failed'});assert.deepEqual(calls.map(c=>c.blockTag),[90,100]);assert.equal(result.prerequisitesConfirmed,true);assert.equal(result.stage,'TRADE');assert.equal(result.error,'EXECUTION_CONFIRMATION_REQUIRED');assert.ok(result.probes.every(p=>p.result==='REVERTED'&&p.reason==='ORDER_TOO_SMALL'));assert.equal(JSON.stringify(state),before);assert.ok(!JSON.stringify(result).includes('private-'));
  await assert.rejects(()=>e.accept({action:'DIAGNOSE',requestId:'missing'}),/REQUEST_NOT_FOUND/);
+ const abi=new Interface(['function executeDelta(bytes32,uint256,int256,int256,uint256,uint256,uint256)']),step=state.books.s.requests.failed.steps['target-16-0'];
+ step.request={to:'0x1111111111111111111111111111111111111111',data:abi.encodeFunctionData('executeDelta',['0x'+'01'.repeat(32),32,100,100,1,330,200])};step.effect={kind:'SHARED_TRADE'};
+ e.accountIdForDiagnosis=async()=>851n;e.exchange={getAccountByAddr:async()=>({balanceCNS:11000000n}),getPerpetualInfoV2:async()=>({markPNS:1n,priceDecimals:0n,lotDecimals:0n}),getPositionV2:async()=>[{depositCNS:50000000n,deltaPnlCNS:0n,premiumPnlCNS:0n}]};
+ const unchanged=JSON.stringify(state),assessment=await e.accept({action:'DIAGNOSE',requestId:'failed'});
+ assert.equal(assessment.orderAssessment.operation,'INCREASE');assert.equal(assessment.orderAssessment.equityCoversTargetMargin,false);assert.deepEqual(assessment.orderAssessment.simulations.map(s=>s.size),['HALF','DOUBLE']);assert.equal(JSON.stringify(state),unchanged);assert.ok(!JSON.stringify(assessment).includes(step.request.data));
 });

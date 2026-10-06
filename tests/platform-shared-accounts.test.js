@@ -2,11 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getCreateAddress } from 'ethers';
 import { PlatformExecution } from '../deploy/tee/operator/execution.mjs';
-import { SharedAccounts,checkpointSharedAccount,selectSharedAccount } from '../deploy/tee/operator/shared-accounts.mjs';
+import { SharedAccounts,checkpointSharedAccount,selectSharedAccount,sharedLeverage } from '../deploy/tee/operator/shared-accounts.mjs';
 import { newBook,depositPending,portfolio,requestWithdrawal } from '../deploy/tee/operator/ledger.mjs';
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../src/platform/vault-retirement.js';
 
 const unit=1000000n;
+test('shared position leverage honors both owners instead of repricing the entire position at the last owners cap',()=>{
+ const a={id:'a',policy:{maxLeverageBps:100000}},b={id:'b',policy:{maxLeverageBps:10000}},state={books:{a,b}},pool={claims:{a:{quantities:{32:'100'}},b:{quantities:{32:'0'}}}};
+ // 100 units at 10x require 10 units of margin; 10 units at 1x require 10.
+ assert.equal(sharedLeverage(state,pool,b,32,10n),550);
+ assert.equal(sharedLeverage(state,pool,b,32,0n),1000);
+ pool.claims.a.quantities[32]='-100';assert.equal(sharedLeverage(state,pool,b,32,-10n),550);
+ a.policy.maxLeverageBps=10000;assert.equal(sharedLeverage(state,pool,b,32,-10n),100);
+});
 test('funding a second market reserves actual collateral locked in the first market',()=>{
  const info={markPNS:'1',priceDecimals:'0',lotDecimals:'0'},book={id:'a',slots:{16:'pool',32:'pool'},policy:{maxLeverageBps:20000}},pool={claims:{a:{equity:String(100n*unit),quantities:{16:'100',32:'0'}}},checkpoint:{free:'0',walletCash:'0',markets:{16:{qty:'100',mark:'1',deposit:String(100n*unit),info}}}},state={books:{a:book},sharedAccounts:{pool}};
  const shared=new SharedAccounts({});

@@ -5,13 +5,13 @@ export const teeAttestationPolicy = Object.freeze({
   "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
   "encryptionPublicKey": "03725e6c5dd02ad7cf9f4c00ef135d0d08a2c9697403e2c2f1817dfa9e518585ed",
   "vault": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
-  "composeHash": "e8626b046b4391e239fef59ead34699588cb524ecf6a574512a7f5b7b9f28f98",
+  "composeHash": "919fceae5c0bf2613f702c0ccad5a501d36550b1c5ca2ef10546360460b6e14c",
   "measurements": {
     "mrtd": "f06dfda6dce1cf904d4e2bab1dc370634cf95cefa2ceb2de2eee127c9382698090d7a4a13e14c536ec6c9c3c8fa87077",
     "rtmr0": "68102e7b524af310f7b7d426ce75481e36c40f5d513a9009c046e9d37e31551f0134d954b496a3357fd61d03f07ffe96",
     "rtmr1": "07e6f51aa763abfe75c3ddfbf4f425fe3f0ceff66d807a75e049303dce9addf68e7218729bd419638af63a370f65878c",
     "rtmr2": "df67e467e60edc1737bcf8e682d48131bfb427f523226aa7f197a7608e9b3784783fa759ef5b28191fa12f9ddb36b858",
-    "rtmr3": "67c4b77413cf7e98df4a5018951a4fe82c66f9884eeafdb3c72dda3f01065ebfa400ac054372720eabc78e012544e994"
+    "rtmr3": "8dcbd17b6b357cdd0201d80b3010832e02e74eecd4203e5e71f836335cc649eb31f10104da88035b83c60d03004ea167"
   },
   "lockSha256": "d6ba52d6f49d643544d3b3b13d09479e20ba1b1e7215a9ba8196b6e0f3335340",
   "wasmSha256": "e2d51e06c934f589038af03ad0e7ae465cebe0fdbed4ddc7776d90df3865709a",
@@ -31,8 +31,8 @@ export const teeAttestationPolicy = Object.freeze({
     "src/platform/investment-message.js": "fceded25b563ff4ba94133503576c5f87820cd22e36e72098f82c93d07ff743c",
     "src/integration/sealed.js": "2a6803f99d92b4f94d20d8560183a89c6af5e6846d862273597de4733676c4cb",
     "deploy/tee/operator/cash-ledger.mjs": "1755e5351dbf27709d9a947e2faa60159a13bafcdc1944f9196f63d7261b9694",
-    "deploy/tee/operator/execution.mjs": "14c99d00f5a1d35551dd9761c7d4b18ebd63f2001a5c5bd1fda774d2a8859b54",
-    "deploy/tee/operator/shared-accounts.mjs": "7ae56494b3e84d0a4f406b6267e7eadb4fcff1a5cacf6d87125b0fdfb5617d32",
+    "deploy/tee/operator/execution.mjs": "846a19aa5ee33e78fd307f48c79ee6fe3574665e4775c4bd08b28385d0ca1f85",
+    "deploy/tee/operator/shared-accounts.mjs": "34c59e90d4a65357a646e486e18bbb8588771216daf109ae226cb0dc931d847a",
     "deploy/tee/operator/ledger.mjs": "e4c3f0e116b949b161cb257bed62918f2e908ac848b67c24235bd22f5bacf7d6",
     "src/platform/policy.js": "e134e3d0b40e54b147c6aca2ed68c07f4abb68d4d95039e92c3d0682d79431bb",
     "src/platform/execution-errors.js": "680c8866acd0131fe8a7245451b6e7c27cfb83b149f360c97ac2db865a4b8ba7",

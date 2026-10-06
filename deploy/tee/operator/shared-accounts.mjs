@@ -25,6 +25,22 @@ const lockedCollateral=(pool,bookId,market)=>{
 };
 export function claim(pool,bookId) {return pool.claims[bookId]||={equity:'0',quantities:{}};}
 
+// Perpl applies leverage to the entire account position, including positions
+// owned by other strategies. Preserve each owner's collateral requirement.
+export function sharedLeverage(state,pool,book,market,target) {
+  const precision=10n**18n;
+  let total=0n,margin=0n;
+  for(const [id,c] of Object.entries(pool.claims)){
+    const qty=id===book.id?target:n(c.quantities[market]),size=qty<0n?-qty:qty;
+    if(!size)continue;
+    const cap=BigInt(state.books[id].policy.maxLeverageBps);
+    total+=size;margin+=(size*precision+cap-1n)/cap;
+  }
+  if(!total)return Math.ceil(book.policy.maxLeverageBps/100);
+  const leverage=total*precision/(margin*100n);
+  return Number(leverage<100n?100n:leverage>1000n?1000n:leverage);
+}
+
 // Prefer reuse, including across markets. Opposing strategies never net: they
 // receive distinct accounts only for the conflicting market.
 export function selectSharedAccount(state,book,market,target) {
@@ -233,7 +249,8 @@ export class SharedAccounts {
     const before=totalQty(pool,market),delta=target-owned,mark=n(observed?.mark||info.markPNS),buy=delta>0n;
     const price=buy?mark*BigInt(10000+book.policy.slippageBps)/10000n:mark*BigInt(10000-book.policy.slippageBps)/10000n;
     const effect={kind:'SHARED_TRADE',bookId:book.id,address:pool.address,market,before:String(before),ownedBefore:String(owned),delta:String(delta)};
-    const result=await e.step(state,job,label,await this.account(pool.address).executeDelta.populateTransaction(opaque(`${job.id}:${label}`),market,before,delta,price,job.deadline,Math.ceil(book.policy.maxLeverageBps/100)),effect);
+    const leverage=sharedLeverage(state,pool,book,market,target);
+    const result=await e.step(state,job,label,await this.account(pool.address).executeDelta.populateTransaction(opaque(`${job.id}:${label}`),market,before,delta,price,job.deadline,leverage),effect);
     if(result.effect?.hasFill)job.hasFill=true;
   }
   async recover(state,book,job,label,opaque) {

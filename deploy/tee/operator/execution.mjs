@@ -1,5 +1,5 @@
 import {redeemToCash,debitPending} from './cash-ledger.mjs';
-import { SharedAccounts } from './shared-accounts.mjs';
+import { SharedAccounts,sharedLeverage } from './shared-accounts.mjs';
 import { ledgerEvent,ledgerValue } from './ledger-journal.mjs';
 import { assertInvestmentStateEmpty,assertVaultRetirable } from '../../../src/platform/vault-retirement.js';
 import { executionError,perplFailure } from '../../../src/platform/execution-errors.js';
@@ -13,6 +13,7 @@ import { newBook, markBook, markVenueEquity, activatePending, publicMetrics, cry
 
 const vaultAbi=['function accountCount() view returns(uint256)','function accounts(uint256) view returns(address)','function createSlots(uint256,uint256)','function executionAccountVersion() view returns(uint256)','function createSharedAccounts(uint256)','function fundSlot(address,uint256,bytes32)','function recoverSlot(address,uint256,bytes32)','function withdraw(address,uint256,bytes32)','function setPaused(bool)'];
 const slotAbi=['function market() view returns(uint256)','function accountId() view returns(uint256)','function execute(bytes32,int256,uint256,uint256,uint256)'];
+const sharedTradeInterface=new Interface(['function executeDelta(bytes32,uint256,int256,int256,uint256,uint256,uint256)']);
 const vaultInterface=new Interface(vaultAbi);
 const n=x=>BigInt(x||0);
 const opaque=s=>keccak256(toUtf8Bytes(s));
@@ -125,7 +126,29 @@ export class PlatformExecution {
         probes.push({blockNumber:block.number,timestamp:block.timestamp,result:error.code==='CALL_EXCEPTION'?'REVERTED':'RPC_UNAVAILABLE',reason:venue?.reason||reason,selector:data?.slice(0,10)||null,...(venue?{resultCode:venue.resultCode,code:venue.code}:{})});
       }
     }
-    let fundingAssessment;
+    let fundingAssessment,orderAssessment;
+    if(step.effect?.kind==='SHARED_TRADE'){
+      const parsed=sharedTradeInterface.parseTransaction(step.request),args=Array.from(parsed.args),market=args[1],before=args[2],delta=args[3],after=before+delta,abs=x=>x<0n?-x:x,block=blocks[0];
+      const [account,info,[position]]=await Promise.all([this.exchange.getAccountByAddr(step.request.to,{blockTag:block.number}),this.exchange.getPerpetualInfoV2(market,{blockTag:block.number}),this.exchange.getPositionV2(market,await this.accountIdForDiagnosis(step.request.to,block.number),{blockTag:block.number})]);
+      const margin=abs(after)*info.markPNS*100000000n/(10n**(info.priceDecimals+info.lotDecimals)*args[6]);
+      const simulations=[];
+      for(const factor of [1,4]){
+        const change=delta*BigInt(factor)/2n,target=before+change;
+        if(change===0n||(before!==0n&&target!==0n&&(before>0n)!==(target>0n)))continue;
+        const alternative=[...args];alternative[3]=change;
+        try{await this.provider.call({...step.request,data:sharedTradeInterface.encodeFunctionData('executeDelta',alternative),from:this.wallet.address,blockTag:block.number});simulations.push({size:factor===1?'HALF':'DOUBLE',result:'CALL_SUCCEEDED'});}
+        catch(error){const venue=perplFailure(error);simulations.push({size:factor===1?'HALF':'DOUBLE',result:'REVERTED',code:venue?.code||executionError(error),resultCode:venue?.resultCode});}
+      }
+      orderAssessment={operation:before===0n?'OPEN':after===0n?'CLOSE':abs(after)<abs(before)?'REDUCE':'INCREASE',freeBalanceCoversTargetMargin:account.balanceCNS>=margin,equityCoversTargetMargin:account.balanceCNS+position.depositCNS+position.deltaPnlCNS+position.premiumPnlCNS>=margin,simulations};
+      const state=this.investments.state(),pool=state.sharedAccounts?.[step.request.to],target=job.plan?.[String(market)];
+      if(pool&&target!==undefined){
+        const leverage=sharedLeverage(state,pool,book,String(market),n(target));
+        orderAssessment.sharedLeverageDiffers=BigInt(leverage)!==args[6];
+        const alternative=[...args];alternative[6]=leverage;
+        try{await this.provider.call({...step.request,data:sharedTradeInterface.encodeFunctionData('executeDelta',alternative),from:this.wallet.address,blockTag:block.number});orderAssessment.sharedLeverageReplay='CALL_SUCCEEDED';}
+        catch(error){orderAssessment.sharedLeverageReplay=perplFailure(error)?.code||executionError(error);}
+      }
+    }
     const targetMarket=label.match(/^target-(\d+)-/);
     if(this.shared&&book.executionMode==='SHARED'&&targetMarket){
       const state=this.investments.state(),market=Number(targetMarket[1]),pool=state.sharedAccounts?.[book.slots[market]],info=pool?.checkpoint?.markets[market]?.info||await this.exchange.getPerpetualInfoV2(market);
@@ -136,8 +159,9 @@ export class PlatformExecution {
         fundingAssessment={source:'CURRENT_ACCOUNT_STATE',lockedCollateralUnderestimated:required>estimated,additionalCollateralRequired:required>0n};
       }
     }
-    return {id:job.id,status:job.status,error:job.error,stage,probes,historicalReplay:true,prerequisitesConfirmed:Boolean(prerequisiteBlock),...(fundingAssessment?{fundingAssessment}:{})};
+    return {id:job.id,status:job.status,error:job.error,stage,probes,historicalReplay:true,prerequisitesConfirmed:Boolean(prerequisiteBlock),...(fundingAssessment?{fundingAssessment}:{}),...(orderAssessment?{orderAssessment}:{})};
   }
+  async accountIdForDiagnosis(address,blockTag){return new Contract(address,['function accountId() view returns(uint256)'],this.provider).accountId({blockTag});}
   performanceFees(book) {
     const totals=managerFeeTotals(book),payments=new Map((book.feePayouts||[]).map(payment=>[payment.txHash,{...payment,status:'PAID'}]));
     // Older books did not retain a payout list, but the sealed transaction
