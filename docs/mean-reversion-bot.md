@@ -31,7 +31,7 @@ To submit again manually on the same day, run `node scripts/mean-reversion.mjs -
 
 ## Reliability and local state
 
-Fresh attestation is verified before each run. API credentials and the complete target vector are encrypted locally and sent directly to the TEE; target vectors are not sent through the platform database. The TEE checks API authorization with the platform API. Actual venue transactions remain observable on-chain.
+Fresh attestation is verified before each run. JSON logs show `ATTESTATION_STARTED`, progress through config pinning, quote retrieval, identity/source hashes, Phala quote verification, report binding/measurements, and event-log/compose checks, then `ATTESTATION_SUCCEEDED` with the public quote hash and elapsed time. A failed check logs `ATTESTATION_FAILED` and stops before submission. `--dry-run` also shows these stages. API credentials and the complete target vector are encrypted locally and sent directly to the TEE; target vectors are not sent through the platform database. The TEE checks API authorization with the platform API. Actual venue transactions remain observable on-chain.
 
 The encrypted local state under `.data/mean-reversion/` tracks intended holdings, the daily checkpoint, and a pending request. It is encrypted using a key derived from the API token. Keep this state across restarts; deleting it or changing the token prevents reliable recovery. State and credentials are ignored by Git. Logs only contain execution metadata, never target vectors or API tokens.
 

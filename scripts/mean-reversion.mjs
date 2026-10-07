@@ -54,7 +54,21 @@ export async function runOnce(options, store, dryRun = false, force = false) {
   const now = Date.now(), day = new Date(now).toISOString().slice(0, 10);
   if (state.lastDay === day && !state.pending && !dryRun && !force) { log({ status: 'ALREADY_RAN_TODAY' }); return; }
   const config = await getJson(`${options.apiBase}/v1/config`);
-  const attested = await verifyPlatformTee({ endpoint: config.teeEndpoint, publicKey: config.teeEncryptionPublicKey, vault: config.vaultAddress });
+  const attestationStarted = Date.now();
+  let stage = 'STARTING';
+  log({ status: 'ATTESTATION_STARTED' });
+  let attested;
+  try {
+    attested = await verifyPlatformTee({
+      endpoint: config.teeEndpoint, publicKey: config.teeEncryptionPublicKey, vault: config.vaultAddress,
+      onProgress: value => { stage = value; log({ status: 'ATTESTATION_PROGRESS', stage }); },
+    });
+    log({ status: 'ATTESTATION_SUCCEEDED', verification: attested.status, quoteHash: attested.quoteHash, elapsedMs: Date.now() - attestationStarted });
+  } catch (error) {
+    const code = /^TEE_ATTESTATION_[A-Z_]+$/.test(error.message || '') ? error.message : 'TEE_ATTESTATION_CONNECTION_OR_VERIFICATION_ERROR';
+    log({ status: 'ATTESTATION_FAILED', stage, error: code, elapsedMs: Date.now() - attestationStarted });
+    throw error;
+  }
   async function send(message) {
     const channel = encryptRequest(attested.encryptionPublicKey, { strategyId: options.strategyId, apiKey: options.apiKey, ...message });
     const body = await getJson(`${attested.teeEndpoint}/platform/encrypted-strategy`, {
