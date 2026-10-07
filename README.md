@@ -4,7 +4,23 @@
 
 Start with the [account and funding UX guide](docs/account-login-ux.md), [platform handoff](docs/e2e-platform-handoff.md), and [strategist API guide](docs/testnet-platform-api.md). The live platform preserves hourly on-chain ledger ZK checkpoints and Phala TDX attestation. The v1 ledger circuit proves financial book transitions; venue prices, fills and authorization remain supplied by the TEE.
 
-For local development, configure `.env` from `.env.example`, then run `npm ci` and `npm run dev`. Vite uses port 5173 and the public platform API uses port 8789. Hosting remains Vercel `mm-zkquant`, Supabase `monad`, and the existing Phala CVM. Funded judge credentials are kept in the ignored local `.data/judge-accounts/access.md`.
+For local development, first configure db url to `.env` from `.env.example` and run the postgresql from docker:
+
+    sed 's|^DATABASE_URL=.*|DATABASE_URL=postgresql://postgres@localhost:5432/mmq|' .env.example > .env
+    docker run --rm --name mmq-pg -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=mmq postgres:17
+
+Apply migrations:
+
+    node scripts/migrate-platform.mjs
+
+Then run:
+
+    npm ci
+    npm run dev
+
+Vite should ready on <http://localhost:5173> and the public platform API is on port 8789 for default.
+
+Hosting remains Vercel `mm-zkquant`, Supabase `monad`, and the existing Phala CVM. Funded judge credentials are kept in the ignored local `.data/judge-accounts/access.md`.
 
 ## Historical research and validation
 
