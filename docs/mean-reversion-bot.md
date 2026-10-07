@@ -23,7 +23,9 @@ node scripts/mean-reversion.mjs --dry-run
 node scripts/mean-reversion.mjs
 ```
 
-The second command sends a live target immediately, then waits for the next daily schedule. Keep the process running on an always-on machine (terminal/tmux/systemd); closing it stops the bot. It is not hosted on Vercel or Phala automatically. For cron, run `node scripts/mean-reversion.mjs --once` daily from the repository directory with `TZ=UTC` and schedule `5 0 * * *`.
+The second command sends a live target immediately unless it already ran today, then waits for the next daily schedule. Keep the process running on an always-on machine (terminal/tmux/systemd); closing it stops the bot. It is not hosted on Vercel or Phala automatically.
+
+To submit again manually on the same day, run `node scripts/mean-reversion.mjs --once`. This bypasses the daily checkpoint and submits a fresh target once. An existing pending request is resumed with its original ID instead; failed/partial requests still require reconciliation. `--once --dry-run` never submits. Repeated submissions can rebalance to the same target weights, but do not guarantee new fills. For cron, use `--once` daily from the repository directory with `TZ=UTC` and schedule `5 0 * * *`.
 
 **This bot takes over the entire strategy's allocation.** The initial active markets are seeded from successful request #17 (BTC/ETH/SOL). On the first live run it can reduce or close those positions based on the signal. For another strategy, set the initial active markets to match its existing positions, or leave empty for a cash-only portfolio. Avoid manual submissions or another bot for the same strategy while running this program.
 

@@ -48,11 +48,11 @@ async function getJson(url, options = {}) {
   return body;
 }
 
-export async function runOnce(options, store, dryRun = false) {
+export async function runOnce(options, store, dryRun = false, force = false) {
   const state = store.read() || { strategyId: options.strategyId, active: options.initialActive, lastDay: null, pending: null };
   if (state.strategyId !== options.strategyId) throw Error('STATE_STRATEGY_MISMATCH');
   const now = Date.now(), day = new Date(now).toISOString().slice(0, 10);
-  if (state.lastDay === day && !state.pending && !dryRun) { log({ status: 'ALREADY_RAN_TODAY' }); return; }
+  if (state.lastDay === day && !state.pending && !dryRun && !force) { log({ status: 'ALREADY_RAN_TODAY' }); return; }
   const config = await getJson(`${options.apiBase}/v1/config`);
   const attested = await verifyPlatformTee({ endpoint: config.teeEndpoint, publicKey: config.teeEncryptionPublicKey, vault: config.vaultAddress });
   async function send(message) {
@@ -120,7 +120,7 @@ async function main() {
   const args = process.argv.slice(2);
   if (args.some(a => !['--once', '--dry-run', '--help'].includes(a))) throw Error('UNKNOWN_ARGUMENT');
   if (args.includes('--help')) {
-    console.log('node scripts/mean-reversion.mjs [--once] [--dry-run]\nDefault: run now, then daily at configured UTC time. --dry-run never submits.'); return;
+    console.log('node scripts/mean-reversion.mjs [--once] [--dry-run]\nDefault: run now, then daily at configured UTC time. --once submits once even if already run today, or resumes a pending request. --dry-run never submits.'); return;
   }
   const envFile = process.env.MRQ_ENV_FILE || '.env.mean-reversion';
   if (existsSync(envFile)) process.loadEnvFile(envFile);
@@ -153,7 +153,7 @@ async function main() {
   const dryRun = args.includes('--dry-run');
   try {
     for (;;) {
-      await runOnce(options, store, dryRun);
+      await runOnce(options, store, dryRun, args.includes('--once'));
       if (args.includes('--once') || dryRun) break;
       const at = nextRun(Date.now(), utcTime);
       log({ status: 'WAITING', nextRun: new Date(at).toISOString() });
