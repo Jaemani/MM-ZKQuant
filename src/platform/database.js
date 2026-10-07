@@ -3,7 +3,13 @@ import pg from 'pg';
 export class PlatformDatabase {
   constructor({ databaseUrl, maxConnections = 2 }) {
     if (!databaseUrl) throw Error('DATABASE_URL is required');
-    this.pool = new pg.Pool({ connectionString: databaseUrl, ssl: { rejectUnauthorized: false }, max: maxConnections, idleTimeoutMillis: 10000, connectionTimeoutMillis: 10000 });
+    this.pool = new pg.Pool({
+      connectionString: databaseUrl,
+      ssl: /[?&]sslmode=(?!disable)/.test(databaseUrl) ? { rejectUnauthorized: false } : false,
+      max: maxConnections,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 10000
+    });
     this.pool.on('error', error => console.error('PLATFORM_DATABASE_IDLE_ERROR', error.code || 'CONNECTION_ERROR'));
   }
 
