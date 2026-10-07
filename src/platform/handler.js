@@ -63,7 +63,7 @@ export async function handlePlatformRequest(request, response, service, { origin
     throw new PlatformError('NOT_FOUND', 404);
   } catch (error) {
     const status = error instanceof PlatformError ? error.status : 500;
-    if (status === 500) console.error('PLATFORM_REQUEST_FAILED', error.code || error.name || 'UNKNOWN');
+    if (status === 500) console.error('PLATFORM_REQUEST_FAILED', request.method, request.url, error, error?.cause);
     reply(response, status, { error: status === 500 ? 'INTERNAL_ERROR' : error.message });
   }
 }
