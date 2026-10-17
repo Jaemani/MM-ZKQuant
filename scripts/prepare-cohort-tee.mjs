@@ -20,7 +20,7 @@ if(reuseEndpoint){
  if(!reused?.experimentId||!reused?.accessHash||!reused?.controller)throw Error('Existing TEE identity is incomplete');
 }
 const token=reused?null:randomBytes(32).toString('hex');
-const runtime=['deploy/tee/operator/server.mjs','deploy/tee/operator/engine.mjs','deploy/tee/operator/platform.mjs','deploy/tee/operator/investments.mjs','protocol/cohort/durable-submitter.mjs','protocol/perpl/target-prover.mjs','src/platform/investment-message.js','src/integration/sealed.js'];
+const runtime=['deploy/tee/operator/server.mjs','deploy/tee/operator/identity.mjs','deploy/tee/operator/engine.mjs','deploy/tee/operator/platform.mjs','deploy/tee/operator/investments.mjs','protocol/cohort/durable-submitter.mjs','protocol/perpl/target-prover.mjs','src/platform/investment-message.js','src/integration/sealed.js'];
 const files=Object.fromEntries(runtime.map(p=>[p,readFileSync(p)]));
 for(const p of ['deploy/tee/operator/cash-ledger.mjs','deploy/tee/operator/execution.mjs','deploy/tee/operator/shared-accounts.mjs','deploy/tee/operator/ledger.mjs','src/platform/policy.js','src/platform/execution-errors.js','src/platform/vault-retirement.js','protocol/perpl/exchange-abi.json']) {runtime.push(p);files[p]=readFileSync(p);}
 for(const p of ['deploy/tee/operator/ledger-journal.mjs','deploy/tee/operator/ledger-proofs.mjs','deploy/tee/operator/ledger-prover.mjs','deploy/tee/operator/ledger-prove-worker.mjs','protocol/platform/ledger-witness.mjs']){runtime.push(p);files[p]=readFileSync(p);}
@@ -43,6 +43,7 @@ if(reused&&process.env.MM_TEE_PINNED_ZKEY_SHA256)hashes['artifacts/perpl-zk/perp
 files['artifacts/perpl-zk/build.json']=Buffer.from(JSON.stringify({sha256:hashes}));
 const manifest={controller:reused?.controller||'0xA761529aE65a0966125C47911DEDCC7F23951D57',experimentId:reused?.experimentId||randomBytes(16).toString('hex'),sourceHashes:Object.fromEntries(runtime.map(p=>[p,sha(files[p])])),lockSha256:sha(files['package-lock.json']),wasmSha256:hashes['artifacts/perpl-zk/perpl-target-mvp_js/perpl-target-mvp.wasm'],zkeySha256:hashes['artifacts/perpl-zk/perpl-target-mvp.zkey'],accessHash:reused?.accessHash||sha(token),...(process.env.OMNIBUS_VAULT_ADDRESS&&process.env.PLATFORM_CASH_TOKEN_ADDRESS?{omnibusVault:process.env.OMNIBUS_VAULT_ADDRESS,cashToken:process.env.PLATFORM_CASH_TOKEN_ADDRESS}:{})};
 if(ledgerProofs)manifest.ledgerProofs=ledgerProofs;
+if(reused?.identityMigration)manifest.identityMigration=reused.identityMigration;
 files['manifest.json']=Buffer.from(JSON.stringify(manifest));
 const entries=Object.entries(files).map(([p,b])=>[p,b.toString('base64')]);
 const bootstrap=`const fs=require('fs'),path=require('path');for(const [p,b] of ${JSON.stringify(entries)}){fs.mkdirSync(path.dirname('/app/'+p),{recursive:true});fs.writeFileSync('/app/'+p,Buffer.from(b,'base64'));}`;

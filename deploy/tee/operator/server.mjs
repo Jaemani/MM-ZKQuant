@@ -8,6 +8,7 @@ import {operatorKeys,createOperator} from './engine.mjs';
 import {PrivateInvestments} from './investments.mjs';
 import {PlatformExecution} from './execution.mjs';
 import {LedgerProofs} from './ledger-proofs.mjs';
+import {resolveOperatorSecret} from './identity.mjs';
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const manifest=JSON.parse(readFileSync('/app/manifest.json'));
 if(process.env.DSTACK_SIMULATOR_ENDPOINT)throw Error('SIMULATOR_FORBIDDEN');
@@ -19,7 +20,7 @@ const dstack=(path,payload)=>new Promise((resolve,reject)=>{
 });
 
 const derived=await dstack('/GetKey',{path:'mm/cohort/'+manifest.experimentId,purpose:'testnet-operator',algorithm:'secp256k1'});
-const secret=Buffer.from(derived.key,'hex'),channel=encryptionIdentity(secret,{maxHexLength:48_000_000}),keys=await operatorKeys(secret);
+const secret=resolveOperatorSecret(Buffer.from(derived.key,'hex'),{storeDir:'/state',identityMigration:manifest.identityMigration}),channel=encryptionIdentity(secret,{maxHexLength:48_000_000}),keys=await operatorKeys(secret);
 const identity={mode:'COHORT_TESTNET_OPERATOR',chainId:10143,encryptionPublicKey:channel.publicKey,operator:keys.wallet.address,managerKeys:[keys.publicKey(0),keys.publicKey(1)],...manifest};
 const rpc=new JsonRpcProvider('https://testnet-rpc.monad.xyz',undefined,{batchMaxCount:1,cacheTimeout:-1});
 let engine,busy=false;const seen=new Set();

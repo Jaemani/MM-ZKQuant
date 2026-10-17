@@ -241,7 +241,7 @@ Financial execution follows a durable sequence: sign the transaction, fsync the 
 
 Recovery requires the existing identity, keys, and persistent state. Ledger mismatches, nonce rollback, or proof failures must remain visible; recovery may safely stop rather than fabricate continuity or initialize a new genesis.
 
-Hosting uses Vercel `mm-zkquant`, Supabase `monad`, and the existing Phala CVM. Worker updates preserve the keys, sealed ledger, Vault, and genesis. Verify the control-plane compose, runtime hashes, and fresh quote before updating pins and deploying the matching web/API. Routine web/worker updates do not require redeploying the Vault. See [attestation operations](docs/platform-tee-attestation.md) and [gas recovery](docs/platform-gas-recovery.md).
+Hosting uses Vercel `mm-zkquant`, Supabase `monad`, and the existing Phala CVM. Worker updates preserve the keys, sealed ledger, Vault, and genesis. Verify the control-plane compose, runtime hashes, and fresh quote before updating pins and deploying the matching web/API. Routine web/worker updates do not require redeploying the Vault. Set `PHALA_CVM_ID` explicitly for worker updates and enrollment. Account migrations preserve the original operator and financial state through an encrypted TEE-to-TEE transfer; see the [Phala account migration runbook](docs/phala-account-migration.md). See also [attestation operations](docs/platform-tee-attestation.md) and [gas recovery](docs/platform-gas-recovery.md).
 
 ## Local development
 

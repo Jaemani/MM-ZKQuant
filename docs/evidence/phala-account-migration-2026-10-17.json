@@ -1,0 +1,81 @@
+{
+  "verifiedAt": "2026-10-17T16:13:59.924319+00:00",
+  "status": "MIGRATED_WITH_EXISTING_GAS_ATTENTION_REQUIRED",
+  "source": {
+    "id": "cvm_9wPmvljk",
+    "appId": "633b691dbe00185be471da9f57b145aba58cbd77",
+    "status": "stopped",
+    "productionOs": true,
+    "temporarySshKeyRemoved": true
+  },
+  "destination": {
+    "id": "cvm_AjWNDYwb",
+    "appId": "779fc173e3c60e56f3b6463d3e49d06164244379",
+    "status": "running",
+    "productionOs": true,
+    "temporarySshKeyRemoved": true
+  },
+  "productionUrl": "https://mm-zkquant.vercel.app",
+  "teeEndpoint": "https://779fc173e3c60e56f3b6463d3e49d06164244379-8080.dstack-pha-prod5.phala.network",
+  "identityPreserved": {
+    "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
+    "encryptionPublicKey": "03725e6c5dd02ad7cf9f4c00ef135d0d08a2c9697403e2c2f1817dfa9e518585ed",
+    "vault": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
+    "genesisRoot": "18055927181367554054422602309928801871588405143950604475701374666380086633284"
+  },
+  "stateTransfer": {
+    "fileCount": 708,
+    "bytes": 60225234,
+    "snapshotSha256": "95b454704226f90c3c4f01819ef638d31730f488c4de08d478bb9f83cfbcd011",
+    "sourceAndDestinationHashesMatch": true,
+    "operatorSecretEncryptedDirectlyToDestination": true,
+    "destinationIdentitySealedUnderNativeKmsKey": true
+  },
+  "attestation": {
+    "enrollmentQuoteHash": "8a5853ac88c54c2d8287e24f99317bc1ca2ab5717e4ee865b0b142758190ffd3",
+    "composeHash": "a66655ec778d9a9abeff887b9bfb7b0d053897e8d9958f25d14d6761ac799a45",
+    "runtimeFiles": 25,
+    "osImage": "dstack-0.5.12",
+    "osImageHash": "8db40cb23008d6213668b5816702d100b37b859a8a5bfd18d938ae3a1b3715bd",
+    "productionOs": true,
+    "pinnedQuoteVerificationPassed": true
+  },
+  "publicCutover": {
+    "homeHttpStatus": 200,
+    "strategyCount": 11,
+    "strategyIdsPreserved": true,
+    "unauthenticatedAttestationHttpStatus": 401,
+    "encryptedRelayVerified": true,
+    "temporaryTransferAgentRemoved": true
+  },
+  "ledgerVerification": {
+    "verified": true,
+    "checkedCompletedProofs": [
+      699,
+      700,
+      701
+    ],
+    "proofSignaturesVerified": true,
+    "groth16Verified": true,
+    "receiptsVerified": true,
+    "deployedCodeHashesMatch": true,
+    "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
+    "vault": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
+    "genesisRoot": "18055927181367554054422602309928801871588405143950604475701374666380086633284",
+    "onchainSequence": "702",
+    "onchainRoot": "9475404192472369147182332458194163249013989561021405407766651125057859278985",
+    "lastCompletedSequence": 701,
+    "note": "The contract can contain pages of an unfinished checkpoint ahead of the last completed public checkpoint."
+  },
+  "validation": {
+    "platformTestsPassed": 70,
+    "frontendBuildPassed": true,
+    "existingCompletedProofRecordsIdenticalAfterRestore": true
+  },
+  "remainingOperationalIssue": {
+    "status": "ATTENTION_REQUIRED",
+    "error": "OPERATOR_GAS_INSUFFICIENT",
+    "presentBeforeMigration": true,
+    "description": "The preserved operator needs additional Monad testnet MON for further checkpoint pages and other gas-funded transactions. No Vault, operator, investor balance, or ledger genesis was reset."
+  }
+}

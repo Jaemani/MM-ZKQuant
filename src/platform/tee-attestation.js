@@ -25,6 +25,7 @@ export async function verifyPlatformTee({ endpoint, publicKey, vault, policy = t
   must(hex(identity.lockSha256) === hex(policy.lockSha256) && hex(identity.wasmSha256) === hex(policy.wasmSha256) && hex(identity.zkeySha256) === hex(policy.zkeySha256), 'ARTIFACTS');
   for (const [path, expected] of Object.entries(policy.sourceHashes)) must(hex(identity.sourceHashes?.[path]) === hex(expected), 'SOURCE_HASH');
   for (const [field, expected] of Object.entries(policy.ledgerGenesis)) must(hex(identity.ledgerGenesis?.[field]) === hex(expected), 'LEDGER_GENESIS');
+  for (const [field, expected] of Object.entries(policy.identityMigration || {})) must(hex(identity.identityMigration?.[field]) === hex(expected), 'MIGRATION_IDENTITY');
   onProgress('IDENTITY_AND_SOURCE_HASHES_VERIFIED');
 
   const binding = sha(JSON.stringify({ domain: 'MM_COHORT_OPERATOR_V1', identity, challenge }));
@@ -48,6 +49,10 @@ export async function verifyPlatformTee({ endpoint, publicKey, vault, policy = t
   replayTdxEvents(events, body);
   const composeEvents = events.filter(event => event.imr === 3 && event.event === 'compose-hash');
   must(composeEvents.length === 1 && hex(composeEvents[0].event_payload) === hex(policy.composeHash), 'COMPOSE_EVENT');
+  if (policy.osImageHash) {
+    const imageEvents = events.filter(event => event.imr === 3 && event.event === 'os-image-hash');
+    must(imageEvents.length === 1 && hex(imageEvents[0].event_payload) === hex(policy.osImageHash), 'OS_IMAGE');
+  }
   must(hex(body.mrconfig) === `01${hex(policy.composeHash)}${'00'.repeat(15)}`, 'COMPOSE_MEASUREMENT');
   onProgress('EVENT_LOG_AND_COMPOSE_VERIFIED');
 

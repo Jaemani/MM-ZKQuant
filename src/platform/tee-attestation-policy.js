@@ -5,13 +5,13 @@ export const teeAttestationPolicy = Object.freeze({
   "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
   "encryptionPublicKey": "03725e6c5dd02ad7cf9f4c00ef135d0d08a2c9697403e2c2f1817dfa9e518585ed",
   "vault": "0xdC4e5675cD4b4E10E1D2274Abc3Fd9100c0334b6",
-  "composeHash": "919fceae5c0bf2613f702c0ccad5a501d36550b1c5ca2ef10546360460b6e14c",
+  "composeHash": "a66655ec778d9a9abeff887b9bfb7b0d053897e8d9958f25d14d6761ac799a45",
   "measurements": {
-    "mrtd": "f06dfda6dce1cf904d4e2bab1dc370634cf95cefa2ceb2de2eee127c9382698090d7a4a13e14c536ec6c9c3c8fa87077",
+    "mrtd": "7fe60787222bd394cb516abca2435f22f035ab2cc9c0a4b4b3b148e46297f3d931a237b72f359052c6e657d8c1409173",
     "rtmr0": "68102e7b524af310f7b7d426ce75481e36c40f5d513a9009c046e9d37e31551f0134d954b496a3357fd61d03f07ffe96",
-    "rtmr1": "07e6f51aa763abfe75c3ddfbf4f425fe3f0ceff66d807a75e049303dce9addf68e7218729bd419638af63a370f65878c",
-    "rtmr2": "df67e467e60edc1737bcf8e682d48131bfb427f523226aa7f197a7608e9b3784783fa759ef5b28191fa12f9ddb36b858",
-    "rtmr3": "8dcbd17b6b357cdd0201d80b3010832e02e74eecd4203e5e71f836335cc649eb31f10104da88035b83c60d03004ea167"
+    "rtmr1": "4ae609807c765916a31d724786ed74bcb97e168a9d937b04936aeef2015c907eba5ac352c6bcd749c246fd62ffb659ec",
+    "rtmr2": "764489f277a8540189761e72b4238ba36d4d647e11bd958d8ab5522af2a4867b0ff63e06b0c4967f1857236244040a5d",
+    "rtmr3": "641596647003befc88923c19142c6a0406d7b49d4168e47ecd06750924f6d22fe5c0b6d82e6546fe7579336d056db35d"
   },
   "lockSha256": "d6ba52d6f49d643544d3b3b13d09479e20ba1b1e7215a9ba8196b6e0f3335340",
   "wasmSha256": "e2d51e06c934f589038af03ad0e7ae465cebe0fdbed4ddc7776d90df3865709a",
@@ -22,7 +22,8 @@ export const teeAttestationPolicy = Object.freeze({
     "registry": "0xDFd9188E5CC1A72a9f9D68ad65e698e51950D822"
   },
   "sourceHashes": {
-    "deploy/tee/operator/server.mjs": "25e3605705ab9d966c266b380f0baf639ca9d8b62703ba2996acad9c919d1910",
+    "deploy/tee/operator/server.mjs": "41e8ac8ed3bb03aa1bac31c284e3e8d0b7318627e44b64885ba6469a3459f7bb",
+    "deploy/tee/operator/identity.mjs": "646a0d3f6e977fb9e5d6d79ee26c3d432824125fb467c6e49c7e0516ba5ea144",
     "deploy/tee/operator/engine.mjs": "6c0e4a89ba23aa91394f40c71d919d3cad42e918bc77cace5a39bad08be5949d",
     "deploy/tee/operator/platform.mjs": "dd04354bebaebb9b784a808a331200447375fcf734076c003d1f50367776d2f9",
     "deploy/tee/operator/investments.mjs": "3f178402a3e9d61672b57525f2a25b6181182a07890a05dfc4cf481a791a0a11",
@@ -46,5 +47,12 @@ export const teeAttestationPolicy = Object.freeze({
     "circuits/platform-ledger-transition.circom": "24c236e6e060ba2f3a837d2f328e3d62fcac21c1548386a45b9982ba19a2e94a",
     "circuits/platform-ledger-transition.template.circom": "6d4dbebdad6f1d4d61a660c1c3bd88872ea12953af7b3d9f8fab242fd3c50fe3",
     "artifacts/platform/shared-account.json": "232de167055b76cc922668737ff4f69b65f21519b6668bb4cebd44868e1e2a9d"
+  },
+  "osImageHash": "8db40cb23008d6213668b5816702d100b37b859a8a5bfd18d938ae3a1b3715bd",
+  "identityMigration": {
+    "sourceAppId": "633b691dbe00185be471da9f57b145aba58cbd77",
+    "targetAppId": "779fc173e3c60e56f3b6463d3e49d06164244379",
+    "operator": "0x711bb18cD7A82BA684cc0F7C5Bd334f9Aee795D7",
+    "encryptionPublicKey": "03725e6c5dd02ad7cf9f4c00ef135d0d08a2c9697403e2c2f1817dfa9e518585ed"
   }
 });

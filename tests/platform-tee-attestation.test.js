@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { createAttestedTeeChannel } from '../src/web/attestedTee.js';
 import { PlatformError, PlatformService } from '../src/platform/service.js';
 import { makePlatformServer } from '../src/platform/http.js';
@@ -8,6 +9,41 @@ import { teeAttestationPolicy } from '../src/platform/tee-attestation-policy.js'
 
 const config = { teeEndpoint: 'https://tee.example', teeEncryptionPublicKey: 'pinned-key' };
 const verified = () => ({ status: 'VERIFIED_PINNED_TDX_VIA_PHALA', teeEndpoint: config.teeEndpoint, encryptionPublicKey: config.teeEncryptionPublicKey, expiresAt: Date.now() + 60_000 });
+
+// Stub the vendor signature verdict while exercising the real byte parser,
+// event replay, report-data binding and migration/OS policy checks.
+function migrationQuoteFixture({actualImage='22'.repeat(32),omitMigration=false}={}) {
+  const sha=x=>createHash('sha256').update(x).digest('hex');
+  const composeHash='11'.repeat(32),osImageHash='22'.repeat(32);
+  const events=[{imr:3,event_type:1,event:'compose-hash',event_payload:composeHash},{imr:3,event_type:1,event:'os-image-hash',event_payload:actualImage}];
+  let rtmr3=Buffer.alloc(48);
+  for(const event of events){const type=Buffer.alloc(4);type.writeUInt32LE(event.event_type);const digest=createHash('sha384').update(Buffer.concat([type,Buffer.from(':'+event.event+':'),Buffer.from(event.event_payload,'hex')])).digest();rtmr3=createHash('sha384').update(Buffer.concat([rtmr3,digest])).digest();}
+  const measurements={mrtd:'00'.repeat(48),rtmr0:'00'.repeat(48),rtmr1:'00'.repeat(48),rtmr2:'00'.repeat(48),rtmr3:rtmr3.toString('hex')};
+  const identityMigration={sourceAppId:'a'.repeat(40),targetAppId:'b'.repeat(40),operator:'0x1234',encryptionPublicKey:'pinned-key'};
+  const policy={mode:'COHORT_TESTNET_OPERATOR',chainId:10143,operator:'0x1234',encryptionPublicKey:'pinned-key',vault:'0x5678',lockSha256:'lock',wasmSha256:'wasm',zkeySha256:'zkey',sourceHashes:{},ledgerGenesis:{genesisRoot:'123'},composeHash,osImageHash,measurements,identityMigration};
+  let vendor;
+  const fetchImpl=async url=>{
+    if(url.startsWith('https://tee.example/')){
+      const challenge=new URL(url).searchParams.get('challenge');
+      const identity={mode:policy.mode,chainId:policy.chainId,operator:policy.operator,encryptionPublicKey:policy.encryptionPublicKey,omnibusVault:policy.vault,lockSha256:policy.lockSha256,wasmSha256:policy.wasmSha256,zkeySha256:policy.zkeySha256,sourceHashes:{},ledgerGenesis:policy.ledgerGenesis,...(omitMigration?{}:{identityMigration})};
+      const binding=sha(JSON.stringify({domain:'MM_COHORT_OPERATOR_V1',identity,challenge}));
+      const fields=[['tee_tcb_svn',16],['mrseam',48],['mrsignerseam',48],['seamattributes',8],['tdattributes',8],['xfam',8],['mrtd',48],['mrconfig',48],['mrowner',48],['mrownerconfig',48],['rtmr0',48],['rtmr1',48],['rtmr2',48],['rtmr3',48],['reportdata',64]];
+      const body=Object.fromEntries(fields.map(([name,size])=>[name,'00'.repeat(size)]));Object.assign(body,measurements,{mrconfig:'01'+composeHash+'00'.repeat(15),reportdata:binding.padEnd(128,'0')});
+      const raw=Buffer.alloc(637);raw.writeUInt16LE(4,0);raw.writeUInt16LE(2,2);raw.writeUInt32LE(129,4);let offset=48;
+      for(const[name,size]of fields){Buffer.from(body[name],'hex').copy(raw,offset);offset+=size;}raw.writeUInt32LE(1,632);raw[636]=1;
+      vendor={success:true,quote:{verified:true,header:{version:4,ak_type:2,tee_type:129,qe_vendor:'00'.repeat(16),user_data:'00'.repeat(20)},body}};
+      return {ok:true,json:async()=>({identity,challenge,binding,quote:{quote:raw.toString('hex'),event_log:events}})};
+    }
+    return {ok:true,json:async()=>vendor};
+  };
+  return {endpoint:'https://tee.example',publicKey:policy.encryptionPublicKey,vault:policy.vault,policy,fetchImpl};
+}
+
+test('migration attestation binds the production OS image and original operator provenance',async()=>{
+  assert.equal((await verifyPlatformTee(migrationQuoteFixture())).status,'VERIFIED_PINNED_TDX_VIA_PHALA');
+  await assert.rejects(verifyPlatformTee(migrationQuoteFixture({actualImage:'33'.repeat(32)})),/TEE_ATTESTATION_OS_IMAGE/);
+  await assert.rejects(verifyPlatformTee(migrationQuoteFixture({omitMigration:true})),/TEE_ATTESTATION_MIGRATION_IDENTITY/);
+});
 
 test('pinned key and Vault are checked before contacting a TEE or vendor', async () => {
   const fetchImpl = () => { throw Error('network must not be contacted'); };
